@@ -1,0 +1,33 @@
+# ignore everything
+*
+
+# respect these:
+!README.md
+!.gitconfig
+!.gitignore
+!.setup/
+!.setup/**
+!.zshrc
+!.zshenv
+!.zplugrc
+!.tmux.conf
+!.shell/
+!.shell/**
+!.config/helix/
+!.config/helix/**
+!.config/helix/config.toml
+!.config/helix/languages.toml
+!.config/vale/
+!.config/vale/**
+!.config/vale/.vale.ini
+!.config/mods/
+!.config/mods/**
+!.config/mods/mods.yml
+
+# git-secret won't work if not:
+!.gitsecret
+!.gitsecret/
+!.gitsecret/**
+
+!*.secret
+.gitsecret/keys/random_seed

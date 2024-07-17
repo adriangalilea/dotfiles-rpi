@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# `.aliases` is used to provide custom aliases.
+
+
+# === Aliases ===
+
+alias ai="mods"
+
+# git secret
+alias add="git secret add"
+alias hide="git secret hide"
+alias reveal="git secret reveal"
+alias tell="git secret tell"
+alias remove="git secret remove"
+alias secrets="git secret list"
+
+alias secret-help="git secret usage" # list commands
+
+# bat is batcat in ubuntu for whatever reason
+alias bat="batcat"
+
+# fd is fdfind in ubuntu for whatever reason
+alias fd="fdfind"
+
+# lazygit shortcut
+alias g="lazygit"
+alias l="lazygit"
+
+# helix shortcut
+alias h="hx"
+alias helix="hx" # just in case
+
+# disk-usage tool
+# alias gdu="gdu-go" # it's already `gdu` in my recent install so this alias would actually break it 
+
+# disk-usage command
+alias diskspace="df -h /"
+alias disk="diskspace"
+alias space="diskspace"
+alias s="diskspace"
+
+# taskwarrior
+alias t="taskwarrior-tui"
+
+# since my ~ is a git with .gitignore * I need some help to see what's not added
+# recursive
+alias ,="git status --short --ignored ."
+# non-recursive
+alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'
+
+# navigation
+alias ls="eza"
+alias la="ls -lah"
+alias ll="ls -l --time-style relative"
+alias lt="ls -R -T --icons"
+
+alias mkdir="mkdir -p"
+alias md="mkdir"
+alias rd="rmdir"
+
+# python venv setup
+alias pyenv='python3 -m venv venv && echo -e "layout python python3\nsource venv/bin/activate\nwatch_file .envrc" > .envrc && direnv allow'
+
+# === Inherited from @sobolevn ===
+
+## Sorts directories in top, colors, and prints `/` at directories:
+# alias ls='gls --color -h --group-directories-first -F'
+
+# Use syntax highlight for `cat`:
+alias cat='bat --paging never --decorations never --plain'
+
+# Copy public key to clipboard:
+alias pubkey="cat ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pasteboard.'"
+
+# I use this a lot:
+alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"

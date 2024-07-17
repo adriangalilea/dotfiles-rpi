@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+# `.competions` handles all custom auto-completions.
+
+# Enable hidden files on completion:
+setopt globdots
+
+# Uncomment to set `CTRL-k` to show debug info:
+# Usage: `your command <CTRL-k>`
+# bindkey '^k' _complete_help
+
+# commented out while we investigate why zoxide doesn't work with completions properly.
+# alias z="zoxide"
+# alias cd="z"
+alias c.="cd .."
+alias c-="cd -" # go back to prev directory
+
+# === fzf-tab ===
+# https://github.com/Aloxaf/fzf-tab
+
+# enable hidden files on completion
+zstyle ':completion:*' special-dirs true
+# hide parents
+zstyle ':completion:*' ignored-patterns '.|..|.DS_Store|**/.|**/..|**/.DS_Store|**/.git'
+# hide `..` and `.` from file menu
+zstyle ':completion:*' ignore-parents 'parent pwd directory'
+# force zsh not to show completion menu,
+# which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+
+# switch groups using `[` and `]`
+zstyle ':fzf-tab:*' switch-group '[' ']'
+
+# use the same layout as others and respect my default
+local fzf_flags
+zstyle -a ':fzf-tab:*' fzf-flags fzf_flags
+fzf_flags=( "${fzf_flags[@]}" '--layout=reverse-list' )
+zstyle ':fzf-tab:*' fzf-flags $fzf_flags
+
+# Tools to autocomplete:
+# ----------------------
+# Big sources of inspiration:
+# - https://github.com/Freed-Wu/fzf-tab-source
+# - https://github.com/DanielFGray/fzf-scripts
+
+# complete `fzf`
+compdef _gnu_generic fzf
+
+# complete `ls` / `cat` / etc
+zstyle ':fzf-tab:complete:(\\|*/|)(ls|gls|bat|cat|cd|z|rm|cp|mv|ln|nano|code|open|tree|source|hx):*' \
+  fzf-preview \
+  '_fzf_complete_realpath "$realpath"'
+
+# complete `make`
+zstyle ':fzf-tab:complete:(\\|*/|)make:*' fzf-preview \
+  'case "$group" in
+  "[make target]")
+    make -n "$word" | _fzf_complete_realpath
+    ;;
+  "[make variable]")
+    make -pq | ag "^$word =" | _fzf_complete_realpath
+    ;;
+  "[file]")
+    _fzf_complete_realpath "$realpath"
+    ;;
+  esac'
+
+# complete `killall`
+zstyle ':completion:*:*:killall:*:*' command 'ps -u "$USERNAME" -o comm'
+zstyle ':fzf-tab:complete:(\\|*/|)killall:*' fzf-preview \
+  'ps aux | ag "$word" | _fzf_complete_realpath'
+
+# complete `zoxide`
+_z () {
+  # I have a custom completion, because I like `z NAME<TAB>`
+  # and not `z NAME<SPACE><TAB>`
+  local args
+  args="$(zoxide query -a -l)"
+  _arguments "1:paths:($args)"
+}
+
+compdef _z z
+zstyle ':fzf-tab:complete:(\\|*/|)z:*' fzf-preview \
+  '_fzf_complete_realpath "$word"'
+
+# bun completions
+[ -s "/home/adrian/.bun/_bun" ] && source "/home/adrian/.bun/_bun"

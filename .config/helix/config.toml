@@ -1,0 +1,97 @@
+[editor]
+bufferline = "always"
+auto-format = true
+line-number = "relative"
+color-modes = true
+cursorline = true
+popup-border = "all"
+true-color = true
+
+[editor.soft-wrap]
+enable = true
+max-wrap = 25
+
+[editor.statusline]
+left = ["mode", "spinner"]
+center = ["file-name"]
+right = ["version-control", "diagnostics", "selections", "position", "file-encoding", "file-line-ending", "file-type"]
+separator = "│"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.lsp]
+# display-inlay-hints = true
+auto-signature-help = false
+# display-messages = true
+
+[editor.auto-pairs]
+'<' = '>'
+'[' = ']'
+'(' = ')'
+'{' = '}'
+'"' = '"'
+'`' = '`'
+"'" = "'"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.indent-guides]
+render = true
+skip-levels = 1
+
+[editor.file-picker]
+# hidden = false
+# git-ignore = false
+
+[keys.normal]
+"q" = ":quit"
+"j" = "move_line_down"
+"k" = "move_line_up"
+"tab" = ":buffer-next"
+"S-tab" = ":buffer-previous"
+"C-tab" = "rotate_view"
+"C-S-tab" = "rotate_view_reverse"
+"A-(" = "rotate_view"
+"A-)" = "rotate_view_reverse"
+
+"A-a" = "select_all" # weird it also allows me to do cmd+a
+
+C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw"]
+# C-t = [":sh task context ${TASKWARRIOR_CONTEXT} > /dev/null", ":sh tmux popup -d \"#{pane_current_path}\" -xC -yC -w80% -h80% -E taskwarrior-tui"] # open taskwarrior-tui on tmux popup (you gotta run helix inside tmux)
+
+C-j = ["extend_to_line_bounds", "delete_selection", "paste_after"] # move line up
+C-k = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"] # move line down
+C-l = ["delete_selection", "paste_after"] # move right
+C-h = ["delete_selection", "move_char_left", "paste_before"] #move left
+
+# C-t = ["goto_first_nonwhitespace"]
+
+"esc" = [ "normal_mode", ":format" , ":write", "collapse_selection", "keep_primary_selection"]
+"{" = "goto_prev_paragraph"
+"}" = "goto_next_paragraph"
+
+"pagedown" = ["page_cursor_half_down" , "align_view_middle"]
+"pageup" = ["page_cursor_half_up", "align_view_middle"]
+"minus" = "align_view_center"
+
+"?" = "command_palette"
+
+"|" = ":vsplit"
+"\\" = ":hsplit"
+
+[keys.normal.space]
+w = ":write"
+q = ":quit"
+x = ":buffer-close"
+"." = [":toggle file-picker.git-ignore", ":toggle file-picker.hidden"]
+# H = ":toggle display-inlay-hints"
+"minus" = [":yank-diagnostic"]
+"tab" = "rotate_view"
+t = ':insert-output date "+%H:%M:%S - %d %B %Y"'
+
+[keys.normal.m]
+n = "expand_selection"

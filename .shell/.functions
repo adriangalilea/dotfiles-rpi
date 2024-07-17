@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+# creates directory and cd's into it
+mc () {
+  if [ $# -ne 1 ]; then
+    echo 'usage: mc <dir-name>'
+    return 137
+  fi
+  # Create a new directory and enter it
+  local dir_name="$1"
+  mkdir -p "$dir_name" && cd "$dir_name"
+}
+
+# shows files
+function files {
+    if [[ ! -x "$(command -v eza)" ]]; then
+        echo -e "\033[1;33mMagic Dashboard: \`eza\` not installed.\033[0m" && return 1
+    fi
+
+    echo
+    
+    # Display current directory with icon
+    eza --icons --color=always --git -d "$PWD"
+    
+    echo
+    
+    local eza_output
+    local max_files_lines=${MAGIC_DASHBOARD_FILES_LINES:-6}
+    local ignore_pattern=".DS_Store|Icon?|Thumbs.db|desktop.ini"
+
+    eza_output=$(
+        eza --width="$COLUMNS" --grid --color=always --icons \
+            --ignore-glob="$ignore_pattern" \
+            --sort=name --group-directories-first --no-quotes \
+            --git --long --no-user --no-permissions --no-filesize --no-time
+    )
+
+    if [[ $(echo "$eza_output" | wc -l) -gt $max_files_lines ]]; then
+        local shortened
+        shortened="$(echo "$eza_output" | head -n"$max_files_lines")"
+        printf "%s \033[1;36m…\033[0m\n" "$shortened"
+    elif [[ -n "$eza_output" ]]; then
+        echo "$eza_output"
+    fi
+    echo
+}
+
+function d () {
+  if [[ -n $1 ]]; then
+    dirs "$@"
+  else
+    dirs -v | head -n 10
+  fi
+}
+compdef _dirs d
+
+# added as a function because it didn't work as an alias
+function - () {
+	cd -
+}
+
+sys() {
+    autoload -U colors && colors
+
+    color_percent() {
+        if (( $1 < 70 )); then
+            echo "%F{green}$1%%%f"
+        elif (( $1 < 85 )); then
+            echo "%F{yellow}$1%%%f"
+        else
+            echo "%F{red}$1%%%f"
+        fi
+    }
+
+    color_temp() {
+        temp=${1%\'C}
+        if (( temp < 50 )); then
+            echo "%F{green}$1%f"
+        elif (( temp < 70 )); then
+            echo "%F{yellow}$1%f"
+        else
+            echo "%F{red}$1%f"
+        fi
+    }
+
+    color_load() {
+        if (( $(echo "$1 < 1" | bc -l) )); then
+            echo "%F{green}$1%f"
+        elif (( $(echo "$1 < 2" | bc -l) )); then
+            echo "%F{yellow}$1%f"
+        else
+            echo "%F{red}$1%f"
+        fi
+    }
+
+    bar_chart() {
+        local percent=$1
+        local filled=$((percent / 10))
+        local result=""
+        for ((i=0; i<10; i++)); do
+            if (( i < filled )); then
+                result+="█"
+            else
+                result+="░"
+            fi
+        done
+        echo $result
+    }
+
+    # CPU
+    cpu_percent=$(top -bn1 | awk '/^%Cpu/ {printf "%.0f", $2+$4}')
+    cpu_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null || echo "N/A")
+    cpu_max_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null || echo "N/A")
+    if [[ $cpu_freq != "N/A" && $cpu_max_freq != "N/A" ]]; then
+        cpu_freq_ghz=$(echo "scale=1; $cpu_freq / 1000000" | bc)
+        cpu_max_freq_ghz=$(echo "scale=1; $cpu_max_freq / 1000000" | bc)
+        cpu_freq_display="($cpu_freq_ghz/$cpu_max_freq_ghz GHz)"
+    else
+        cpu_freq_display="(N/A)"
+    fi
+
+    # Temperature
+    temp=$(vcgencmd measure_temp | cut -d"=" -f2 | cut -d"'" -f1)
+
+    # RAM
+    ram_total=$(free -m | awk '/^Mem:/ {print $2}')
+    ram_used=$(free -m | awk '/^Mem:/ {print $3}')
+    ram_percent=$((ram_used * 100 / ram_total))
+
+    # Disk
+    disk_total=$(df -h / | awk 'NR==2 {print $2}')
+    disk_used=$(df -h / | awk 'NR==2 {print $3}')
+    disk_percent=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+
+    # Swap
+    swap_total=$(free -m | awk '/^Swap:/ {print $2}')
+    swap_used=$(free -m | awk '/^Swap:/ {print $3}')
+    swap_percent=$((swap_used * 100 / swap_total))
+
+    # Load
+    load_avg=$(uptime | awk -F'load average:' '{print $2}' | sed 's/,//g')
+    load_1=$(echo $load_avg | awk '{print $1}')
+    load_5=$(echo $load_avg | awk '{print $2}')
+    load_15=$(echo $load_avg | awk '{print $3}')
+
+    print -P "⚙️  $(bar_chart $cpu_percent) $(color_percent $cpu_percent) $cpu_freq_display CPU"
+    print -P "🌡️  $(bar_chart $temp) $(color_temp $temp\'C) CPU Temp"
+    print -P "🧠  $(bar_chart $ram_percent) $(color_percent $ram_percent) ($ram_used/$ram_total MB) RAM"
+    print -P "💾  $(bar_chart $disk_percent) $(color_percent $disk_percent) ($disk_used/$disk_total) Disk"
+    print -P "🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap"
+    print -P "⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
+}

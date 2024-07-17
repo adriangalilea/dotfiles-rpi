@@ -1,0 +1,19 @@
+# eza binary on git repo
+export PATH="$HOME/.shell/bin:$PATH"
+
+# zoxide directory
+export PATH="$HOME/.local/bin:$PATH"
+
+# golang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# limit zsh-highight otherwise too slow
+export ZSH_HIGHLIGHT_MAXLENGTH=200
+
+# must be the last line
+export PATH

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+# `.external` handles all complex external tools.
+
+
+# === fzf ===
+# https://github.com/junegunn/fzf
+
+if [[ ! "$PATH" == */opt/fzf/bin* ]]; then
+  # Enable `fzf-git`:
+  # https://github.com/junegunn/fzf-git.sh
+  source 'fzf-git.sh'  # installed via `zplug`
+
+  # Enable `fzf`:
+  eval "$(fzf --zsh)"
+fi
+
+# fzf configuration:
+export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type=d --hidden --strip-cwd-prefix --exclude .git'
+export FZF_CTRL_T_OPTS="--preview '_fzf_complete_realpath {}'"
+export FZF_ALT_C_OPTS="--preview '_fzf_complete_realpath {}'"
+
+# fzf-git configuration:
+export FZF_GIT_COLOR='never'
+export FZF_GIT_PREVIEW_COLOR='always'
+
+
+# Use generator to customize:
+# https://vitormv.github.io/fzf-themes/
+# To add wrap lines add:
+# --preview-window=wrap
+export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+--layout=reverse-list
+--bind 'ctrl-a:toggle'
+--bind 'ctrl-h:change-preview-window(hidden|)'
+--cycle
+-i
+"
+
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path () {
+  fd --hidden --no-ignore-vcs --exclude .git . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir () {
+  fd --type=d --hidden --no-ignore-vcs --exclude .git . "$1"
+}
+
+# See `.completions` file for all the list of fast tab completions.
+
+
+# === z ===
+# https://github.com/ajeetdsouza/zoxide
+
+# `zoxide` has an option to use `fzf` to provide completions natively,
+# but it works only for `z NAME<SPACE><TAB>`,
+# it does not work for `z NAME<TAB>`.
+# So, I have this usecase as a custom completion defined in `.completions`.
+eval "$(zoxide init zsh --no-cmd)"
+
+z () {
+  # I need this function to setup custom code completion for `zoxide`.
+  \__zoxide_z "$@"
+}
