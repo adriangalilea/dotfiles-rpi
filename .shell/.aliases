@@ -75,3 +75,7 @@ alias pubkey="cat ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pas
 
 # I use this a lot:
 alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"
+
+# Add x
+alias x="chmod +x"
+alias x\*="x *"
