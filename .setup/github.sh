@@ -1,5 +1,9 @@
 #!/bin/zsh
 
+# TODO check [jpillora/instaler](https://github.com/jpillora/installer)
+# TODO check [@codelinkx gist](https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8?permalink_comment_id=4699831#gistcomment-4699831)
+# TODO [implement dra](https://github.com/devmatteini/dra?tab=readme-ov-file#non-interactive-download)
+
 # Function to update the static line
 update_static_line() {
     local message=$1
