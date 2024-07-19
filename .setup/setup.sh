@@ -7,13 +7,12 @@ source ./apt.sh
 main() {
     gum log --structured --level info "Starting setup..."
     increase_swap_size 1024
-    add_charm_repository
 
     # APT packages
     local apt_packages=(
         zsh git wget curl jq tar xz-utils htop neofetch bat
         build-essential dh-make devscripts golang python3-pip fd-find tree tmux shellcheck
-        gum glow
+        glow
     )
     install_apt_packages "${apt_packages[@]}"
     install_pip_packages

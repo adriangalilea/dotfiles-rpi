@@ -27,25 +27,6 @@ install_apt_packages() {
     fi
 }
 
-add_charm_repository() {
-    gum log --structured --level info "Adding Charm repository..."
-    
-    if [ ! -f /etc/apt/keyrings/charm.gpg ]; then
-        sudo mkdir -p /etc/apt/keyrings
-        if curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg; then
-            echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ *"* | sudo tee /etc/apt/sources.list.d/charm.list > /dev/null
-            gum log --structured --level info "Charm GPG key added."
-            update_package_lists
-        else
-            gum log --structured --level error "Failed to add Charm GPG key. Skipping Charm repository addition."
-            return 1
-        fi
-    else
-        gum log --structured --level warn "Charm GPG key already exists. Skipping addition."
-    fi
-    gum log --structured --level info "Charm repository process completed."
-}
-
 install_pip_packages() {
     gum log --structured --level info "Installing pip packages..."
     local pip_output
