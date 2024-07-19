@@ -29,7 +29,7 @@ install_gum() {
 
 run_system_setup() {
     if [ -f "./setup.sh" ]; then
-        gum spin --spinner dot --title "Running system setup" -- zsh ./setup.sh
+        ./setup.sh
     else
         gum log --structured --level error "setup.sh not found in the current directory."
         exit 1
