@@ -25,7 +25,13 @@ alias fd="fdfind"
 
 # lazygit shortcut
 alias g="lazygit"
-alias l="lazygit"
+
+function run_lazygit {
+  lazygit
+}
+
+zle -N run_lazygit
+bindkey '^g' run_lazygit
 
 # helix shortcut
 alias h="hx"
@@ -51,6 +57,7 @@ alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'
 
 # navigation
 alias ls="eza"
+alias l="ls"
 alias la="ls -lah"
 alias ll="ls -l --time-style relative"
 alias lt="ls -R -T --icons"
