@@ -146,6 +146,10 @@ fetch_latest_release() {
     local url="https://api.github.com/repos/$repo/releases/latest"
     local response=$(curl -s "$url")
     RATE_LIMIT_REMAINING=$((RATE_LIMIT_REMAINING - 1))
+    if [[ -z "$response" ]]; then
+        echo "Failed to fetch latest release for $repo."
+        return 1
+    fi
     echo -E "$response"
 }
 
@@ -182,5 +186,64 @@ find_best_asset() {
         fi
     done < <(echo -E "$assets_json" | jq -c '.[]')
 
+    if [ -z "$best_asset" ]; then
+        echo "No suitable asset found."
+        return 1
+    fi
+
     echo "$best_asset"
+}
+
+download_and_extract_asset() {
+    local asset_url=$1
+    local binary_name=$2
+
+    local tmp_dir="/tmp/$binary_name"
+    local tmp_file="$tmp_dir/$(basename "$asset_url")"
+
+    mkdir -p "$tmp_dir"
+    if ! curl -s -L "$asset_url" -o "$tmp_file"; then
+        echo "Failed to download $asset_url"
+        return 1
+    fi
+
+    case "$tmp_file" in
+        *.tar.gz|*.tar.xz|*.tgz|*.tar)
+            tar -xf "$tmp_file" -C "$tmp_dir" || { echo "Failed to extract $tmp_file"; return 1; }
+            ;;
+        *.zip)
+            unzip -q "$tmp_file" -d "$tmp_dir" || { echo "Failed to unzip $tmp_file"; return 1; }
+            ;;
+        *.AppImage|*.sh)
+            chmod +x "$tmp_file"
+            sudo mv "$tmp_file" /usr/local/bin/"$binary_name" || { echo "Failed to move $binary_name"; return 1; }
+            ;;
+        *.deb)
+            sudo dpkg -i "$tmp_file" || { echo "Failed to install $tmp_file"; return 1; }
+            ;;
+        *.rpm)
+            sudo rpm -i "$tmp_file" || { echo "Failed to install $tmp_file"; return 1; }
+            ;;
+        *)
+            echo "Unsupported file format: $tmp_file"
+            return 1
+            ;;
+    esac
+
+    [ -f "$tmp_file" ] && rm "$tmp_file"
+
+    local extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
+    if [ -z "$extracted_file" ]; then
+        echo "$binary_name not found in the extracted files."
+        return 1
+    fi
+
+    if [[ "$extracted_file" != *"$binary_name"* ]]; then
+        mv "$extracted_file" "$tmp_dir/$binary_name"
+        extracted_file="$tmp_dir/$binary_name"
+    fi
+
+    sudo mv "$extracted_file" /usr/local/bin/"$binary_name" || { echo "Failed to move $binary_name to /usr/local/bin/"; return 1; }
+    sudo chmod +x /usr/local/bin/"$binary_name"
+    rm -rf "$tmp_dir"
 }
