@@ -1,78 +1,80 @@
 #!/bin/zsh
 
-# Define log file
-LOGFILE="$HOME/setup.log"
-
-autoload -Uz colors && colors
-
-log() {
-    local message="$1"
-    local color="${2:-default}"
-    local timestamp
-    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    print -P "%F{$color}[$timestamp] $message%f" | tee -a "$LOGFILE"
-}
-
-# Redirect stdout and stderr to the log file for the entire script
-exec > >(tee -a "$LOGFILE") 2>&1
+#!/bin/zsh
 
 increase_swap_size() {
     local new_size=$1
     local current_size
 
     if [[ -z "$new_size" ]]; then
-        log "Please provide the new swap size in MB." "red"
+        gum log --structured --level error "Please provide the new swap size in MB."
         return 1
     fi
 
     current_size=$(grep CONF_SWAPSIZE /etc/dphys-swapfile | cut -d= -f2)
 
     if (( current_size >= new_size )); then
-        log "Current swap size ($current_size MB) is already greater than or equal to requested size ($new_size MB). Skipping." "yellow"
+        gum log --structured --level warn "Current swap size ($current_size MB) is already greater than or equal to requested size ($new_size MB). Skipping."
         return 0
     fi
     
-    log "Increasing swap from $current_size MB to $new_size MB" "blue"
+    gum log --structured --level info "Increasing swap from $current_size MB to $new_size MB"
     
     local result
     result=$(sudo sed -i "s/CONF_SWAPSIZE=.*/CONF_SWAPSIZE=${new_size}/" /etc/dphys-swapfile)
     if (( $? != 0 )); then
-        log "Failed to update swap size in /etc/dphys-swapfile" "red"
+        gum log --structured --level error "Failed to update swap size in /etc/dphys-swapfile"
         return 1
     fi
     
     result=$(sudo systemctl restart dphys-swapfile.service)
     if (( $? != 0 )); then
-        log "Failed to restart dphys-swapfile service" "red"
+        gum log --structured --level error "Failed to restart dphys-swapfile service"
         return 1
     fi
     
-    log "Swap size increased to ${new_size}MB." "green"
+    gum log --structured --level info "Swap size increased to ${new_size}MB."
 }
 
-determine_architecture() {
-    local arch
-    arch=$(uname -m)
-    log "Detected architecture: $arch" "blue"
+get_system_info() {
+    local arch=$(uname -m)
+    local os=$(uname -s)
     
+    gum log --structured --level debug "Raw arch: $arch"
+    gum log --structured --level debug "Raw OS: $os"
+
     case $arch in
         x86_64)
-            ARCH="x86_64"
+            arch="x86_64|amd64"
             ;;
         aarch64|arm64)
-            ARCH="aarch64"
+            arch="aarch64|arm64"
             ;;
         armv7l)
-            ARCH="armv7l"
+            arch="armv7l|armv7"
             ;;
         *)
-            log "Unsupported architecture: $arch" "red"
-            log "Please report this to the script maintainer." "red"
-            return 1
+            arch="$arch"
             ;;
     esac
-    
-    log "Normalized architecture: $ARCH" "blue"
+
+    case $os in
+        Linux*)
+            os="linux"
+            ;;
+        Darwin*)
+            os="macos"
+            ;;
+        *)
+            os=$(echo "$os" | tr '[:upper:]' '[:lower:]')
+            ;;
+    esac
+
+    gum log --structured --level debug "Processed arch: $arch"
+    gum log --structured --level debug "Processed OS: $os"
+
+    echo "$arch"
+    echo "$os"
 }
 
 setup_ssh_clipboard_forwarding() {
@@ -92,7 +94,7 @@ setup_ssh_clipboard_forwarding() {
                     "$SSHD_CONFIG")
     
     if (( $? != 0 )); then
-        log "Failed to update SSH configuration" "red"
+        gum log --structured --level error "Failed to update SSH configuration"
         return 1
     fi
     
@@ -104,11 +106,11 @@ setup_ssh_clipboard_forwarding() {
     fi
     
     if (( $? != 0 )); then
-        log "Failed to restart SSH service" "red"
+        gum log --structured --level error "Failed to restart SSH service"
         return 1
     fi
     
-    log "Clipboard forwarding set up and SSH service restarted." "green"
+    gum log --structured --level info "Clipboard forwarding set up and SSH service restarted."
 }
 
 # Global variables for rate limiting
@@ -153,46 +155,67 @@ fetch_latest_release() {
     echo -E "$response"
 }
 
+extract_release_info() {
+    local latest_release_json=$1
+    local version=$(echo -E "$latest_release_json" | jq -r '.tag_name')
+    if [[ -z "$version" || "$version" == "null" ]]; then
+        echo "Failed to extract version" >&2
+        return 1
+    fi
+
+    local assets=$(echo -E "$latest_release_json" | jq -c '.assets')
+    if [[ -z "$assets" || "$assets" == "null" || "$assets" == "[]" ]]; then
+        echo "No assets found in the release" >&2
+        return 1
+    fi
+
+    local simplified_assets=$(echo -E "$assets" | jq -c '[.[] | {name: .name, url: .browser_download_url}]')
+    if [[ -z "$simplified_assets" ]]; then
+        echo "Failed to extract asset information" >&2
+        return 1
+    fi
+
+    echo "$version"
+    echo "$simplified_assets"
+}
+
 find_best_asset() {
-    local assets_json=$1
-    local arch_patterns="x86_64|amd64|aarch64|arm64|armv7l|armv7|armhf"
+    local assets=$1
+    local arch_pattern="aarch64|arm64"
     local os_pattern="linux"
-    local file_types="tar.xz tar.gz zip AppImage tgz"
+    local file_types=("tar.xz" "tar.gz" "zip" "AppImage" "tgz")
     local best_asset=""
     local max_score=0
 
-    while IFS= read -r asset; do
+    while read -r asset; do
         local asset_name=$(echo -E "$asset" | jq -r '.name' | tr '[:upper:]' '[:lower:]')
-        local asset_url=$(echo -E "$asset" | jq -r '.browser_download_url')
+        local asset_url=$(echo -E "$asset" | jq -r '.url')
         local score=0
 
-        if echo "$asset_name" | grep -qE "$arch_patterns"; then
-            score=$((score + 10))
-        fi
-        if echo "$asset_name" | grep -q "$os_pattern"; then
-            score=$((score + 5))
-        fi
-        for file_type in $file_types; do
-            if echo "$asset_name" | grep -q "$file_type"; then
-                local file_type_score=$((6 - $(echo "$file_types" | tr ' ' '\n' | grep -n "$file_type" | cut -d: -f1)))
-                score=$((score + file_type_score))
+        [[ $asset_name =~ $arch_pattern ]] && ((score += 10))
+        [[ $asset_name =~ $os_pattern ]] && ((score += 5))
+
+        for ((i=0; i<${#file_types[@]}; i++)); do
+            if [[ $asset_name =~ ${file_types[i]} ]]; then
+                ((score += 5 - i))
                 break
             fi
         done
 
-        if [ $score -gt $max_score ]; then
+        if ((score > max_score)); then
             max_score=$score
             best_asset=$asset_url
         fi
-    done < <(echo -E "$assets_json" | jq -c '.[]')
+    done < <(echo -E "$assets" | jq -c '.[]')
 
-    if [ -z "$best_asset" ]; then
-        echo "No suitable asset found."
+    if [[ -z "$best_asset" ]]; then
+        echo "No suitable asset found for $arch_pattern on $os_pattern." >&2
         return 1
     fi
 
     echo "$best_asset"
 }
+
 
 download_and_extract_asset() {
     local asset_url=$1
@@ -247,3 +270,11 @@ download_and_extract_asset() {
     sudo chmod +x /usr/local/bin/"$binary_name"
     rm -rf "$tmp_dir"
 }
+
+
+run_with_spinner() {
+    local title=$1
+    shift
+    gum spin --spinner dot --title "$title" --show-output -- zsh -c "source /home/adrian/.setup/utils.sh; $*"
+}
+

@@ -1,40 +1,42 @@
 #!/bin/zsh
 
+# Function to update the static line
+update_static_line() {
+    local message=$1
+    echo -e "\033[1A\033[K$message"
+}
+    
 process_package() {
-    local package=$1
-    IFS=':' read -r repo binary_name <<< "$package"
+    local repo=$1
+    local binary=$2
+    local latest_release_json version assets asset_url
 
-    local latest_release_json
-    if ! latest_release_json=$(fetch_latest_release "$repo"); then
-        echo "Failed to fetch latest release"
+    echo "📦 $binary 🌐 $repo"
+    if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $repo"); then
+        echo "❌ Failed to fetch the latest release for $repo"
         return 1
     fi
 
-    local version
-    if ! version=$(echo -E "$latest_release_json" | jq -r '.tag_name'); then
-        echo "Failed to extract version"
+    if ! { read -r version; read -r assets; } < <(extract_release_info "$latest_release_json"); then
+        echo "❌ Failed to extract release information"
+        return 1
+    fi
+    update_static_line "📦 $binary 🌐 $repo 🏷️ $version"
+    run_with_spinner "🧠 Extracting release info..." "sleep 1"  # Simulating work
+
+    if ! asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'"); then
+        echo "❌ Failed to find best asset"
         return 1
     fi
 
-    local assets_json
-    if ! assets_json=$(echo -E "$latest_release_json" | jq '.assets'); then
-        echo "Failed to extract assets"
+    local asset_name=$(echo "$asset_url" | awk -F/ '{print $NF}')
+    if ! run_with_spinner "⚙️ Installing..." "download_and_extract_asset '$asset_url' '$binary'"; then
+        echo "❌ Failed to download or extract asset"
         return 1
     fi
 
-    local asset_url
-    if ! asset_url=$(find_best_asset "$assets_json"); then
-        echo "Failed to find best asset"
-        return 1
-    fi
-
-    if ! download_and_extract_asset "$asset_url" "$binary_name"; then
-        echo "Failed to download or extract asset"
-        return 1
-    fi
-
-    if ! command -v "$binary_name" &> /dev/null; then
-        echo "Installation failed"
+    if ! command -v "$binary" &> /dev/null; then
+        echo "❌ Installation failed: $binary not found in PATH"
         return 1
     fi
 
@@ -45,20 +47,21 @@ install_from_github() {
     local github_packages=("$@")
 
     for package in "${github_packages[@]}"; do
-        IFS=':' read -r repo binary_name <<< "$package"
-
         if [[ ! "$package" =~ ^[^:]+:[^:]+$ ]]; then
-            echo "❌ Invalid package format: $package. Expected format: owner/repo:binary_name"
+            echo "❌ Invalid package format: $package. Expected format: owner/repo:binary"
             continue
         fi
+    
+        IFS=':' read -r repo binary <<< "$package"
 
         repo=$(echo "$repo" | xargs)
-        binary_name=$(echo "$binary_name" | xargs)
+        binary=$(echo "$binary" | xargs)
 
-        if ! error=$(process_package "$package" 2>&1); then
-            echo "❌ Skipping $package: $error"
+        if ! process_package "$repo" "$binary"; then
+            update_static_line "❌ Skipping $package: Failed to process package"
+            
         else
-            echo "📦 '$binary_name' was installed! ✅"
+            update_static_line "📦 $binary 🌐 $repo 🏷️ $version was installed! ✅"
         fi
     done
 }
