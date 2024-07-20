@@ -1,3 +1,8 @@
+# in order to let my rpi not die from shellcheck
+[[language]]
+name = "bash"
+language-servers = []
+
 [[language]]
 name = "html"
 language-servers = [ "vscode-html-language-server", "tailwindcss-ls", "emmet-ls", "vale" ]
