@@ -93,3 +93,19 @@ alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"
 # Add x
 alias x="chmod +x"
 alias x\*="x *"
+
+alias salsa="source ~/.zshrc"
+
+function source_zshrc {
+  # shellcheck source=/home/adrian/.zshrc
+  source ~/.zshrc
+}
+
+# Disable terminal flow control to free up ^s for custom use
+# Terminal flow control allows pausing/resuming terminal output (Ctrl+S pauses, Ctrl+Q resumes output) (e.g., stopping long command output)
+if [[ $- == *i* ]] && [ -t 0 ]; then
+  stty -ixon 2>/dev/null || true
+fi
+
+zle -N source_zshrc
+bindkey '^s' source_zshrc
