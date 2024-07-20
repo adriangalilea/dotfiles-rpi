@@ -120,7 +120,7 @@ ssh-add ~/.ssh/id_rsa
 - [ ] add: `calcurse`
 - [ ] fix `zoxide` not behaving right if set in alias as `cd` 
 - [ ] consider if [sdm](https://github.com/gitbls/sdm) or hijacking the script.sh(rpi imager) is a better option to run the `setup.sh`
-- [ ] improve output:
+- [ ] improve installing output:
 ```
   » ./main.sh
 Installing gum...
@@ -195,4 +195,3 @@ INFO Setup complete! Please reboot to apply all changes. <-- needs emoji ✅
   - [ ] client
   - [ ] server
 - [.] add [yallezix v3](https://github.com/luccahuguet/zellij) for a tree navigation and possible integration with other tools such as task-warrior tui
-- [ ] port `ip` into a package I can install in linux instead of brew(not workign on arm) --> - [ ] add: `ip`
