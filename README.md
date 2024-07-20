@@ -8,6 +8,76 @@ Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://
 
 Assumes aarch64.
 
+# Batteries included
+
+List of included apt packages: [pending]
+List of included github binaries that install automatically: [pending]
+
+## [aliases & shortcuts](https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases)
+
+Notably:
+
+<kbd>ctrl</kbd>+<kbd>s</kbd> --> `source ~/.zshrc`
+
+<kbd>ctrl</kbd>+<kbd>g</kbd> --> lazygit
+
+<kbd>ctrl</kbd>+<kbd>h</kbd> --> helix editor
+
+<kbd>enter</kbd> [zsh-magic-dashboard](https://github.com/chrisgrieser/zsh-magic-dashboard)
+
+<img width="1360" alt="image" src="https://github.com/user-attachments/assets/fa4040d8-ce6d-4b6e-b3dd-0a0179f4f115">
+
+[nav](https://github.com/betafcc/nav) arrow keys: 
+`alt` + `↑` - go up a directory
+`alt` + `↓` - fuzzy find directory below current one
+`alt` + `←` - go back in directory history
+`alt` + `→` - go forward in directory history
+
+## utilities: [shell functions](https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.functions)
+
+### [`sys`](https://github.com/adriangalilea/dotfiles-rpi/blob/92afee4de28aa5e26dffc438d71364bd00f50998/.shell/.functions#L62)
+<img width="260" alt="image" src="https://github.com/user-attachments/assets/59c06811-b290-4351-a6e4-c3e91c4ec1b4">
+
+### [`dif`](https://github.com/adriangalilea/dotfiles-rpi/blob/92afee4de28aa5e26dffc438d71364bd00f50998/.shell/.functions#L154)
+
+<img width="765" alt="image" src="https://github.com/user-attachments/assets/af434b5f-908d-4945-bec0-8459d3b1a54f">
+
+
+```
+» dif -h                                                                                                            
+Usage: dif <file1> <file2>
+Compare two files or URLs, including GitHub repositories.
+
+Supported formats:
+  - Local files
+  - GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}
+    ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases
+  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases
+  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.shell/.aliases
+
+Examples:
+  1. Compare local file to GitHub shorthand:
+     dif ~/.shell/.aliases git:adriangalilea/dotfiles-rpi:.shell/.aliases
+
+  2. Compare two GitHub repositories using shorthand:
+     dif git:adriangalilea/dotfiles-rpi:.shell/.aliases git:sobolevn/dotfiles:shell/.aliases
+
+  3. Compare GitHub shorthand to GitHub regular URL:
+     dif git:adriangalilea/dotfiles-rpi:.shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions
+
+  4. Compare local file to GitHub raw URL:
+     dif ~/.shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions
+
+  5. Compare GitHub regular URL to GitHub raw URL:
+     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases
+
+  6. Compare two local files:
+     dif ~/.shell/.aliases ~/.shell/.completions
+
+  7. Compare GitHub shorthand with specific branch to GitHub regular URL:
+     dif git:adriangalilea/dotfiles-rpi:main:.shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases
+```
+
 # [@self] SSH Configuration Instructions
 
 > [!NOTE]  
