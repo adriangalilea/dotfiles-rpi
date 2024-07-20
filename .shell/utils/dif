@@ -1,0 +1,181 @@
+#!/bin/bash
+# dif - Advanced File Comparison Tool
+# Author: Adrian Galilea
+# Created: July 20, 2024
+# Last Modified: July 20, 2024
+#
+# Description:
+# A versatile file comparison tool that supports local files, GitHub repositories,
+# and URLs. It provides colorful and informative diff output using delta.
+#
+# Usage:
+#   source /path/to/dif
+#   dif <file1> <file2>
+#
+# Note: This script is designed to be sourced and run as a function.
+# Ensure it's in your PATH or source it in your .zshrc or .bashrc file.
+
+debug() {
+    [[ $DEBUG == 1 ]] && echo "DEBUG: $1" >&2
+}
+
+show_help() {
+    echo "Usage: dif <file1> <file2>"
+    echo "Compare two files or URLs, including GitHub repositories."
+    echo
+    echo "Supported formats:"
+    echo "  - Local files"
+    echo "  - GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}"
+    echo "    ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases"
+    echo "  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases"
+    echo "  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.shell/.aliases"
+    echo
+    echo "Examples:"
+    echo "  1. Compare local file to GitHub shorthand:"
+    echo "     dif ~/.shell/.aliases git:adriangalilea/dotfiles-rpi:.shell/.aliases"
+    echo
+    echo "  2. Compare two GitHub repositories using shorthand:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.aliases git:sobolevn/dotfiles:shell/.aliases"
+    echo
+    echo "  3. Compare GitHub shorthand to GitHub regular URL:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions"
+    echo
+    echo "  4. Compare local file to GitHub raw URL:"
+    echo "     dif ~/.shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions"
+    echo
+    echo "  5. Compare GitHub regular URL to GitHub raw URL:"
+    echo "     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases"
+    echo
+    echo "  6. Compare two local files:"
+    echo "     dif ~/.shell/.aliases ~/.shell/.completions"
+    echo
+    echo "  7. Compare GitHub shorthand with specific branch to GitHub regular URL:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:main:.shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases"
+}
+
+parse_github_input() {
+    local input=$1
+    local -n ref_repo=$2
+    local -n ref_branch=$3
+    local -n ref_filepath=$4
+
+    if [[ $input =~ ^git: ]]; then
+        ref_repo=$(echo "$input" | cut -d':' -f2)
+        local branch_and_path=$(echo "$input" | cut -d':' -f3-)
+        
+        if [[ "$branch_and_path" == *:* ]]; then
+            ref_branch=$(echo "$branch_and_path" | cut -d':' -f1)
+            ref_filepath=$(echo "$branch_and_path" | cut -d':' -f2-)
+        else
+            ref_filepath=$branch_and_path
+        fi
+    elif [[ $input =~ ^https://github.com ]]; then
+        ref_repo=$(echo "$input" | sed -E 's|https://github.com/([^/]+/[^/]+)/blob/.*|\1|')
+        ref_branch=$(echo "$input" | sed -E 's|.*/blob/([^/]+)/.*|\1|')
+        ref_filepath=$(echo "$input" | sed -E 's|.*/blob/[^/]+/(.*)|\1|')
+    else
+        echo "Error: Invalid GitHub input format: $input" >&2
+        return 1
+    fi
+}
+
+fetch_github_file() {
+    local input=$1
+    local repo branch filepath
+    
+    parse_github_input "$input" repo branch filepath
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    debug "Extracted - Repo: $repo, Branch: $branch, Filepath: $filepath"
+    
+    local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
+    debug "Constructed URL: $github_raw_url"
+    
+    local content=$(curl -sfL "$github_raw_url")
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to fetch file from GitHub. URL: $github_raw_url" >&2
+        return 1
+    fi
+    echo "$content"
+}
+
+get_content() {
+    local file=$1
+    if [[ -f $file ]]; then
+        debug "Reading local file: $file"
+        cat "$file"
+    elif [[ $file =~ ^(git:|https://github.com) ]]; then
+        fetch_github_file "$file"
+    elif [[ $file =~ ^https?:// ]]; then
+        debug "Fetching from URL: $file"
+        local content=$(curl -sfL "$file")
+        if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to fetch file from URL: $file" >&2
+            return 1
+        fi
+        echo "$content"
+    else
+        echo "Error: File not found or invalid input: $file" >&2
+        return 1
+    fi
+}
+
+dif() {
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
+        show_help
+        return 0
+    fi
+
+    if [[ -z $1 || -z $2 ]]; then
+        echo "Error: Two arguments are required." >&2
+        show_help
+        return 1
+    fi
+
+    local file1=$1
+    local file2=$2
+
+    debug "Processing file1: $file1"
+    local content1=$(get_content "$file1")
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    debug "Processing file2: $file2"
+    local content2=$(get_content "$file2")
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    if [[ -z $content1 ]]; then
+        echo "Error: Empty content received for $file1" >&2
+        return 1
+    fi
+
+    if [[ -z $content2 ]]; then
+        echo "Error: Empty content received for $file2" >&2
+        return 1
+    fi
+
+    # Use process substitution and capture the exit status of diff
+    diff -u --label "${file1}" --label "${file2}" <(echo "$content1") <(echo "$content2") | delta
+    local diff_exit_code=${PIPESTATUS[0]}
+
+    # Check the exit code of diff
+    if [[ $diff_exit_code -eq 0 ]]; then
+        echo "Files are identical."
+    elif [[ $diff_exit_code -eq 1 ]]; then
+        # Differences found, but this is not an error
+        return 0
+    else
+        echo "Error: diff command failed with exit code $diff_exit_code" >&2
+        return $diff_exit_code
+    fi
+}
+
+# If the script is sourced, don't run the dif function
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    dif "$@"
+fi

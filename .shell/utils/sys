@@ -1,0 +1,110 @@
+#!/bin/bash
+# sys - System Resource Monitor
+# Author: Adrian Galilea
+# Created: July 20, 2024
+# Last Modified: July 20, 2024
+#
+# Description:
+# Minimal, colorful and informative display of system resource usage,
+# including CPU, RAM, disk space, swap, and load averages.
+#
+# Usage:
+#   source /path/to/sys
+#   sys
+#
+# Note: This script is designed to be sourced and run as a function.
+# Ensure it's in your PATH or source it in your .zshrc file.
+
+autoload -U colors && colors
+
+color_percent() {
+    if (( $1 < 70 )); then
+        echo "%F{green}$1%%%f"
+    elif (( $1 < 85 )); then
+        echo "%F{yellow}$1%%%f"
+    else
+        echo "%F{red}$1%%%f"
+    fi
+}
+
+color_temp() {
+    temp=${1%\'C}
+    if (( temp < 50 )); then
+        echo "%F{green}$1%f"
+    elif (( temp < 70 )); then
+        echo "%F{yellow}$1%f"
+    else
+        echo "%F{red}$1%f"
+    fi
+}
+
+color_load() {
+    if (( $(echo "$1 < 1" | bc -l) )); then
+        echo "%F{green}$1%f"
+    elif (( $(echo "$1 < 2" | bc -l) )); then
+        echo "%F{yellow}$1%f"
+    else
+        echo "%F{red}$1%f"
+    fi
+}
+
+bar_chart() {
+    local percent=$1
+    local filled=$((percent / 10))
+    local result=""
+    for ((i=0; i<10; i++)); do
+        if (( i < filled )); then
+            result+="█"
+        else
+            result+="░"
+        fi
+    done
+    echo $result
+}
+
+sys() {
+    # CPU
+    cpu_percent=$(top -bn1 | awk '/^%Cpu/ {printf "%.0f", $2+$4}')
+    cpu_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null || echo "N/A")
+    cpu_max_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null || echo "N/A")
+    if [[ $cpu_freq != "N/A" && $cpu_max_freq != "N/A" ]]; then
+        cpu_freq_ghz=$(echo "scale=1; $cpu_freq / 1000000" | bc)
+        cpu_max_freq_ghz=$(echo "scale=1; $cpu_max_freq / 1000000" | bc)
+        cpu_freq_display="($cpu_freq_ghz/$cpu_max_freq_ghz GHz)"
+    else
+        cpu_freq_display="(N/A)"
+    fi
+
+    # Temperature
+    temp=$(vcgencmd measure_temp 2>/dev/null | cut -d"=" -f2 | cut -d"'" -f1 || echo "N/A")
+
+    # RAM
+    ram_total=$(free -m | awk '/^Mem:/ {print $2}')
+    ram_used=$(free -m | awk '/^Mem:/ {print $3}')
+    ram_percent=$((ram_used * 100 / ram_total))
+
+    # Disk
+    disk_total=$(df -h / | awk 'NR==2 {print $2}')
+    disk_used=$(df -h / | awk 'NR==2 {print $3}')
+    disk_percent=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
+
+    # Swap
+    swap_total=$(free -m | awk '/^Swap:/ {print $2}')
+    swap_used=$(free -m | awk '/^Swap:/ {print $3}')
+    swap_percent=$((swap_used * 100 / swap_total))
+
+    # Load
+    load_avg=$(uptime | awk -F'load average:' '{print $2}' | sed 's/,//g')
+    load_1=$(echo $load_avg | awk '{print $1}')
+    load_5=$(echo $load_avg | awk '{print $2}')
+    load_15=$(echo $load_avg | awk '{print $3}')
+
+    print -P "⚙️  $(bar_chart $cpu_percent) $(color_percent $cpu_percent) $cpu_freq_display CPU"
+    if [[ $temp != "N/A" ]]; then
+        print -P "🌡️  $(bar_chart $temp) $(color_temp $temp\'C) CPU Temp"
+    fi
+    print -P "🧠  $(bar_chart $ram_percent) $(color_percent $ram_percent) ($ram_used/$ram_total MB) RAM"
+    print -P "💾  $(bar_chart $disk_percent) $(color_percent $disk_percent) ($disk_used/$disk_total) Disk"
+    print -P "🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap"
+    print -P "⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
+}

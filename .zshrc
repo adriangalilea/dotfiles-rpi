@@ -76,6 +76,8 @@ setopt HIST_EXPIRE_DUPS_FIRST
 # This PATH needs to be set before all other modifications:
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin:$PATH"
 
+# source every util
+export PATH="$HOME/.shell/utils:$PATH"
 # === Plugin management ===
 
 source "$HOME/.zplugrc"
@@ -88,6 +90,7 @@ source "$HOME/.shell/.aliases"
 source "$HOME/.shell/.functions"
 source "$HOME/.shell/.external"
 source "$HOME/.shell/.completions"
+# source .env if it exists
 if [ -f "$HOME/.env" ]; then
   source "$HOME/.env"
 fi
