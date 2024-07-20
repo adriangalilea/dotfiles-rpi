@@ -110,6 +110,8 @@ ssh-add ~/.ssh/id_rsa
 
 ## main
 
+- [ ] fix: `sys` not running for some reason
+- [ ] feat: github-rsolver or `gr`
 - [ ] feat: alias that executes `~/.setup/main.sh` for convenience on first git pull
 - [ ] refactor: all github installs into [`dra`](https://github.com/devmatteini/dra)
 - [ ] chore: test install from scratch
