@@ -37,6 +37,13 @@ bindkey '^g' run_lazygit
 alias h="hx"
 alias helix="hx" # just in case
 
+function run_helix {
+  h
+}
+
+zle -N run_helix
+bindkey '^h' run_helix
+
 # disk-usage tool
 # alias gdu="gdu-go" # it's already `gdu` in my recent install so this alias would actually break it 
 
