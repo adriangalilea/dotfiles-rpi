@@ -150,3 +150,129 @@ sys() {
     print -P "🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap"
     print -P "⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
 }
+
+ function dif() {
+  debug() {
+    [[ $DEBUG == 1 ]] && echo "DEBUG: $1" >&2
+  }
+
+
+  show_help() {
+    echo "Usage: dif <file1> <file2>"
+    echo "Compare two files or URLs, including GitHub repositories."
+    echo
+    echo "Supported formats:"
+    echo "  - Local files"
+    echo "  - GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}"
+    echo "    ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases"
+    echo "  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases"
+    echo "  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.shell/.aliases"
+    echo
+    echo "Examples:"
+    echo "  1. Compare local file to GitHub shorthand:"
+    echo "     dif ~/.shell/.aliases git:adriangalilea/dotfiles-rpi:.shell/.aliases"
+    echo
+    echo "  2. Compare two GitHub repositories using shorthand:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.aliases git:sobolevn/dotfiles:shell/.aliases"
+    echo
+    echo "  3. Compare GitHub shorthand to GitHub regular URL:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions"
+    echo
+    echo "  4. Compare local file to GitHub raw URL:"
+    echo "     dif ~/.shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions"
+    echo
+    echo "  5. Compare GitHub regular URL to GitHub raw URL:"
+    echo "     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases"
+    echo
+    echo "  6. Compare two local files:"
+    echo "     dif ~/.shell/.aliases ~/.shell/.completions"
+    echo
+    echo "  7. Compare GitHub shorthand with specific branch to GitHub regular URL:"
+    echo "     dif git:adriangalilea/dotfiles-rpi:main:.shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases"
+  }
+
+  fetch_github_file() {
+    local input=$1
+    debug "Parsing GitHub input: $input"
+
+    local repo branch filepath
+
+    if [[ $input =~ ^git: ]]; then
+      # Handle git: shorthand
+      repo=$(echo "$input" | cut -d':' -f2)
+      local branch_and_path=$(echo "$input" | cut -d':' -f3-)
+      
+      if [[ "$branch_and_path" == *:* ]]; then
+        branch=$(echo "$branch_and_path" | cut -d':' -f1)
+        filepath=$(echo "$branch_and_path" | cut -d':' -f2-)
+      else
+        filepath=$branch_and_path
+      fi
+    elif [[ $input =~ ^https://github.com ]]; then
+      # Handle GitHub URLs
+      repo=$(echo "$input" | sed -E 's|https://github.com/([^/]+/[^/]+)/blob/.*|\1|')
+      branch=$(echo "$input" | sed -E 's|.*/blob/([^/]+)/.*|\1|')
+      filepath=$(echo "$input" | sed -E 's|.*/blob/[^/]+/(.*)|\1|')
+    else
+      echo "Error: Invalid GitHub input format." >&2
+      return 1
+    fi
+
+    # If branch is not specified, try 'main' first, then 'master'
+    if [[ -z $branch ]]; then
+      if curl -sfL "https://raw.githubusercontent.com/${repo}/main/${filepath}" > /dev/null 2>&1; then
+        branch="main"
+      else
+        branch="master"
+      fi
+    fi
+    
+    debug "Extracted - Repo: $repo, Branch: $branch, Filepath: $filepath"
+    
+    local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
+    debug "Constructed URL: $github_raw_url"
+    
+    curl -sfL "$github_raw_url" || { echo "Error: Failed to fetch file from GitHub." >&2; return 1; }
+  }
+
+  get_content() {
+    local file=$1
+    if [[ -f $file ]]; then
+      debug "Reading local file: $file"
+      cat "$file"
+    elif [[ $file =~ ^(git:|https://github.com) ]]; then
+      fetch_github_file "$file"
+    elif [[ $file =~ ^https?:// ]]; then
+      debug "Fetching from URL: $file"
+      curl -sfL "$file" || { echo "Error: Failed to fetch file from URL." >&2; return 1; }
+    else
+      echo "Error: File not found or invalid input: $file" >&2
+      return 1
+    fi
+  }
+
+  if [[ $1 == "-h" || $1 == "--help" ]]; then
+    show_help
+    return 0
+  fi
+
+  if [[ -z $1 || -z $2 ]]; then
+    echo "Error: Two arguments are required." >&2
+    show_help
+    return 1
+  fi
+
+  local file1=$1
+  local file2=$2
+
+  debug "Processing file1: $file1"
+  local content1=$(get_content "$file1")
+  debug "Processing file2: $file2"
+  local content2=$(get_content "$file2")
+
+  if [[ -z $content1 || -z $content2 ]]; then
+    return 1
+  fi
+
+  diff -u --label "${file1}" --label "${file2}" <(echo "$content1") <(echo "$content2") | delta
+}
