@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# --- override ex ---
+
+alias ex='~/.shell/utils/ex'
+
 # --- general aliases ---
 
 alias salsa="source ~/.zshrc"

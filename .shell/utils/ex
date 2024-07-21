@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# ex - Extract Common Archive Formats
+# Author: Adrian Galilea
+# Last Modified: July 21, 2024
+#
+# Description:
+# Extract common archive formats without needing to remember the command per each format.
+# Just do `ex <file>`
+# Supported formats include:
+# zip, rar, bz2, gz, tar, tbz2, tgz, Z, 7z, xz, ex, tar.bz2, tar.gz, and tar.xz.
+#
+# Usage:
+#   ex <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>
+#   ex <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]
+#
+# Debug mode:
+#   Set DEBUG=1 before running the script to enable debug mode
+
+# Enable debug mode if DEBUG is set to 1
+if [[ "${DEBUG}" == "1" ]]; then
+    set -x
+fi
+
+# Ensure we're not being sourced
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    echo "This script should not be sourced. Please run it as a command."
+    exit 1
+fi
+
+# Function to extract files
+extract_files() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: ex <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+        echo "       ex <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
+        echo "Debug mode: Set DEBUG=1 before running the script to enable debug mode"
+        return 1
+    fi
+
+    for n in "$@"; do
+        if [ -f "$n" ] ; then
+            echo "Attempting to extract: $n"
+            case "${n%,}" in
+                *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
+                             tar xvf "$n"       ;;
+                *.lzma)      unlzma ./"$n"      ;;
+                *.bz2)       bunzip2 ./"$n"     ;;
+                *.cbr|*.rar) unrar x -ad ./"$n" ;;
+                *.gz)        gunzip ./"$n"      ;;
+                *.cbz|*.epub|*.zip)
+                             unzip ./"$n"       ;;
+                *.z)         uncompress ./"$n"  ;;
+                *.7z|*.arj|*.cab|*.cb7|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.pkg|*.rpm|*.udf|*.wim|*.xar)
+                             7z x ./"$n"        ;;
+                *.xz)        unxz ./"$n"        ;;
+                *.exe)       cabextract ./"$n"  ;;
+                *.cpio)      cpio -id < ./"$n"  ;;
+                *.cba|*.ace) unace x ./"$n"     ;;
+                *)
+                             echo "ex: '$n' - unknown archive method"
+                             return 1
+                             ;;
+            esac
+        else
+            echo "'$n' - file does not exist"
+            return 1
+        fi
+    done
+}
+
+# Main execution
+extract_files "$@"
+
+# Disable debug mode if it was enabled
+if [[ "${DEBUG}" == "1" ]]; then
+    set +x
+fi
