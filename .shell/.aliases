@@ -25,7 +25,7 @@ alias pyenv="python3 -m venv venv && echo -e 'layout python python3\nsource venv
 
 # --- file listing ---
 
-alias ls="eza --color=always --icons --group-directories-first --time-style relative"
+alias ls="eza --color=always --icons --group-directories-first --time-style relative --git"
 alias l="ls"
 alias la="ls -lah"
 alias ll="ls -l"
