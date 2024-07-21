@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 # sys - System Resource Monitor
 # Author: Adrian Galilea
 # Created: July 20, 2024
@@ -108,3 +108,9 @@ sys() {
     print -P "🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap"
     print -P "⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
 }
+
+if [[ "${BASH_SOURCE[0]:-$0}" != "${0}" ]]; then
+    return 0
+else
+    sys
+fi
