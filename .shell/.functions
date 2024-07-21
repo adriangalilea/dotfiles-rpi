@@ -1,25 +1,40 @@
 #!/usr/bin/env bash
 
-# creates directory and cd's into it
-mc () {
+# --- directories ---
+
+# Create directory and cd into it
+mc() {
   if [ $# -ne 1 ]; then
-    echo 'usage: mc <dir-name>'
+    echo "usage: mc <dir-name>"
     return 137
   fi
-  # Create a new directory and enter it
   local dir_name="$1"
   mkdir -p "$dir_name" && cd "$dir_name"
 }
 
-# shows files
-function files {
+# Display or change the directory stack
+d() {
+  if [[ -n $1 ]]; then
+    dirs "$@"
+  else
+    dirs -v | head -n 10
+  fi
+}
+compdef _dirs d
+
+# Change to the previous directory
+-() {
+  cd -
+}
+
+# --- file listing ---
+
+files() {
     if [[ ! -x "$(command -v eza)" ]]; then
         echo -e "\033[1;33mMagic Dashboard: \`eza\` not installed.\033[0m" && return 1
     fi
-
     echo
     
-    # Display current directory with icon
     eza --icons --color=always --git -d "$PWD"
     
     echo
@@ -27,14 +42,12 @@ function files {
     local eza_output
     local max_files_lines=${MAGIC_DASHBOARD_FILES_LINES:-6}
     local ignore_pattern=".DS_Store|Icon?|Thumbs.db|desktop.ini"
-
     eza_output=$(
         eza --width="$COLUMNS" --grid --color=always --icons \
             --ignore-glob="$ignore_pattern" \
             --sort=name --group-directories-first --no-quotes \
             --git --long --no-user --no-permissions --no-filesize --no-time
     )
-
     if [[ $(echo "$eza_output" | wc -l) -gt $max_files_lines ]]; then
         local shortened
         shortened="$(echo "$eza_output" | head -n"$max_files_lines")"
@@ -45,16 +58,32 @@ function files {
     echo
 }
 
-function d () {
-  if [[ -n $1 ]]; then
-    dirs "$@"
-  else
-    dirs -v | head -n 10
-  fi
-}
-compdef _dirs d
+# --- Ctrl+S zsh sourcing ---
 
-# added as a function because it didn't work as an alias
-function - () {
-	cd -
+source_zshrc() {
+  source ~/.zshrc
 }
+
+# Disable terminal flow control (Ctrl+S/Ctrl+Q) to free up Ctrl+S
+if [[ $- == *i* ]] && [[ -t 0 ]]; then
+  stty -ixon 2>/dev/null || true
+fi
+
+zle -N source_zshrc
+bindkey "^s" source_zshrc
+
+# --- Ctrl+G lazygit ---
+
+run_lazygit() {
+  lazygit
+}
+zle -N run_lazygit
+bindkey "^g" run_lazygit
+
+# --- Ctrl+H helix ---
+
+run_helix() {
+  h
+}
+zle -N run_helix
+bindkey "^h" run_helix

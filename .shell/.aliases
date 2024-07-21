@@ -1,111 +1,70 @@
 #!/usr/bin/env bash
 
-# `.aliases` is used to provide custom aliases.
+# --- general aliases ---
 
-
-# === Aliases ===
-
+alias salsa="source ~/.zshrc"
+alias x="chmod +x"
+alias x\*="x *"
+alias g="lazygit"
+alias h="hx"
+alias t="taskwarrior-tui"
+alias mkdir="mkdir -p"
+alias md="mkdir"
+alias rd="rmdir"
 alias ai="mods"
+alias grep="grep --color=auto"         # colorize output (good for log files)
+alias cat="bat --paging never --decorations never --plain"
 
-# git secret
+# --- python venv ---
+
+alias pyenv="python3 -m venv venv && echo -e 'layout python python3\nsource venv/bin/activate\nwatch_file .envrc' > .envrc && direnv allow"
+
+# --- file listing ---
+
+alias ls="eza --color=always --icons --group-directories-first --time-style relative"
+alias l="ls"
+alias la="ls -lah"
+alias ll="ls -l"
+alias lt="ls -R -T"
+
+# --- disk usage ---
+
+alias df="df -h"                       # human-readable sizes
+alias diskspace="df /"
+alias disk="diskspace"
+alias space="diskspace"
+alias s="diskspace"
+
+# --- process management ---
+
+alias psa="ps auxf"
+alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
+alias psmem="ps auxf | sort -nr -k 4"
+alias pscpu="ps auxf | sort -nr -k 3"
+alias free="free -m"                   # show sizes in MB
+
+# --- git status ---
+
+alias ,="git status --short --ignored ."    # recursive
+alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'  # non-recursive
+
+# --- git secret ---
+
 alias add="git secret add"
 alias hide="git secret hide"
 alias reveal="git secret reveal"
 alias tell="git secret tell"
 alias remove="git secret remove"
 alias secrets="git secret list"
+alias secret-help="git secret usage"   # list commands
 
-alias secret-help="git secret usage" # list commands
+# --- misc utilities ---
 
-# bat is batcat in ubuntu for whatever reason
-alias bat="batcat"
-
-# fd is fdfind in ubuntu for whatever reason
-alias fd="fdfind"
-
-# lazygit shortcut
-alias g="lazygit"
-
-function run_lazygit {
-  lazygit
-}
-
-zle -N run_lazygit
-bindkey '^g' run_lazygit
-
-# helix shortcut
-alias h="hx"
-alias helix="hx" # just in case
-
-function run_helix {
-  h
-}
-
-zle -N run_helix
-bindkey '^h' run_helix
-
-# disk-usage tool
-# alias gdu="gdu-go" # it's already `gdu` in my recent install so this alias would actually break it 
-
-# disk-usage command
-alias diskspace="df -h /"
-alias disk="diskspace"
-alias space="diskspace"
-alias s="diskspace"
-
-# taskwarrior
-alias t="taskwarrior-tui"
-
-# since my ~ is a git with .gitignore * I need some help to see what's not added
-# recursive
-alias ,="git status --short --ignored ."
-# non-recursive
-alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'
-
-# navigation
-alias ls="eza"
-alias l="ls"
-alias la="ls -lah"
-alias ll="ls -l --time-style relative"
-alias lt="ls -R -T --icons"
-
-alias mkdir="mkdir -p"
-alias md="mkdir"
-alias rd="rmdir"
-
-# python venv setup
-alias pyenv='python3 -m venv venv && echo -e "layout python python3\nsource venv/bin/activate\nwatch_file .envrc" > .envrc && direnv allow'
-
-# === Inherited from @sobolevn ===
-
-## Sorts directories in top, colors, and prints `/` at directories:
-# alias ls='gls --color -h --group-directories-first -F'
-
-# Use syntax highlight for `cat`:
-alias cat='bat --paging never --decorations never --plain'
-
-# Copy public key to clipboard:
 alias pubkey="cat ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pasteboard.'"
-
-# I use this a lot:
 alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"
 
-# Add x
-alias x="chmod +x"
-alias x\*="x *"
+# --- compatibility aliases ---
 
-alias salsa="source ~/.zshrc"
-
-function source_zshrc {
-  # shellcheck source=/home/adrian/.zshrc
-  source ~/.zshrc
-}
-
-# Disable terminal flow control to free up ^s for custom use
-# Terminal flow control allows pausing/resuming terminal output (Ctrl+S pauses, Ctrl+Q resumes output) (e.g., stopping long command output)
-if [[ $- == *i* ]] && [ -t 0 ]; then
-  stty -ixon 2>/dev/null || true
-fi
-
-zle -N source_zshrc
-bindkey '^s' source_zshrc
+alias helix="hx"
+alias bat="batcat"                     # bat is batcat in ubuntu
+alias fd="fdfind"                      # fd is fdfind in ubuntu
