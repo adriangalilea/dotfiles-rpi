@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+
 # ex - Extract Common Archive Formats
-# Author: Adrian Galilea
-# Last Modified: July 21, 2024
+# Author: Derek Taylor
+# Source: https://gitlab.com/dwt1/dotfiles/-/blob/master/.zshrc
 #
 # Description:
 # Extract common archive formats without needing to remember the command per each format.
@@ -21,18 +22,16 @@ if [[ "${DEBUG}" == "1" ]]; then
     set -x
 fi
 
-# Ensure we're not being sourced
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-    echo "This script should not be sourced. Please run it as a command."
-    exit 1
-fi
+show_help() {
+    echo "Usage: ex <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+    echo "       ex <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
+    echo "Debug mode: Set DEBUG=1 before running the script to enable debug mode"
+}
 
 # Function to extract files
 extract_files() {
     if [ $# -eq 0 ]; then
-        echo "Usage: ex <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-        echo "       ex <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
-        echo "Debug mode: Set DEBUG=1 before running the script to enable debug mode"
+        show_help
         return 1
     fi
 
@@ -67,10 +66,13 @@ extract_files() {
     done
 }
 
-# Main execution
-extract_files "$@"
+# Run the main function only if the script is executed, not sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    extract_files "$@"
+fi
 
 # Disable debug mode if it was enabled
 if [[ "${DEBUG}" == "1" ]]; then
     set +x
 fi
+

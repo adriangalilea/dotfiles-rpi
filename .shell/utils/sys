@@ -1,4 +1,5 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
 # sys - System Resource Monitor
 # Author: Adrian Galilea
 # Created: July 20, 2024
@@ -11,6 +12,11 @@
 #
 # Usage:
 #   sys
+
+# Enable debug mode if DEBUG is set to 1
+if [[ "${DEBUG}" == "1" ]]; then
+    set -x
+fi
 
 autoload -U colors && colors
 
@@ -163,5 +169,12 @@ $([[ $temp != "N/A" ]] && echo "🌡️  $(bar_chart $temp) $(color_temp $temp\'
     fi
 }
 
-# Run the sys function
-sys
+# Run the main function only if the script is executed, not sourced
+if [[ "$0" == "${(%):-%N}" ]]; then
+    sys
+fi
+
+# Disable debug mode if it was enabled
+if [[ "${DEBUG}" == "1" ]]; then
+    set +x
+fi

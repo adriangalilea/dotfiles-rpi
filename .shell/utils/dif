@@ -1,23 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # dif - Advanced File Comparison Tool
 # Author: Adrian Galilea
 # Created: July 20, 2024
-# Last Modified: July 20, 2024
+# Last Modified: July 21, 2024
 #
 # Description:
-# A versatile file comparison tool that supports local files, GitHub repositories,
-# and URLs. It provides colorful and informative diff output using delta.
+# A file comparison tool that wraps `delta` and adds support for GitHub repositories.
+# Both raw and normal URL's to files are accepted.
+# GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}"
+# ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases (it infers main/master if not specified)
 #
 # Usage:
-#   source /path/to/dif
 #   dif <file1> <file2>
-#
-# Note: This script is designed to be sourced and run as a function.
-# Ensure it's in your PATH or source it in your .zshrc or .bashrc file.
 
-debug() {
-    [[ $DEBUG == 1 ]] && echo "DEBUG: $1" >&2
-}
+# Enable debug mode if DEBUG is set to 1
+if [[ "${DEBUG}" == "1" ]]; then
+    set -x
+fi
 
 show_help() {
     echo "Usage: dif <file1> <file2>"
@@ -82,34 +82,47 @@ parse_github_input() {
 fetch_github_file() {
     local input=$1
     local repo branch filepath
-    
+
     parse_github_input "$input" repo branch filepath
     if [[ $? -ne 0 ]]; then
         return 1
     fi
 
-    debug "Extracted - Repo: $repo, Branch: $branch, Filepath: $filepath"
-    
-    local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
-    debug "Constructed URL: $github_raw_url"
-    
-    local content=$(curl -sfL "$github_raw_url")
-    if [[ $? -ne 0 ]]; then
-        echo "Error: Failed to fetch file from GitHub. URL: $github_raw_url" >&2
+    [[ $DEBUG == 1 ]] && echo "DEBUG: Extracted - Repo: $repo, Branch: $branch, Filepath: $filepath" >&2
+
+    if [[ -z "$branch" ]]; then
+        for branch in main master; do
+            local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
+            [[ $DEBUG == 1 ]] && echo "DEBUG: Trying $branch branch URL: $github_raw_url" >&2
+            local content=$(curl -sfL "$github_raw_url")
+            if [[ $? -eq 0 && -n "$content" ]]; then
+                echo "$content"
+                return 0
+            fi
+        done
+        echo "Error: Failed to fetch file from GitHub. Tried branches: main, master" >&2
         return 1
+    else
+        local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
+        [[ $DEBUG == 1 ]] && echo "DEBUG: Constructed URL: $github_raw_url" >&2
+        local content=$(curl -sfL "$github_raw_url")
+        if [[ $? -ne 0 || -z "$content" ]]; then
+            echo "Error: Failed to fetch file from GitHub. URL: $github_raw_url" >&2
+            return 1
+        fi
+        echo "$content"
     fi
-    echo "$content"
 }
 
 get_content() {
     local file=$1
     if [[ -f $file ]]; then
-        debug "Reading local file: $file"
+        [[ $DEBUG == 1 ]] && echo "DEBUG: Reading local file: $file" >&2
         cat "$file"
     elif [[ $file =~ ^(git:|https://github.com) ]]; then
         fetch_github_file "$file"
     elif [[ $file =~ ^https?:// ]]; then
-        debug "Fetching from URL: $file"
+        [[ $DEBUG == 1 ]] && echo "DEBUG: Fetching from URL: $file" >&2
         local content=$(curl -sfL "$file")
         if [[ $? -ne 0 ]]; then
             echo "Error: Failed to fetch file from URL: $file" >&2
@@ -137,13 +150,13 @@ dif() {
     local file1=$1
     local file2=$2
 
-    debug "Processing file1: $file1"
+    [[ $DEBUG == 1 ]] && echo "DEBUG: Processing file1: $file1" >&2
     local content1=$(get_content "$file1")
     if [[ $? -ne 0 ]]; then
         return 1
     fi
 
-    debug "Processing file2: $file2"
+    [[ $DEBUG == 1 ]] && echo "DEBUG: Processing file2: $file2" >&2
     local content2=$(get_content "$file2")
     if [[ $? -ne 0 ]]; then
         return 1
@@ -175,7 +188,13 @@ dif() {
     fi
 }
 
-# If the script is sourced, don't run the dif function
+# Run the main function only if the script is executed, not sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     dif "$@"
 fi
+
+# Disable debug mode if it was enabled
+if [[ "${DEBUG}" == "1" ]]; then
+    set +x
+fi
+
