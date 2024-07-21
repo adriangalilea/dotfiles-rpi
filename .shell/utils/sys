@@ -2,54 +2,53 @@
 # sys - System Resource Monitor
 # Author: Adrian Galilea
 # Created: July 20, 2024
-# Last Modified: July 20, 2024
+# Last Modified: July 21, 2024
 #
 # Description:
 # Minimal, colorful and informative display of system resource usage,
 # including CPU, RAM, disk space, swap, and load averages.
+# Now with warnings and process management for high CPU/RAM usage.
 #
 # Usage:
-#   source /path/to/sys
 #   sys
-#
-# Note: This script is designed to be sourced and run as a function.
-# Ensure it's in your PATH or source it in your .zshrc file.
 
 autoload -U colors && colors
 
 color_percent() {
-    if (( $1 < 70 )); then
-        echo "%F{green}$1%%%f"
-    elif (( $1 < 85 )); then
-        echo "%F{yellow}$1%%%f"
+    local value=${1:-0}
+    if (( value < 70 )); then
+        echo "${fg[green]}${value}%${reset_color}"
+    elif (( value < 85 )); then
+        echo "${fg[yellow]}${value}%${reset_color}"
     else
-        echo "%F{red}$1%%%f"
+        echo "${fg[red]}${value}%${reset_color}"
     fi
 }
 
 color_temp() {
-    temp=${1%\'C}
+    local temp=${1%\'C}
     if (( temp < 50 )); then
-        echo "%F{green}$1%f"
+        echo "${fg[green]}${1}${reset_color}"
     elif (( temp < 70 )); then
-        echo "%F{yellow}$1%f"
+        echo "${fg[yellow]}${1}${reset_color}"
     else
-        echo "%F{red}$1%f"
+        echo "${fg[red]}${1}${reset_color}"
     fi
 }
 
 color_load() {
-    if (( $(echo "$1 < 1" | bc -l) )); then
-        echo "%F{green}$1%f"
-    elif (( $(echo "$1 < 2" | bc -l) )); then
-        echo "%F{yellow}$1%f"
+    local load=${1:-0}
+    if (( $(echo "$load < 1" | bc -l) )); then
+        echo "${fg[green]}${load}${reset_color}"
+    elif (( $(echo "$load < 2" | bc -l) )); then
+        echo "${fg[yellow]}${load}${reset_color}"
     else
-        echo "%F{red}$1%f"
+        echo "${fg[red]}${load}${reset_color}"
     fi
 }
 
 bar_chart() {
-    local percent=$1
+    local percent=${1:-0}
     local filled=$((percent / 10))
     local result=""
     for ((i=0; i<10; i++)); do
@@ -62,55 +61,107 @@ bar_chart() {
     echo $result
 }
 
-sys() {
-    # CPU
-    cpu_percent=$(top -bn1 | awk '/^%Cpu/ {printf "%.0f", $2+$4}')
-    cpu_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null || echo "N/A")
-    cpu_max_freq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null || echo "N/A")
-    if [[ $cpu_freq != "N/A" && $cpu_max_freq != "N/A" ]]; then
-        cpu_freq_ghz=$(echo "scale=1; $cpu_freq / 1000000" | bc)
-        cpu_max_freq_ghz=$(echo "scale=1; $cpu_max_freq / 1000000" | bc)
-        cpu_freq_display="($cpu_freq_ghz/$cpu_max_freq_ghz GHz)"
+show_top_offenders() {
+    local resource=$1
+    local count=5
+    local command
+
+    if [[ $resource == "cpu" ]]; then
+        command="ps -eo pcpu,pid,user,args --sort=-pcpu | head -n $((count + 1))"
     else
-        cpu_freq_display="(N/A)"
+        command="ps -eo pmem,pid,user,args --sort=-pmem | head -n $((count + 1))"
     fi
 
-    # Temperature
-    temp=$(vcgencmd measure_temp 2>/dev/null | cut -d"=" -f2 | cut -d"'" -f1 || echo "N/A")
-
-    # RAM
-    ram_total=$(free -m | awk '/^Mem:/ {print $2}')
-    ram_used=$(free -m | awk '/^Mem:/ {print $3}')
-    ram_percent=$((ram_used * 100 / ram_total))
-
-    # Disk
-    disk_total=$(df -h / | awk 'NR==2 {print $2}')
-    disk_used=$(df -h / | awk 'NR==2 {print $3}')
-    disk_percent=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//')
-
-    # Swap
-    swap_total=$(free -m | awk '/^Swap:/ {print $2}')
-    swap_used=$(free -m | awk '/^Swap:/ {print $3}')
-    swap_percent=$((swap_used * 100 / swap_total))
-
-    # Load
-    load_avg=$(uptime | awk -F'load average:' '{print $2}' | sed 's/,//g')
-    load_1=$(echo $load_avg | awk '{print $1}')
-    load_5=$(echo $load_avg | awk '{print $2}')
-    load_15=$(echo $load_avg | awk '{print $3}')
-
-    print -P "⚙️  $(bar_chart $cpu_percent) $(color_percent $cpu_percent) $cpu_freq_display CPU"
-    if [[ $temp != "N/A" ]]; then
-        print -P "🌡️  $(bar_chart $temp) $(color_temp $temp\'C) CPU Temp"
-    fi
-    print -P "🧠  $(bar_chart $ram_percent) $(color_percent $ram_percent) ($ram_used/$ram_total MB) RAM"
-    print -P "💾  $(bar_chart $disk_percent) $(color_percent $disk_percent) ($disk_used/$disk_total) Disk"
-    print -P "🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap"
-    print -P "⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
+    echo "Top $resource consumers:"
+    eval $command | awk 'NR>1 {printf "%5s%% %5s %-8s %s\n", $1, $2, $3, $4}' | 
+        gum table --widths 8,8,12,42 --padding "0 1"
 }
 
-if [[ "${BASH_SOURCE[0]:-$0}" != "${0}" ]]; then
-    return 0
-else
-    sys
-fi
+manage_process() {
+    local resource=$1
+    local pid=$(gum input --placeholder "Enter PID to kill")
+    if [[ -n $pid ]]; then
+        if gum confirm "Are you sure you want to kill process $pid?"; then
+            kill $pid
+            echo "Process $pid has been terminated."
+        else
+            echo "Process termination cancelled."
+        fi
+    fi
+}
+
+sys() {
+    # CPU
+    local cpu_percent=$(top -bn1 | awk '/^%Cpu/ {printf "%.0f", $2+$4}')
+    cpu_percent=${cpu_percent:-0}
+
+    # RAM
+    local ram_info=$(command free -m | awk '/^Mem:/ {print $2,$3,$4}')
+    local ram_total=$(echo $ram_info | cut -d' ' -f1)
+    local ram_used=$(echo $ram_info | cut -d' ' -f2)
+    local ram_free=$(echo $ram_info | cut -d' ' -f3)
+    local ram_percent=0
+    if (( ram_total > 0 )); then
+        ram_percent=$((ram_used * 100 / ram_total))
+    fi
+
+    # Disk
+    local disk_info=$(df -h / | awk 'NR==2 {print $2,$3,$5}')
+    local disk_total=$(echo $disk_info | cut -d' ' -f1)
+    local disk_used=$(echo $disk_info | cut -d' ' -f2)
+    local disk_percent=$(echo $disk_info | cut -d' ' -f3 | sed 's/%//')
+    disk_percent=${disk_percent:-0}
+
+    # Swap
+    local swap_info=$(LANG=en_US.UTF-8 command free -m | awk '/^Swap:/ {print $2,$3}')
+    local swap_total=$(echo $swap_info | cut -d' ' -f1)
+    local swap_used=$(echo $swap_info | cut -d' ' -f2)
+    local swap_percent=0
+    if (( swap_total > 0 )); then
+        swap_percent=$((swap_used * 100 / swap_total))
+    fi
+
+    # Load
+    local load_avg=$(uptime | awk -F'load average:' '{print $2}' | sed 's/,//g')
+    local load_1=$(echo $load_avg | awk '{print $1}')
+    local load_5=$(echo $load_avg | awk '{print $2}')
+    local load_15=$(echo $load_avg | awk '{print $3}')
+
+    # Temperature (if available)
+    local temp=$(vcgencmd measure_temp 2>/dev/null | cut -d"=" -f2 | cut -d"'" -f1 || echo "N/A")
+
+    gum style \
+        --align left --width 60 \
+        "⚙️  $(bar_chart $cpu_percent) $(color_percent $cpu_percent) CPU
+$([[ $temp != "N/A" ]] && echo "🌡️  $(bar_chart $temp) $(color_temp $temp\'C) CPU Temp")
+🧠  $(bar_chart $ram_percent) $(color_percent $ram_percent) ($ram_used/$ram_total MB) RAM
+💾  $(bar_chart $disk_percent) $(color_percent $disk_percent) ($disk_used/$disk_total) Disk
+🔄  $(bar_chart $swap_percent) $(color_percent $swap_percent) ($swap_used/$swap_total MB) Swap
+⚖️  $(color_load $load_1) $(color_load $load_5) $(color_load $load_15) Load (1m 5m 15m)"
+
+    local warning_shown=false
+
+    if (( cpu_percent >= 80 )); then
+        echo "⚠️  Warning: High CPU usage detected!"
+        show_top_offenders "cpu"
+        if gum confirm "Do you want to manage high CPU processes?"; then
+            manage_process "cpu"
+        fi
+        warning_shown=true
+    fi
+
+    if (( ram_percent >= 80 )); then
+        if $warning_shown; then
+            sys
+            return
+        fi
+        echo "⚠️  Warning: High RAM usage detected!"
+        show_top_offenders "ram"
+        if gum confirm "Do you want to manage high RAM processes?"; then
+            manage_process "ram"
+        fi
+    fi
+}
+
+# Run the sys function
+sys
