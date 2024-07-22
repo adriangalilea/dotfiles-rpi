@@ -1,5 +1,7 @@
 # This file is sourced for all shells, not just interactive ones like `.zshrc`.
 
+alias bat="batcat"
+
 _fzf_complete_realpath () {
   # Used for `tab` completion in `shell/.completions` and `shell/.external`.
   # Can be customized to behave differently for different objects.
@@ -12,7 +14,6 @@ _fzf_complete_realpath () {
       --language=sh \
       --plain \
       --color=always \
-      --theme="$SOBOLE_SYNTAX_THEME" \
       --wrap=character \
       --terminal-width="$FZF_PREVIEW_COLUMNS" \
       --line-range :100
@@ -37,7 +38,6 @@ _fzf_complete_realpath () {
       bat --number \
         --color=always \
         --line-range :100 \
-        --theme="$SOBOLE_SYNTAX_THEME" \
         "$realpath"
     fi
   else
