@@ -46,11 +46,21 @@ parse_github_input() {
         fi
     elif [[ $input =~ ^https://github.com ]]; then
         ref_username=$(echo "$input" | sed -E 's|https://github.com/([^/]+)/.*|\1|')
-        ref_repo=$(echo "$input" | sed -E 's|https://github.com/[^/]+/([^/]+)/blob/.*|\1|')
-        ref_branch=$(echo "$input" | sed -E 's|.*/blob/([^/]+)/.*|\1|')
-        ref_filepath=$(echo "$input" | sed -E 's|.*/blob/[^/]+/(.*)|\1|')
+        ref_repo=$(echo "$input" | sed -E 's|https://github.com/[^/]+/([^/]+).*|\1|')
+        
+        if [[ $input =~ /tree/ ]]; then
+            ref_branch=$(echo "$input" | sed -E 's|.*/tree/([^/]+).*|\1|')
+            ref_filepath=$(echo "$input" | sed -E 's|.*/tree/[^/]+/(.*)|\1|')
+        elif [[ $input =~ /blob/ ]]; then
+            ref_branch=$(echo "$input" | sed -E 's|.*/blob/([^/]+)/.*|\1|')
+            ref_filepath=$(echo "$input" | sed -E 's|.*/blob/[^/]+/(.*)|\1|')
+        else
+            ref_branch="main"
+            ref_filepath=""
+        fi
     else
         echo "Error: Invalid GitHub input format: $input" >&2
         return 1
     fi
 }
+

@@ -1,39 +1,65 @@
 #!/bin/bash
 
-# Function to download from GitHub
-download_from_github() {
-    local username=$1 repo=$2 branch=$3 filepath=$4 dest_path=$5 interactive=$6 force=$7
+# github.sh - GitHub content downloader
+#
+# This script handles the downloading of content from GitHub repositories.
+# It is designed to be called by an external command with specific parameters.
+#
+# Function: download_from_github
+# Usage: download_from_github username repo branch filepath dest_path interactive force
+#
+# Parameters:
+#   $1 username: GitHub username
+#   $2 repo: Repository name
+#   $3 branch: Branch name or 'latest' for the latest release/default branch
+#   $4 filepath: Path to file or directory within the repository
+#   $5 dest_path: Local destination path for downloaded content
+#   $6 interactive: Flag for interactive mode ('-i' if active)
+#   $7 force: Flag to force overwrite ('--force' if active)
+#
+# Behavior:
+# 1. Repository download:
+#    - If filepath is '.', downloads the entire repository/branch
+# 2. Directory download:
+#    - If filepath points to a directory, downloads its contents
+# 3. File download:
+#    - If filepath points to a file, downloads that specific file
+# 4. Interactive mode:
+#    - When $6 is '-i', allows user to select specific files/directories to download
+# 5. Force overwrite:
+#    - When $7 is '--force', overwrites existing files in the destination
+# 6. Latest release/default branch:
+#    - When $3 is 'latest', automatically determines the latest release or default branch
+#
+# The function ensures all content is downloaded to the specified destination path (or current directory if not specified),
+# without recreating the full directory structure from the repository.
 
-    logs info "🐱 $username/$repo [🌿 $branch] 📁 $filepath"
-    mkdir -p "$dest_path"
-    cd "$dest_path" || return 1
-
-    local is_file=false
-    [[ "$filepath" == *"."* ]] && is_file=true
-
-    local url="https://codeload.github.com/$username/$repo/tar.gz/$branch"
-    local tar_options="-xzv"
-    local extract_dir="$repo-$branch"
-    [ "$filepath" != "." ] && extract_dir+="/$filepath"
-
-    local filter=""
-    if [[ $is_file = true ]]; then
-        if [[ $interactive = "-i" ]]; then
-            logs warn "-i used but provided a specific file, nothing to choose."
-        fi
-        filter=$(basename "$filepath")
-        extract_dir=$(dirname "$extract_dir")  # Remove the filename from extract_dir
-    elif [[ $interactive = "-i" ]]; then
-        filter=$(select_github_items "$username" "$repo" "$branch" "$filepath")
-        if [ -z "$filter" ]; then
-            logs info "No items selected. Exiting."
-            return 0
-        fi
+# Function to get the default branch or latest release
+get_latest_branch() {
+    local username=$1
+    local repo=$2
+    local api_url="https://api.github.com/repos/$username/$repo"
+    
+    # First, try to get the latest release
+    local latest_release
+    latest_release=$(curl -s "${api_url}/releases/latest" | jq -r .tag_name)
+    
+    if [ "$latest_release" != "null" ] && [ -n "$latest_release" ]; then
+        echo "$latest_release"
+        return 0
     fi
-
-    [ -n "$DEBUG" ] && echo "Using filter: $filter"
-
-    download_and_extract_github_files "$url" "$extract_dir" "$filter" "$force"
+    
+    # If no releases, get the default branch
+    local default_branch
+    default_branch=$(curl -s "$api_url" | jq -r .default_branch)
+    
+    if [ -n "$default_branch" ]; then
+        echo "$default_branch"
+        return 0
+    fi
+    
+    # If all else fails, return "main" as a fallback
+    echo "main"
 }
 
 # Function to select GitHub items interactively
@@ -53,41 +79,83 @@ select_github_items() {
     echo "$selected_items" | sed 's/ 📄$//' | sed 's/ 📁$//' | tr '\n' ' '
 }
 
+# Function to download from GitHub
+download_from_github() {
+    local username=$1 repo=$2 branch=$3 filepath=$4 dest_path=$5 interactive=$6 force=$7
+    
+    # Handle 'latest' branch
+    if [ "$branch" = "latest" ]; then
+        branch=$(get_latest_branch "$username" "$repo")
+        logs info "Latest branch/release: $branch"
+    fi
+    
+    logs info "🐱 $username/$repo [🌿 $branch] 📁 $filepath"
+    mkdir -p "$dest_path"
+    cd "$dest_path" || return 1
+    local url="https://codeload.github.com/$username/$repo/tar.gz/$branch"
+    local extract_dir="$repo-${branch#v}"  # Remove 'v' prefix if present
+    local filter=""
+
+    # Determine the filter based on the filepath
+    if [ "$filepath" = "." ]; then
+        filter="$extract_dir/*"
+    elif [[ "$filepath" == *"."* ]]; then
+        filter="$extract_dir/$filepath"
+    else
+        filter="$extract_dir/$filepath/*"
+    fi
+
+    # Handle interactive mode
+    if [ "$interactive" = "-i" ] && [ "$filepath" != "." ] && [[ "$filepath" != *"."* ]]; then
+        local selected_items
+        selected_items=$(select_github_items "$username" "$repo" "$branch" "$filepath")
+        if [ -z "$selected_items" ]; then
+            logs info "No items selected. Exiting."
+            return 0
+        fi
+        filter=$(for item in $selected_items; do echo "$extract_dir/$filepath/$item"; done | tr '\n' ' ')
+    fi
+
+    download_and_extract_github_files "$url" "$extract_dir" "$filter" "$force" "$filepath"
+}
+
 # Function to download and extract GitHub files
 download_and_extract_github_files() {
-    local url=$1 extract_dir=$2 filter=$3 force=$4
+    local url=$1 extract_dir=$2 filter=$3 force=$4 filepath=$5
 
     gum spin --spinner dot --title "Downloading from GitHub..." -- \
         curl -L "$url" -o /tmp/repo.tar.gz
 
-    local tar_command="tar $tar_options -f /tmp/repo.tar.gz"
+    local tar_command="tar -xzvf /tmp/repo.tar.gz"
     [ "$force" = "--force" ] && tar_command+=" --overwrite"
+    tar_command+=" --wildcards"
 
-    if [ -n "$filter" ]; then
-        for item in $filter; do
-            tar_command+=" --wildcards '$extract_dir/$item'"
-        done
-    else
-        tar_command+=" '$extract_dir'"
+    # Calculate the number of directories to strip from the extracted files
+    local strip_components=1
+    if [ "$filepath" != "." ]; then
+        strip_components=$(echo "$filepath" | grep -o "/" | wc -l)
+        strip_components=$((strip_components + 2))  # Add 2 to handle the repo and branch directory
     fi
-
-    local strip_components=$(echo "$extract_dir" | tr -cd '/' | wc -c)
-    strip_components=$((strip_components + 1))
     tar_command+=" --strip-components=$strip_components"
 
-    [ -n "$DEBUG" ] && echo "Extracting with command: $tar_command"
+    # Add each item in the filter to the tar command
+    for item in $filter; do
+        tar_command+=" '$item'"
+    done
 
+    # Execute the tar command and capture its output
     local extraction_output
-    extraction_output=$(bash -c "$tar_command" 2>&1)
+    extraction_output=$(eval "$tar_command" 2>&1)
     local extraction_status=$?
 
     rm /tmp/repo.tar.gz
 
     if [ $extraction_status -eq 0 ]; then
-        logs info "✅ Extracted files from $filepath"
+        logs info "✅ Extracted files successfully"
         return 0
     else
         logs error "Extraction failed: $extraction_output"
         return 1
     fi
 }
+
