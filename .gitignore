@@ -27,6 +27,10 @@
 !.config/mods/
 !.config/mods/**
 !.config/mods/mods.yml
+!.config/yazi/
+!.config/yazi/**
+!.config/yazi/plugins/
+!.config/yazi/plugins/**
 
 # git-secret won't work if not:
 !.gitsecret
