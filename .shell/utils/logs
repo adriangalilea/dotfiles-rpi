@@ -1,0 +1,109 @@
+#!/bin/zsh
+
+# logs - Logging Utility Command
+# Author: Adrian Galilea
+# Version: 1.0
+#
+# Description:
+# This script provides a unified logging interface that can use gum if available,
+# or fall back to color-coded echo statements.
+#
+# Usage:
+#   logs [<level>] <message>
+#
+# Levels:
+#   debug, info, warn, error, fatal
+#
+# If no level is specified, it defaults to 'info'.
+#
+# Examples:
+#   logs "This is an info message"
+#   logs warn "This is a warning"
+#   logs error "This is an error"
+
+# Enable debug mode if DEBUG is set to 1
+if [[ "${DEBUG}" = "1" ]]; then
+    set -x
+fi
+
+# Ensure the script is not being sourced
+if [[ "${(%):-%x}" != "${0}" ]]; then
+    echo "This script should not be sourced. Please run it as a standalone command."
+    return 1
+fi
+
+# Load colors
+autoload -U colors && colors
+
+# Function to check if a command is available
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to display colored output
+color_echo() {
+    local color=$1
+    shift
+    echo "${fg[$color]}$@${reset_color}"
+}
+
+# Main logging function
+log_message() {
+    local level=$1
+    shift
+    local message="$@"
+
+    if command_exists gum; then
+        gum log --level $level -- "$message"
+    else
+        case $level in
+            debug)
+                color_echo blue "DEBUG: $message"
+                ;;
+            info)
+                color_echo green "INFO: $message"
+                ;;
+            warn)
+                color_echo yellow "WARNING: $message"
+                ;;
+            error)
+                color_echo red "ERROR: $message"
+                ;;
+            fatal)
+                color_echo red "FATAL: $message"
+                exit 1
+                ;;
+            *)
+                echo "$message"
+                ;;
+        esac
+    fi
+}
+
+
+# Main function
+main() {
+    local level="info"
+    local message=""
+
+    # Parse arguments
+    if [[ $# -eq 1 ]]; then
+        message="$1"
+    elif [[ $# -ge 2 ]]; then
+        level="$1"
+        shift
+        message="$@"
+    else
+        echo "Usage: logs [<level>] <message>"
+        exit 1
+    fi
+
+    log_message "$level" "$message"
+}
+
+main "$@"
+
+# Disable debug mode if it was enabled
+if [[ "${DEBUG}" = "1" ]]; then
+    set +x
+fi
