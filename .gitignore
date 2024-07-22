@@ -13,6 +13,10 @@
 !.tmux.conf
 !.shell/
 !.shell/**
+!.shell/lib/
+!.shell/lib/**
+!.shell/db/
+!.shell/db/**
 !.config/helix/
 !.config/helix/**
 !.config/helix/config.toml
