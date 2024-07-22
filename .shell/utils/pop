@@ -1,0 +1,185 @@
+#!/bin/bash
+
+# pop - Interactive Process Manager
+# Author: Adrian Galilea
+# Version: 1.5
+#
+# Description:
+# This script provides an interactive way to monitor and manage processes by CPU and memory usage.
+# It uses gum for interactive prompts and supports both interactive and non-interactive modes.
+#
+# Usage:
+#   pop
+#
+# Debug mode:
+#   Set DEBUG=1 before running the script to enable debug mode
+
+# Enable debug mode if DEBUG is set to 1
+[[ "${DEBUG}" = "1" ]] && set -x
+
+# Ensure the script is not being sourced
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    echo "This script should not be sourced. Please run it as a standalone script."
+    exit 1
+fi
+
+# Function to parse arguments
+parse_arguments() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+        shift
+    done
+}
+
+# Function to show help
+show_help() {
+    echo "Usage: script.sh [-h|--help]"
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+}
+
+# Function to style the legend content
+style_legend() {
+    K=$(gum style --border rounded --align center --padding="0 1" --margin="0 0" "K")
+    ill=$(gum style --border normal --faint --border-foreground "0" "ill a process")
+    Q=$(gum style --border rounded --align center --padding="0 1" --margin="0 0" "Q")
+    uit=$(gum style --border normal --faint --border-foreground "0" "uit")
+    legend_content=$(gum join --horizontal "$K" "$ill" "$Q" "$uit")
+    echo "$legend_content"
+}
+
+# Function to fetch and format processes based on sort mode
+fetch_processes() {
+    local sort_mode="$1"
+    if [ "$sort_mode" == "cpu" ]; then
+        ps aux --sort=-%cpu --no-headers | head -n 5 | awk '{printf "%s,%s,%s,%s\n", $11, $3, $4, $1}'
+    else
+        ps aux --sort=-%mem --no-headers | head -n 5 | awk '{printf "%s,%s,%s,%s\n", $11, $3, $4, $1}'
+    fi
+}
+
+# Function to construct and display the table
+display_table() {
+    local processes="$1"
+    local sort_mode="$2"
+    local header_cpu
+    local header_mem
+    local arrow
+
+    # Define the sort arrow and highlight the current sort mode
+    arrow="▼"
+    if [ "$sort_mode" == "cpu" ]; then
+        header_cpu=$(gum style --foreground "86" --bold "[C]PU% $arrow")
+        header_mem="[M]EM%"
+    else
+        header_cpu="[C]PU%"
+        header_mem=$(gum style --foreground "86" --bold "[M]EM% $arrow")
+    fi
+
+    # Construct the table with styled headers
+    header_string="COMMAND,$header_cpu,$header_mem,USER"
+    table=$(echo -e "$processes" | gum table --separator=',' --columns="COMMAND,$header_cpu,$header_mem,USER" --widths=30,10,10,20 --height=10 --border='rounded' --border.foreground="#C2C2F0" --header.foreground="#D8BFD8" --cell.foreground="#C0E0C0" --print)
+
+    # Get the legend content
+    legend_content=$(style_legend)
+
+    # Join the table and legend
+    display=$(gum join --vertical "$table" "$legend_content")
+    echo -n "$display"
+}
+
+# Function to kill a selected process
+kill_process() {
+    local processes="$1"
+    clear
+    echo "Select a process to kill (use arrow keys and enter to select):"
+    
+    # Display processes using gum choose for selection
+    process_to_kill=$(echo -e "$processes" | gum choose --height 10)
+
+    if [ -n "$process_to_kill" ]; then
+        pid=$(echo "$process_to_kill" | awk -F',' '{print $2}')
+        command=$(echo "$process_to_kill" | awk -F',' '{print $1}')
+        echo "Are you sure you want to kill process $pid ($command)?"
+        if gum confirm; then
+            kill -9 $pid
+            echo "Process $pid killed."
+        else
+            echo "Kill action cancelled."
+        fi
+        sleep 2
+    fi
+}
+
+# Function to update display
+update_display() {
+    processes=$(fetch_processes "$sort_mode")
+    display=$(display_table "$processes" "$sort_mode")
+    clear
+    echo -n "$display"
+}
+
+# Main function
+main() {
+    parse_arguments "$@"
+    
+    # Initial sort mode
+    sort_mode="memory"
+    
+    # Hide cursor
+    tput civis
+    
+    # Ensure cursor is shown on exit
+    trap 'tput cnorm' EXIT
+    
+    # Initialize last update time
+    last_update=$(date +%s)
+    
+    # Main loop to display processes and handle user input
+    while true; do
+        # Update display if 1 second has passed
+        current_time=$(date +%s)
+        if (( current_time - last_update >= 1 )); then
+            update_display
+            last_update=$current_time
+        fi
+        
+        # Check for input (non-blocking)
+        if read -t 0.1 -n 1 -s user_input; then
+            case "$user_input" in
+                "m")
+                    sort_mode="mem"
+                    update_display
+                    ;;
+                "c")
+                    sort_mode="cpu"
+                    update_display
+                    ;;
+                "k")
+                    kill_process "$processes"
+                    update_display
+                    ;;
+                "q")
+                    break
+                    ;;
+            esac
+        fi
+    done
+}
+
+# Run the main function
+main "$@"
+
+# Disable debug mode if it was enabled
+[[ "${DEBUG}" = "1" ]] && set +x
+
