@@ -26,17 +26,3 @@ install_apt_packages() {
         return 1
     fi
 }
-
-install_pip_packages() {
-    gum log --structured --level info "Installing pip packages..."
-    local pip_output
-    pip_output=$(sudo pip3 install --break-system-packages -q dtj tldr yt-dlp 2>&1)
-    
-    if [ $? -eq 0 ]; then
-        gum log --structured --level info "Pip packages installed successfully."
-    else
-        gum log --structured --level error "Error installing pip packages. Details:"
-        echo "$pip_output"
-        gum log --structured --level warn "PIP package installation failed. Continuing with setup..."
-    fi
-}

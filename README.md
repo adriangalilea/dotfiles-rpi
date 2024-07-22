@@ -114,7 +114,6 @@ ssh-add ~/.ssh/id_rsa
 - [ ] feat: alias that executes `~/.setup/main.sh` for convenience on first git pull
 - [ ] refactor: all github installs into [`dra`](https://github.com/devmatteini/dra)
 - [ ] chore: test install from scratch
-- [ ] chore: move all `pip` installs into `pipx`
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
 - [ ] add: `direnv`
 - [ ] add: `markdown-oxide` lsp for hx
