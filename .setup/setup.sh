@@ -35,6 +35,8 @@ main() {
         "dandavison/delta:delta"
         "errata-ai/vale:vale"
         "errata-ai/vale-ls:vale-ls"
+        # "devmatteini/dra:dra"
+        "sxyazi/yazi:yazi"
     )
     install_from_github "${github_packages[@]}" || {
         gum log --structured --level error "Failed to install GitHub packages. Exiting."
