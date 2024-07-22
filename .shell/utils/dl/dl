@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# dl - Interactive Downloader for GitHub and YouTube
+# Author: Adrian Galilea
+# Version: 2.2
+#
+# Description:
+# This script provides an interactive way to download files from GitHub directories
+# and videos from YouTube. It uses gum for interactive prompts and supports both
+# interactive and non-interactive modes.
+#
+# Usage:
+#   dl [-i] [--force] [<path>] <url>
+#     -i        Interactive mode
+#     --force   Overwrite existing files
+#     <path>    Optional destination path (default: current directory)
+#     <url>     URL to download from (GitHub directory or YouTube video)
+#
+# Examples:
+#   dl https://github.com/user/repo/tree/branch/path/to/dir
+#   dl -i /downloads https://www.youtube.com/watch?v=VIDEO_ID
+#
+# Debug mode:
+#   Set DEBUG=1 before running the script to enable debug mode
+
+# Enable debug mode if DEBUG is set to 1
+[[ "${DEBUG}" = "1" ]] && set -x
+
+# Ensure the script is not being sourced
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    logs error "This script should not be sourced. Please run it as a standalone script."
+    exit 1
+fi
+
+# Source common utilities
+source "${HOME}/.shell/utils/lib/common.sh"
+
+# Source specific downloaders
+source "${HOME}/.shell/utils/dl/github.sh"
+source "${HOME}/.shell/utils/dl/youtube.sh"
+
+# Function to display help
+show_help() {
+    logs info "Usage: dl [-i] [--force] [<path>] <url>"
+    logs info "  -i        Interactive mode"
+    logs info "  --force   Overwrite existing files"
+    logs info "  <path>    Optional destination path (default: current directory)"
+    logs info "  <url>     URL to download from (GitHub directory or YouTube video)"
+    logs info ""
+    logs info "Examples:"
+    logs info "  dl https://github.com/user/repo/tree/branch/path/to/dir"
+    logs info "  dl -i /downloads https://www.youtube.com/watch?v=VIDEO_ID"
+}
+
+# Function to parse arguments
+parse_arguments() {
+    interactive="" dest_path="" url="" force=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -i)
+                interactive="-i"
+                shift
+                ;;
+            --force)
+                force="--force"
+                shift
+                ;;
+            http*)
+                url=$1
+                shift
+                ;;
+            *)
+                dest_path=$1
+                shift
+                ;;
+        esac
+    done
+
+    [[ -z $url ]] && { show_help; exit 1; }
+    [[ -z $dest_path ]] && dest_path="$(pwd)"
+}
+
+# Main function
+main() {
+    parse_arguments "$@"
+    
+    if parse_github_input "$url" username repo branch filepath; then
+        download_from_github "$username" "$repo" "$branch" "$filepath" "$dest_path" "$interactive" "$force"
+    elif [[ $url =~ ^https://(www\.)?youtube\.com ]]; then
+        download_from_youtube "$url" "$dest_path" "$interactive" "$force"
+    else
+        logs error "Unsupported URL type. This script supports GitHub directories and YouTube videos."
+        exit 1
+    fi
+}
+
+# Run the main function
+main "$@"
+
+# Disable debug mode if it was enabled
+[[ "${DEBUG}" = "1" ]] && set +x

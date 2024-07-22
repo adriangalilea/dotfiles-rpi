@@ -50,6 +50,7 @@ setopt HIST_EXPIRE_DUPS_FIRST          # remove duplicates first when trimming h
 
 # this section needs to be set before all other modifications
 if [ -d "$HOME/.shell/utils" ] ; then PATH="$HOME/.shell/utils:$PATH" ; fi  # bespoke CLI utils
+if [ -d "$HOME/.shell/utils/dl" ] ; then PATH="$HOME/.shell/utils/dl:$PATH" ; fi  # bespoke CLI utils
 if [ -d "/usr/local/sbin" ] ; then PATH="/usr/local/sbin:$PATH" ; fi
 if [ -d "/usr/local/bin" ] ; then PATH="/usr/local/bin:$PATH" ; fi
 if [ -d "/usr/sbin" ] ; then PATH="/usr/sbin:$PATH" ; fi
