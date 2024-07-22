@@ -112,7 +112,6 @@ ssh-add ~/.ssh/id_rsa
 
 - [ ] feat: github-rsolver or `gr`
 - [ ] feat: alias that executes `~/.setup/main.sh` for convenience on first git pull
-- [ ] refactor: all github installs into [`dra`](https://github.com/devmatteini/dra)
 - [ ] chore: test install from scratch
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
 - [ ] add: `direnv`
