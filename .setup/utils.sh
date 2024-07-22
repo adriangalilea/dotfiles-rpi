@@ -1,7 +1,5 @@
 #!/bin/zsh
 
-#!/bin/zsh
-
 increase_swap_size() {
     local new_size=$1
     local current_size
@@ -220,11 +218,11 @@ find_best_asset() {
 download_and_extract_asset() {
     local asset_url=$1
     local binary_name=$2
-
     local tmp_dir="/tmp/$binary_name"
     local tmp_file="$tmp_dir/$(basename "$asset_url")"
 
     mkdir -p "$tmp_dir"
+
     if ! curl -s -L "$asset_url" -o "$tmp_file"; then
         echo "Failed to download $asset_url"
         return 1
@@ -255,7 +253,14 @@ download_and_extract_asset() {
 
     [ -f "$tmp_file" ] && rm "$tmp_file"
 
-    local extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
+    # First, try to find an executable file that matches the binary name
+    local extracted_file=$(find "$tmp_dir" -type f -executable -name "*$binary_name*" -print -quit)
+
+    # If no match is found, fall back to any executable file
+    if [ -z "$extracted_file" ]; then
+        extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
+    fi
+
     if [ -z "$extracted_file" ]; then
         echo "$binary_name not found in the extracted files."
         return 1
@@ -268,9 +273,9 @@ download_and_extract_asset() {
 
     sudo mv "$extracted_file" /usr/local/bin/"$binary_name" || { echo "Failed to move $binary_name to /usr/local/bin/"; return 1; }
     sudo chmod +x /usr/local/bin/"$binary_name"
+
     rm -rf "$tmp_dir"
 }
-
 
 run_with_spinner() {
     local title=$1
