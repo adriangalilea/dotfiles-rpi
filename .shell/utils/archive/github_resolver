@@ -1,0 +1,165 @@
+#!/bin/bash
+# github_resolver - GitHub File Resolution and Command Execution
+# Author: Adrian Galilea
+# Created: July 20, 2024
+# Last Modified: July 20, 2024
+#
+# Description:
+# A versatile tool that resolves GitHub URLs and file shortcuts, allowing
+# seamless use of GitHub files with various shell commands.
+#
+# Usage:
+#   source /path/to/github_resolver.sh
+#   gr <command> [args...]
+#
+# Note: This script is designed to be sourced and run as a function.
+# Ensure it's in your PATH or source it in your .zshrc or .bashrc file.
+
+debug() {
+    [[ $DEBUG == 1 ]] && echo "DEBUG: $1" >&2
+}
+
+show_help() {
+    # ... (keep the existing show_help function as is)
+}
+
+parse_github_input() {
+    local input=$1
+    local repo=""
+    local branch=""
+    local filepath=""
+
+    if [[ $input =~ ^git: ]]; then
+        repo=$(echo "$input" | cut -d':' -f2)
+        local branch_and_path=$(echo "$input" | cut -d':' -f3-)
+        
+        if [[ "$branch_and_path" == *:* ]]; then
+            branch=$(echo "$branch_and_path" | cut -d':' -f1)
+            filepath=$(echo "$branch_and_path" | cut -d':' -f2-)
+        else
+            filepath=$branch_and_path
+        fi
+    elif [[ $input =~ ^https://github.com ]]; then
+        repo=$(echo "$input" | sed -E 's|https://github.com/([^/]+/[^/]+)/blob/.*|\1|')
+        branch=$(echo "$input" | sed -E 's|.*/blob/([^/]+)/.*|\1|')
+        filepath=$(echo "$input" | sed -E 's|.*/blob/[^/]+/(.*)|\1|')
+    elif [[ $input =~ ^https://raw.githubusercontent.com ]]; then
+        repo=$(echo "$input" | sed -E 's|https://raw.githubusercontent.com/([^/]+/[^/]+)/.*|\1|')
+        branch=$(echo "$input" | sed -E 's|.*/([^/]+)/.*|\1|')
+        filepath=$(echo "$input" | sed -E 's|.*/[^/]+/(.*)|\1|')
+    else
+        echo "Error: Invalid GitHub input format: $input" >&2
+        return 1
+    fi
+
+    echo "$repo"
+    echo "$branch"
+    echo "$filepath"
+}
+
+fetch_github_file() {
+    local input=$1
+    local parsed_input=$(parse_github_input "$input")
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    local repo=$(echo "$parsed_input" | sed -n '1p')
+    local branch=$(echo "$parsed_input" | sed -n '2p')
+    local filepath=$(echo "$parsed_input" | sed -n '3p')
+
+    debug "Extracted - Repo: $repo, Branch: $branch, Filepath: $filepath"
+    
+    # If branch is not specified, try 'main' first, then 'master'
+    if [[ -z $branch ]]; then
+        if curl -sfL "https://raw.githubusercontent.com/${repo}/main/${filepath}" > /dev/null 2>&1; then
+            branch="main"
+        else
+            branch="master"
+        fi
+    fi
+
+    local github_raw_url="https://raw.githubusercontent.com/${repo}/${branch}/${filepath}"
+    debug "Constructed URL: $github_raw_url"
+    
+    local content=$(curl -sfL "$github_raw_url")
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Failed to fetch file from GitHub. URL: $github_raw_url" >&2
+        return 1
+    fi
+    echo "$content"
+}
+
+get_content() {
+    local file=$1
+    if [[ -f $file ]]; then
+        debug "Reading local file: $file"
+        cat "$file"
+    elif [[ $file =~ ^(git:|https://github.com|https://raw.githubusercontent.com) ]]; then
+        fetch_github_file "$file"
+    elif [[ $file =~ ^https?:// ]]; then
+        debug "Fetching from URL: $file"
+        local content=$(curl -sfL "$file")
+        if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to fetch file from URL: $file" >&2
+            return 1
+        fi
+        echo "$content"
+    else
+        echo "$file"
+    fi
+}
+
+gr() {
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
+        show_help
+        return 0
+    fi
+
+    if [[ -z $1 ]]; then
+        echo "Error: Command is required." >&2
+        show_help
+        return 1
+    fi
+
+    local cmd=$1
+    shift
+
+    local resolved_args=()
+    for arg in "$@"; do
+        if [[ $arg =~ ^(git:|https://github.com|https://raw.githubusercontent.com) ]]; then
+            local content=$(get_content "$arg")
+            if [[ $? -ne 0 ]]; then
+                return 1
+            fi
+            local temp_file=$(mktemp)
+            echo "$content" > "$temp_file"
+            resolved_args+=("$temp_file")
+        else
+            resolved_args+=("$arg")
+        fi
+    done
+
+    $cmd "${resolved_args[@]}"
+    local exit_code=$?
+
+    # Clean up temporary files
+    for arg in "${resolved_args[@]}"; do
+        if [[ $arg =~ ^/tmp/ ]]; then
+            rm -f "$arg"
+        fi
+    done
+
+    return $exit_code
+}
+
+# Alias for common commands
+for cmd in cat delta diff; do
+    alias $cmd="gr $cmd"
+done
+
+# If the script is sourced, don't run any function
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "This script should be sourced, not executed directly."
+    exit 1
+fi
