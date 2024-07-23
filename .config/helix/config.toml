@@ -83,6 +83,9 @@ C-h = ["delete_selection", "move_char_left", "paste_before"] #move left
 "|" = ":vsplit"
 "\\" = ":hsplit"
 
+"A-n" = "extend_search_next"
+"A-N" = "extend_search_prev"
+
 [keys.normal.space]
 w = ":write"
 q = ":quit"
@@ -95,3 +98,5 @@ t = ':insert-output date "+%H:%M:%S - %d %B %Y"'
 
 [keys.normal.m]
 n = "expand_selection"
+
+[keys.select]
