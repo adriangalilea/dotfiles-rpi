@@ -60,8 +60,10 @@ skip-levels = 1
 
 "A-a" = "select_all" # weird it also allows me to do cmd+a
 
-C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw"]
-# C-t = [":sh task context ${TASKWARRIOR_CONTEXT} > /dev/null", ":sh tmux popup -d \"#{pane_current_path}\" -xC -yC -w80% -h80% -E taskwarrior-tui"] # open taskwarrior-tui on tmux popup (you gotta run helix inside tmux)
+# C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw"] # looks great but corrupts my terminal sometimes
+C-g = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% --close-on-exit -- lazygit"
+C-f = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker.sh"
+C-t = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% --close-on-exit -- taskwarrior-tui"
 
 C-j = ["extend_to_line_bounds", "delete_selection", "paste_after"] # move line up
 C-k = ["extend_to_line_bounds", "delete_selection", "move_line_up", "paste_before"] # move line down
