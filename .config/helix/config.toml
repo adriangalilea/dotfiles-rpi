@@ -64,7 +64,9 @@ skip-levels = 1
 
 # C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw"] # looks great but corrupts my terminal sometimes
 C-g = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% --close-on-exit -- lazygit"
-C-f = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker.sh"
+# C-f = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker.sh"
+
+C-f = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% -- ~/.config/helix/open_in_helix_from_yazi.zsh"
 C-t = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% --close-on-exit -- taskwarrior-tui"
 
 C-j = ["extend_to_line_bounds", "delete_selection", "paste_after"] # move line up
