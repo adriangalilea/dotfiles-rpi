@@ -46,6 +46,7 @@ main() {
         "jwt-rs/jwt-ui:jwtui"
         "csvlens/releases:csvlens"
         "yassinebridi/serpl:serpl"
+        "zellij-org/zellij:zellij"
     )
     install_from_github "${github_packages[@]}" || {
         gum log --structured --level error "Failed to install GitHub packages. Exiting."

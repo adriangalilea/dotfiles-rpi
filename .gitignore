@@ -30,6 +30,8 @@
 !.config/direnv/**
 !.config/serpl/
 !.config/serpl/**
+!.config/zellij/
+!.config/zellij/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/helix/config.toml
