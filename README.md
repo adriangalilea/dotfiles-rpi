@@ -12,7 +12,7 @@ Assumes aarch64.
 
 ## [SETUP](./.setup/README.md)
 
-## [HELIX](./config/helix/README.md)
+## [HELIX](./.config/helix/README.md)
 
 List of included apt packages: [pending]
 List of included github binaries that install automatically: [pending]
@@ -117,7 +117,6 @@ ssh-add ~/.ssh/id_rsa
 - [ ] chore: test install from scratch
 - [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
-- [ ] add: `markdown-oxide` lsp for hx
 - [ ] add: `calcurse`
 - [ ] showcase:
   - [ ] flow of installation
