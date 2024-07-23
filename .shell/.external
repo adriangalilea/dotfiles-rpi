@@ -2,6 +2,8 @@
 
 # `.external` handles all complex external tools.
 
+# === direnv ===
+eval "$(direnv hook zsh)"
 
 # === fzf ===
 # https://github.com/junegunn/fzf

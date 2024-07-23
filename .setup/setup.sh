@@ -46,6 +46,9 @@ main() {
     # install clipboard `cb`
     curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh
 
+    # install direnv
+    curl -sfL https://direnv.net/install.sh | bash
+
     setup_ssh_clipboard_forwarding || {
         gum log --structured --level error "Failed to set up SSH clipboard forwarding. Exiting."
         exit 1
