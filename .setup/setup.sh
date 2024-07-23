@@ -20,7 +20,7 @@ main() {
         exit 1
     }
 
-    install_pipx_packages dtj tldr yt-dlp || {
+    install_pipx_packages dtj tldr yt-dlp periodic-table-cli || {
         gum log --structured --level error "Failed to install pipx packages. Exiting."
         exit 1
     }
@@ -42,6 +42,9 @@ main() {
         gum log --structured --level error "Failed to install GitHub packages. Exiting."
         exit 1
     }
+
+    # install clipboard `cb`
+    curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh
 
     setup_ssh_clipboard_forwarding || {
         gum log --structured --level error "Failed to set up SSH clipboard forwarding. Exiting."
