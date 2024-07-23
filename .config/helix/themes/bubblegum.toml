@@ -1,0 +1,133 @@
+# Author : Adrian Galilea
+
+# hx 24.3
+"ui.virtual.jump-label" = { fg="yellow", bg = "black"}
+
+"attribute" = "rose"
+"namespace" = "gold"
+
+"tag" = "pine"
+"string" = "rose"
+"string.regexp" = "love"
+"string.special" = "gold"
+
+"label" = "foam"
+"module" = "beige"
+
+"keyword" = { fg = "subtle", modifiers = ["italic"] }
+"keyword.directive" = "love"
+"punctuation" = "subtle"
+"punctuation.delimiter" = "rose"
+"punctuation.special" = "subtle"
+"punctuation.bracket" = "subtle"
+"operator" = { fg = "love", modifiers = ["bold"] }
+"special" = "foam"
+
+"variable" = "iris"
+"variable.builtin" = "foam"
+"variable.parameter" = "light_gold"
+"variable.other.member" = "antique_white"
+
+"type" = "foam"
+"type.builtin" = { fg = "foam", modifiers = ["italic"] }
+"type.enum" = { fg = "gold", modifiers = ["italic"] }
+
+"constructor" = "pine"
+"function" = "foam"
+"function.macro" = { fg = "foam", modifiers = [] }
+"function.builtin" = { fg = "foam", modifiers = ["bold"] }
+"comment" = { fg = "muted", modifiers = ["italic"] }
+
+"constant" = "gold"
+"constant.builtin" = "foam"
+"constant.numeric" = "gold"
+"constant.character.escape" = { fg = "pine", modifiers = ["bold"] }
+
+"markup" = "antique_white"
+"markup.normal" = "antique_white"
+"markup.heading.marker" = "gold"
+"markup.heading.1" = { fg = "gold", modifiers = ["bold"] }
+"markup.heading" = "gold"
+"markup.list" = "subtle"
+"markup.bold" = { fg = "foam", modifiers = ["bold"] }
+"markup.italic" = { fg = "iris", modifiers = ["italic"] }
+"markup.link.url" = { fg = "gray", modifiers = ["underlined"] }
+"markup.link.text" = "rose"
+"markup.quote" = "foam"
+"markup.raw" = "pine"
+
+"diff.plus" = "foam"
+"diff.delta" = "rose"
+"diff.minus" = "love"
+
+"ui.background" = { fg = "base" }
+"ui.linenr" = { fg = "subtle" }
+"ui.linenr.selected" = { fg = "text" }
+"ui.cursorline" = { fg = "overlay" }
+"ui.statusline" = { fg = "text", bg = "surface" }
+"ui.statusline.inactive" = { fg = "subtle", bg = "surface" }
+"ui.popup" = { bg = "surface" }
+"ui.window" = { bg = "surface" }
+"ui.help" = { bg = "surface", fg = "text" }
+
+"ui.statusline.normal" = { fg = "base", bg = "gold", modifiers = [ "bold" ]}
+"ui.statusline.insert" = { fg = "base", bg = "pine", modifiers = [ "bold" ]}
+"ui.statusline.select" = { fg = "base", bg = "love", modifiers = [ "bold" ] }
+
+"ui.text" = { fg = "antique_white" }
+"ui.text.focus" = { fg = "text", modifiers= ["bold"] }
+"ui.virtual.whitespace" = "highlight_low"
+"ui.virtual.ruler" = { bg = "overlay" }
+"ui.virtual.indent-guide" = { fg = "highlight_med" }
+"ui.virtual.inlay-hint" = { fg = "muted" }
+
+"ui.cursor.match" = { fg = "gold", modifiers = ["underlined"] }
+"ui.selection" = { fg = "white", bg = "gray" }
+"ui.cursor" = { fg = "black", bg = "light-gray" }
+"ui.cursor.primary" = { fg = "black", bg = "light-gray" }
+
+"ui.menu" = { fg = "text", bg = "surface" }
+"ui.menu.selected" = { bg = "pine", fg = "base" }
+
+"ui.bufferline" = { fg = "subtle", bg = "surface" }
+"ui.bufferline.active" = { fg = "overlay", bg = "pine" }
+
+"warning" = "foam"
+"error" = "love"
+"info" = "pine"
+"hint" = "gold"
+
+"diagnostic" = {underline = {color = "yellow", style="dotted"}}
+"diagnostic.hint" = { underline = { color = "gold", style="curl"} }
+"diagnostic.info"= { underline = { color = "gold", style="curl"} }
+"diagnostic.error"= { underline = { color = "love", style="curl"} }
+"diagnostic.warning"= { underline = { color = "yellow", style="curl"} }
+
+[palette]
+base           = "#232136" 
+surface        = "#2a273f" 
+overlay        = "#393552"
+muted          = "#6e6a86"
+subtle         = "#908caa"
+text           = "#e0def4"
+love           = "#eb6f92"
+love_10        = "#3a2841"
+gold           = "#f6c177"
+gold_10        = "#39313e"
+rose           = "#ea9a97"
+rose_10        = "#392d41"
+pine           = "#3e8fb0"
+pine_10        = "#252c44"
+foam           = "#9ccfd8"
+foam_10        = "#2e3248"
+iris           = "#c4a7e7"
+iris_10        = "#342e4a"
+highlight_low  = "#2a283e"
+highlight_med  = "#44415a"
+highlight_high = "#56526e"
+cream          = "#FFFDD0"
+beige          = "#F5F5DC"
+antique_white  = "#FAEBD7"
+light_gold     = "#F8E08E"
+"springViolet2" = "#9CABCA"
+

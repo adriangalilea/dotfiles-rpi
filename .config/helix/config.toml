@@ -1,3 +1,5 @@
+theme = "bubblegum"
+
 [editor]
 bufferline = "always"
 auto-format = true
