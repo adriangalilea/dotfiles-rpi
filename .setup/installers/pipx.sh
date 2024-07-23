@@ -19,7 +19,7 @@ install_pipx_packages() {
     done
 
     if [ $? -eq 0 ]; then
-        gum log --structured --level info "pipx packages installed successfully."
+        gum log --structured --level info "pipx packages installed successfully. ✅"
     else
         gum log --structured --level error "Error installing pipx packages. Details:"
         echo "$pipx_output"

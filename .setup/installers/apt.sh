@@ -20,7 +20,7 @@ install_apt_packages() {
     # Install packages quietly, suppressing most output
     gum log --structured --level info "Installing APT packages..."
     if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${apt_packages[@]}" > /dev/null 2>&1; then
-        gum log --structured --level info "APT packages installed successfully."
+        gum log --structured --level info "APT packages installed successfully.✅"
     else
         gum log --structured --level error "Error installing APT packages."
         return 1

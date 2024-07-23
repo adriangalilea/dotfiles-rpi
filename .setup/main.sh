@@ -39,7 +39,7 @@ run_system_setup() {
 # Main execution
 install_gum
 if command -v gum &> /dev/null; then
-    gum log --structured --level info "gum installed successfully. Running system setup..."
+    gum log --structured --level info "😎 gum installed successfully. Running system setup..."
     run_system_setup
 else
     echo "Failed to install gum. Please check your internet connection and try again."
