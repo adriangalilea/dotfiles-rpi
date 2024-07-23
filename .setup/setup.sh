@@ -1,9 +1,10 @@
 #!/bin/zsh
 
-source ./utils.sh
-source ./github.sh
-source ./apt.sh
-source ./pipx.sh
+source ./lib/sys.sh
+source ./lib/ui.sh
+source ./installers/github/main.sh
+source ./installers/apt.sh
+source ./installers/pipx.sh
 
 main() {
     gum log --structured --level info "Starting setup..."
