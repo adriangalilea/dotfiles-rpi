@@ -117,6 +117,7 @@ ssh-add ~/.ssh/id_rsa
 - [ ] chore: test install from scratch
 - [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
+- [ ] add: `markdown-oxide` lsp for hx
 - [ ] add: `calcurse`
 - [ ] showcase:
   - [ ] flow of installation

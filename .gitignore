@@ -34,8 +34,6 @@
 !.config/zellij/**
 
 # Explicitly allow specific files in .config subdirectories
-!.config/helix/config.toml
-!.config/helix/languages.toml
 !.config/vale/
 !.config/vale/.vale.ini
 !.config/mods/mods.yml
