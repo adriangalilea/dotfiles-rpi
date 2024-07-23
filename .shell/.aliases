@@ -16,6 +16,7 @@ alias mkdir="mkdir -p"
 alias md="mkdir"
 alias rd="rmdir"
 alias ai="mods"
+alias \?="mods"
 alias grep="grep --color=auto"         # colorize output (good for log files)
 alias cat="bat --paging never --decorations never --plain"
 alias wget='wget -o /dev/null'
