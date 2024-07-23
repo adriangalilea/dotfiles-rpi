@@ -10,7 +10,7 @@ Assumes aarch64.
 
 # Batteries included
 
-## [SETUP](./.setup/README.md)
+## [Automated install of packages](./.setup/README.md)
 
 ## [HELIX](./.config/helix/README.md)
 
@@ -127,7 +127,6 @@ ssh-add ~/.ssh/id_rsa
   - [ ] git secret usage to use ai and lsp-ai
   
 ## side-quests 
-- [ ] [simple-completion-language-server](https://github.com/estin/simple-completion-language-server) + [lsp-ai](https://github.com/SilasMarvin/lsp-ai)
 - [ ] [research more zsh config](https://github.com/changs/slimzsh?tab=readme-ov-file#fasd)
 - [ ] mod [`betafcc/nav`](https://github.com/betafcc/nav) nav-down into fzf like @sobolevn does, works way better
 - [ ] taskwarrior

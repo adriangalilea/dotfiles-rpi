@@ -46,7 +46,7 @@ auto-format = true
 
 [[language]]
 name = "markdown"
-language-servers = [{ name = "ltex"}, "markdown-oxide", "vale"] #prev marksman
+language-servers = [{ name = "ltex"}, "markdown-oxide", "vale", "gpt"] #prev marksman
 file-types = ["md", "txt"]
 scope = "text.markdown"
 roots = []
@@ -95,6 +95,10 @@ provideFormatter = true
 
 # [language-server.ltex.config.ltex.dictionary]
 # "en-US" = ["Tp-Note","Zettelkasten"]
+
+# [language-server.gpt]
+# command = "bun"
+# args = ["run", "/usr/bin/helix-gpt"]
 
 # [language-server.gpt]
 # command = "helix-gpt"
