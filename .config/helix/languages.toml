@@ -100,6 +100,13 @@ provideFormatter = true
 # command = "helix-gpt"
 # environment = { HANDLER= "copilot" }
 
+[[language]]
+name = "markdown"
+language-servers = ["markdown-oxide"] #prev marksman
+file-types = ["md"]
+scope = "text.markdown"
+roots = []
+
 
 [language-server.vale]
 command = "vale-ls"

@@ -47,6 +47,7 @@ main() {
         "csvlens/releases:csvlens"
         "yassinebridi/serpl:serpl"
         "zellij-org/zellij:zellij"
+        "Feel-ix-343/markdown-oxide:markdown-oxide"
     )
     install_from_github "${github_packages[@]}" || {
         gum log --structured --level error "Failed to install GitHub packages. Exiting."

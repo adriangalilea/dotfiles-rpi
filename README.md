@@ -10,6 +10,10 @@ Assumes aarch64.
 
 # Batteries included
 
+## [SETUP](./.setup/README.md)
+
+## [HELIX](./config/helix/README.md)
+
 List of included apt packages: [pending]
 List of included github binaries that install automatically: [pending]
 
@@ -106,91 +110,26 @@ ssh-add ~/.ssh/id_rsa
    Copy the key and add it to your GitHub account:
    - GitHub: [Settings -> SSH and GPG keys -> New SSH key](https://github.com/settings/keys)
 
-# TO-DO
+# TODO
 
 ## main
 
-- [ ] feat: github-rsolver or `gr`
-- [ ] feat: alias that executes `~/.setup/main.sh` for convenience on first git pull
 - [ ] chore: test install from scratch
+- [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
-- [ ] add: `direnv`
-- [ ] add: `markdown-oxide` lsp for hx
 - [ ] add: `calcurse`
-- [ ] fix `zoxide` not behaving right if set in alias as `cd` 
-- [ ] consider if [sdm](https://github.com/gitbls/sdm) or hijacking the script.sh(rpi imager) is a better option to run the `setup.sh`
-- [ ] improve installing output:
-```
-  » ./main.sh
-Installing gum...
-Adding Charm repository...
-Charm GPG key already exists. Skipping addition.
-Charm repository process completed.
-Hit:1 http://deb.debian.org/debian bookworm InRelease
-Hit:2 http://deb.debian.org/debian-security bookworm-security InRelease                                                 
-Hit:3 http://deb.debian.org/debian bookworm-updates InRelease                                                           
-Hit:4 http://deb.gierens.de stable InRelease                                                  
-Hit:5 http://archive.raspberrypi.com/debian bookworm InRelease                                
-Get:6 https://repo.charm.sh/apt * InRelease                             
-Fetched 6,639 B in 3s (2,039 B/s)
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-3 packages can be upgraded. Run 'apt list --upgradable' to see them.
-Reading package lists... Done
-Building dependency tree... Done
-Reading state information... Done
-The following NEW packages will be installed:
-  gum
-0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.
-Need to get 0 B/4,222 kB of archives.
-After this operation, 28.3 MB of additional disk space will be used.
-Selecting previously unselected package gum.
-(Reading database ... 124307 files and directories currently installed.)
-Preparing to unpack .../archives/gum_0.14.1_arm64.deb ...
-Unpacking gum (0.14.1) ...
-Setting up gum (0.14.1) ...
-Processing triggers for man-db (2.11.2-2) ...
-INFO gum installed successfully. Running system setup... <-- cooler glasses emoji
-INFO Starting setup...
-WARN Current swap size (1024 MB) is already greater than or equal to requested size (1024 MB). Skipping. <-- memory emoji
-INFO Installing required packages...
-INFO Updating package lists...
-INFO Package lists updated successfully.
-INFO Installing APT packages... <-- needs same output as github installed packages
-INFO APT packages installed successfully.
-INFO Installing pip packages...
-INFO Pip packages installed successfully. <-- needs same output as github installed packages
-📦 helix 🌐 helix-editor/helix 🏷️  was installed! ✅
-📦 eza 🌐 eza-community/eza 🏷️  was installed! ✅
-📦 lazygit 🌐 jesseduffield/lazygit 🏷️  was installed! ✅
-📦 gdu 🌐 dundee/gdu 🏷️  was installed! ✅
-📦 fzf 🌐 junegunn/fzf 🏷️  was installed! ✅
-📦 delta 🌐 dandavison/delta 🏷️  was installed! ✅
-📦 vale 🌐 errata-ai/vale 🏷️  was installed! ✅
-📦 vale-ls 🌐 errata-ai/vale-ls 🏷️  was installed! ✅
-INFO Clipboard forwarding set up and SSH service restarted.
-INFO Setup complete! Please reboot to apply all changes. <-- needs emoji ✅
-19 Jul 24 22:22 CEST INFO Setup finished at Fri 19 Jul 22:22:01 CEST 2024 <-- redundant
-````
-- [ ] handle lack of gum or opt-out
-- [ ] .toml file to select installing packages on each category instead of main.py
-- [ ] refactor: github utils and github.sh inside /github
-- [ ] "
 - [ ] showcase:
   - [ ] flow of installation
   - [ ] usefulness
   - [ ] aliases walkthrough
   - [ ] git secret usage to use ai and lsp-ai
-- [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
   
 ## side-quests 
 - [ ] [simple-completion-language-server](https://github.com/estin/simple-completion-language-server) + [lsp-ai](https://github.com/SilasMarvin/lsp-ai)
 - [ ] [research more zsh config](https://github.com/changs/slimzsh?tab=readme-ov-file#fasd)
 - [ ] mod [`betafcc/nav`](https://github.com/betafcc/nav) nav-down into fzf like @sobolevn does, works way better
-- [ ] more architectures
-- [ ] interactive installs
 - [ ] taskwarrior
   - [ ] client
   - [ ] server
-- [.] add [yallezix v3](https://github.com/luccahuguet/zellij) for a tree navigation and possible integration with other tools such as task-warrior tui
+- [ ] run lsp's in another computer on the network for the zero's
+- [ ] feat: github-rsolver or `gr`
