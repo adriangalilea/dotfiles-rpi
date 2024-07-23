@@ -117,7 +117,9 @@ ssh-add ~/.ssh/id_rsa
 - [ ] chore: test install from scratch
 - [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
-- [ ] add: `calcurse`
+- [ ] add: calendar view for my tasks
+  - [ ] [`calcurse`](https://calcurse.org/)
+  - [ ] [`calcure`](https://github.com/anufrievroman/calcure)
 - [ ] showcase:
   - [ ] flow of installation
   - [ ] usefulness
@@ -133,3 +135,13 @@ ssh-add ~/.ssh/id_rsa
   - [ ] server
 - [ ] run lsp's in another computer on the network for the zero's
 - [ ] feat: github-rsolver or `gr`
+
+# Notes on selected software
+
+## Navigation
+
+After many considerations I settled between `broot` and `yazi`, I genuinely love broot, I think it has the best design, but it's not playing well with my `~` as a git repo and despite feeling slower with `yazi` is offering me enough right now.
+
+> Perfection is the enemy of good.
+
+So I shall stick with `yazi` for now but I urge you to check out `broot`
