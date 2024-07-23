@@ -37,6 +37,12 @@ main() {
         "errata-ai/vale-ls:vale-ls"
         # "devmatteini/dra:dra"
         "sxyazi/yazi:yazi"
+        "achannarasappa/ticker:ticker"
+        "humanlogio/humanlog:humanlog"
+        "zaghaghi/openapi-tui:openapi-tui"
+        "tbillington/kondo:kondo"
+        "ynqa/jnv:jnv"
+        "jwt-rs/jwt-ui:jwtui"
     )
     install_from_github "${github_packages[@]}" || {
         gum log --structured --level error "Failed to install GitHub packages. Exiting."
