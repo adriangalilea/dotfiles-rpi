@@ -10,7 +10,7 @@ process_package() {
     local binary=$2
     local latest_release_json version assets asset_url
 
-    echo "📦 $binary 🌐 $repo"
+    echo "🌐 $repo 📦 $binary"
     if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $repo"); then
         echo "❌ Failed to fetch the latest release for $repo"
         return 1
@@ -20,8 +20,7 @@ process_package() {
         echo "❌ Failed to extract release information"
         return 1
     fi
-    update_static_line "📦 $binary 🌐 $repo 🏷️ $version"
-    run_with_spinner "🧠 Extracting release info..." "sleep 1"  # Simulating work
+    update_static_line "🌐 $repo 📦 $binary 🏷️ $version"
 
     if ! asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'"); then
         echo "❌ Failed to find best asset"
@@ -38,7 +37,7 @@ process_package() {
         echo "❌ Installation failed: $binary not found in PATH"
         return 1
     fi
-
+    update_static_line "🌐 $repo 📦 $binary 🏷️ $version installed ✅"
     return 0
 }
 
@@ -58,9 +57,6 @@ install_from_github() {
 
         if ! process_package "$repo" "$binary"; then
             update_static_line "❌ Skipping $package: Failed to process package"
-            
-        else
-            update_static_line "📦 $binary 🌐 $repo 🏷️ $version was installed! ✅"
         fi
     done
 }

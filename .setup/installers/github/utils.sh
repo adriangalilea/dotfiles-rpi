@@ -68,100 +68,90 @@ extract_release_info() {
 
 find_best_asset() {
     local assets=$1
-    local arch_pattern="aarch64|arm64"
+    local arch_pattern="aarch64|arm64|armv7l"
     local os_pattern="linux"
-    local file_types=("tar.xz" "tar.gz" "zip" "AppImage" "tgz")
+    local file_types=("tar.xz" "tar.gz" "tgz" "tar.bz2" "tbz2" "zip" "AppImage" "deb" "bin" "run")
     local best_asset=""
     local max_score=0
-
     while read -r asset; do
         local asset_name=$(echo -E "$asset" | jq -r '.name' | tr '[:upper:]' '[:lower:]')
         local asset_url=$(echo -E "$asset" | jq -r '.url')
         local score=0
-
+        local is_valid_type=false
+        for type in "${file_types[@]}"; do
+            if [[ $asset_name == *.$type ]]; then
+                is_valid_type=true
+                break
+            fi
+        done
+        if ! $is_valid_type; then
+            continue
+        fi
         [[ $asset_name =~ $arch_pattern ]] && ((score += 10))
         [[ $asset_name =~ $os_pattern ]] && ((score += 5))
-
         for ((i=0; i<${#file_types[@]}; i++)); do
-            if [[ $asset_name =~ ${file_types[i]} ]]; then
+            if [[ $asset_name == *.${file_types[i]} ]]; then
                 ((score += 5 - i))
                 break
             fi
         done
-
         if ((score > max_score)); then
             max_score=$score
             best_asset=$asset_url
         fi
     done < <(echo -E "$assets" | jq -c '.[]')
-
     if [[ -z "$best_asset" ]]; then
         echo "No suitable asset found for $arch_pattern on $os_pattern." >&2
         return 1
     fi
-
     echo "$best_asset"
 }
-
 
 download_and_extract_asset() {
     local asset_url=$1
     local binary_name=$2
     local tmp_dir="/tmp/$binary_name"
     local tmp_file="$tmp_dir/$(basename "$asset_url")"
-
     mkdir -p "$tmp_dir"
-
     if ! curl -s -L "$asset_url" -o "$tmp_file"; then
         echo "Failed to download $asset_url"
         return 1
     fi
-
     case "$tmp_file" in
-        *.tar.gz|*.tar.xz|*.tgz|*.tar)
-            tar -xf "$tmp_file" -C "$tmp_dir" || { echo "Failed to extract $tmp_file"; return 1; }
+        *.tar.gz|*.tar.xz|*.tgz|*.tar|*.tar.bz2|*.tbz2)
+            tar -xf "$tmp_file" -C "$tmp_dir" || return 1
             ;;
         *.zip)
-            unzip -q "$tmp_file" -d "$tmp_dir" || { echo "Failed to unzip $tmp_file"; return 1; }
+            unzip -q "$tmp_file" -d "$tmp_dir" || return 1
             ;;
-        *.AppImage|*.sh)
+        *.AppImage|*.sh|*.bin|*.run)
             chmod +x "$tmp_file"
-            sudo mv "$tmp_file" /usr/local/bin/"$binary_name" || { echo "Failed to move $binary_name"; return 1; }
+            sudo mv "$tmp_file" /usr/local/bin/"$binary_name" || return 1
+            return 0
             ;;
         *.deb)
-            sudo dpkg -i "$tmp_file" || { echo "Failed to install $tmp_file"; return 1; }
-            ;;
-        *.rpm)
-            sudo rpm -i "$tmp_file" || { echo "Failed to install $tmp_file"; return 1; }
+            sudo dpkg -i "$tmp_file" > /dev/null || return 1
+            return 0
             ;;
         *)
             echo "Unsupported file format: $tmp_file"
             return 1
             ;;
     esac
-
     [ -f "$tmp_file" ] && rm "$tmp_file"
-
-    # First, try to find an executable file that matches the binary name
     local extracted_file=$(find "$tmp_dir" -type f -executable -name "*$binary_name*" -print -quit)
-
-    # If no match is found, fall back to any executable file
     if [ -z "$extracted_file" ]; then
         extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
     fi
-
     if [ -z "$extracted_file" ]; then
         echo "$binary_name not found in the extracted files."
         return 1
     fi
-
     if [[ "$extracted_file" != *"$binary_name"* ]]; then
         mv "$extracted_file" "$tmp_dir/$binary_name"
         extracted_file="$tmp_dir/$binary_name"
     fi
-
-    sudo mv "$extracted_file" /usr/local/bin/"$binary_name" || { echo "Failed to move $binary_name to /usr/local/bin/"; return 1; }
+    sudo mv "$extracted_file" /usr/local/bin/"$binary_name" || return 1
     sudo chmod +x /usr/local/bin/"$binary_name"
-
     rm -rf "$tmp_dir"
 }
