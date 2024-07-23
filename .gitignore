@@ -28,6 +28,8 @@
 !.config/yazi/**
 !.config/direnv/
 !.config/direnv/**
+!.config/serpl/
+!.config/serpl/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/helix/config.toml
