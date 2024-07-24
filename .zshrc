@@ -65,11 +65,11 @@ source "$HOME/.zplugrc"                # load plugin manager configuration
 
 # === shell parts ===
 
-source "$HOME/.shell/.exports"         # load custom exports
-source "$HOME/.shell/.aliases"         # load custom aliases
-source "$HOME/.shell/.functions"       # load custom functions
-source "$HOME/.shell/.external"        # load external configurations
-source "$HOME/.shell/.completions"     # load custom completions
+source "$HOME/.shell/exports"         # load custom exports
+source "$HOME/.shell/aliases"         # load custom aliases
+source "$HOME/.shell/functions"       # load custom functions
+source "$HOME/.shell/external"        # load external configurations
+source "$HOME/.shell/completions"     # load custom completions
 
 # --- environment variables ---
 
