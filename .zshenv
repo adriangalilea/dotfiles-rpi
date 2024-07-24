@@ -1,6 +1,8 @@
 # This file is sourced for all shells, not just interactive ones like `.zshrc`.
 
-alias bat="batcat"
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  alias bat="batcat"
+fi
 
 _fzf_complete_realpath () {
   # Used for `tab` completion in `shell/.completions` and `shell/.external`.

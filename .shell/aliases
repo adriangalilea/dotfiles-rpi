@@ -6,6 +6,7 @@ alias ex='~/.shell/utils/ex'
 
 # --- general aliases ---
 
+[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 alias salsa="source ~/.zshrc"
 alias x="chmod +x"
 alias x\*="x *"
@@ -72,5 +73,8 @@ alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"
 # --- compatibility aliases ---
 
 alias helix="hx"
-alias bat="batcat"                     # bat is batcat in ubuntu
-alias fd="fdfind"                      # fd is fdfind in ubuntu
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  alias bat="batcat"
+  alias fd="fdfind"
+fi
+

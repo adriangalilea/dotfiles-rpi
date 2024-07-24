@@ -22,10 +22,12 @@ d() {
 }
 compdef _dirs d
 
-# Change to the previous directory
--() {
-  cd -
-}
+# Change to the previous directory only on non mac systems
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  -() {
+    cd -
+  }
+fi
 
 # --- file listing ---
 

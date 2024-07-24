@@ -2,8 +2,13 @@
 
 # `.external` handles all complex external tools.
 
+# === broot ===
+# source "$HOME/.config/broot/launcher/bash/br"
+
 # === direnv ===
 eval "$(direnv hook zsh)"
+# mute output
+export DIRENV_LOG_FORMAT=
 
 # === fzf ===
 # https://github.com/junegunn/fzf

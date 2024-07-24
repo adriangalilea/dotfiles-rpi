@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # eza binary on git repo
 export PATH="$HOME/.shell/bin:$PATH"
 
@@ -14,6 +16,29 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # limit zsh-highight otherwise too slow
 export ZSH_HIGHLIGHT_MAXLENGTH=200
+
+# pip
+export PATH="/Library/Frameworks/Python.framework/Versions/3.11/bin:$PATH"
+
+# pipx
+export PATH="$PATH:/Users/adrian/.local/bin"
+
+# nvm deprecated in favor of fnm
+alias nvm="fnm"
+
+# pnpm
+export PNPM_HOME="/Users/adrian/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# mpv
+export PATH="$HOME/bin:$PATH"
+
+# x/twitter from the terminal https://github.com/devhindo/x
+export PATH="$PATH:$HOME/bin/x"
 
 # must be the last line
 export PATH
