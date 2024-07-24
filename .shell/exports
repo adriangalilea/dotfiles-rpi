@@ -7,11 +7,11 @@ export PATH="$HOME/.shell/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 # golang
-export GOPATH=$HOME/go
+export GOPATH=$HOME/.local/go
 export PATH=$PATH:$GOPATH/bin
 
 # bun
-export BUN_INSTALL="$HOME/.bun"
+export BUN_INSTALL="$HOME/.local/bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # limit zsh-highight otherwise too slow
@@ -39,6 +39,12 @@ export PATH="$HOME/bin:$PATH"
 
 # x/twitter from the terminal https://github.com/devhindo/x
 export PATH="$PATH:$HOME/bin/x"
+
+# wget config
+export WGETRC=$HOME/.config/wget/wgetrc
+
+# less output
+export LESSHISTFILE=$HOME/.local/share/less/lesshst
 
 # must be the last line
 export PATH

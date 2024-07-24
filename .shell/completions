@@ -85,4 +85,4 @@ zstyle ':fzf-tab:complete:(\\|*/|)z:*' fzf-preview \
   '_fzf_complete_realpath "$word"'
 
 # bun completions
-[ -s "/home/adrian/.bun/_bun" ] && source "/home/adrian/.bun/_bun"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"

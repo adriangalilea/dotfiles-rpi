@@ -65,7 +65,7 @@ HYPHEN_INSENSITIVE="false"             # treat hyphens and underscores as differ
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"  # commands to ignore in history
 HIST_STAMPS="yyyy/mm/dd"               # set history timestamp format
 HIST_IGNORE_SPACE="true"               # don't save commands starting with space
-HISTFILE=~/.zsh_history                # history file location
+HISTFILE=~$HOME/.local/share/zsh/zsh_histor # history file location
 HISTSIZE=10000                         # number of lines in history file
 SAVEHIST=10000                         # number of lines in memory history
 setopt SHARE_HISTORY                   # share history between sessions

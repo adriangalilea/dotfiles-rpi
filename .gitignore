@@ -34,6 +34,8 @@
 !.config/zellij/**
 !.config/bat/
 !.config/bat/**
+!.config/wget/
+!.config/wget/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/vale/

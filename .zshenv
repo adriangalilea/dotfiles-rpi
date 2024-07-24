@@ -1,5 +1,8 @@
 # This file is sourced for all shells, not just interactive ones like `.zshrc`.
 
+# Set ZDOTDIR to store all Zsh configuration and dump files in a specific directory to keep the home directory clean
+echo 'export ZDOTDIR=$HOME/.local/share/zsh'
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
   alias bat="batcat"
 fi
