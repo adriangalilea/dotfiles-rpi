@@ -1,35 +1,31 @@
-source $HOME/.zplug/init.zsh
+#!/usr/bin/env zsh
 
-# Must be the first one:
+# Load zplug
+source "$ZPLUG_HOME/init.zsh"
+
+# Load plugins
 zplug 'Aloxaf/fzf-tab', depth:1
-
-# [ip](https://github.com/adriangalilea/homebrew-ip/blob/main/ip.sh) from yours trully :)
 zplug "adriangalilea/homebrew-ip", use:"magic_dashboard.sh", as:command
-
-# Sorted in order of appearance (new at the bottom):
 zplug 'zsh-users/zsh-syntax-highlighting', depth:1
 zplug 'junegunn/fzf-git.sh', as:command, use:'fzf-git.sh', depth:1
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-completions"
 zplug "MichaelAquilina/zsh-you-should-use"
-
-# magic dashboard
 zplug "chrisgrieser/zsh-magic-dashboard", use:"magic_dashboard.zsh"
-
-# nav
 zplug "betafcc/nav", use:"nav.zsh"
+# zplug 'sobolevn/sobole-zsh-theme', as:theme, depth:1
+zplug "romkatv/powerlevel10k", as:theme, depth:1
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check; then
+    zplug install
+fi
+
+# Configure nav plugin
 bindkey '^[[1;2A' nav-up      # shift + up
 bindkey '^[[1;2B' nav-down    # shift + down
 bindkey '^[[1;2C' nav-forward # shift + right
 bindkey '^[[1;2D' nav-back    # shift + left
 
-# Theme, should be the last:
-zplug 'sobolevn/sobole-zsh-theme', as:theme, depth:1
-
-# Install plugins if there are plugins that have not been installed:
-if ! zplug check; then
-  zplug install
-fi
-
-# Then, source plugins and add commands to $PATH
+# Load zplug plugins
 zplug load

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-# --- override ex ---
+# --- overrides ---
 
-alias ex='~/.shell/utils/ex'
+alias ex="~/.shell/utils/ex" # I want my extraction command rather than the ex command I never use
+alias extract="ex"
+
+# Disable 'r' command (if it exists)
+(( $+commands[r] )) && disable r
 
 # --- general aliases ---
 
@@ -11,7 +15,6 @@ alias salsa="source ~/.zshrc"
 alias x="chmod +x"
 alias x\*="x *"
 alias g="lazygit"
-alias h="hx"
 alias t="taskwarrior-tui"
 alias mkdir="mkdir -p"
 alias md="mkdir"
@@ -72,9 +75,31 @@ alias shrug="echo '¯\_(ツ)_/¯' | pbcopy | echo '=> Copied to pasteboard.'"
 
 # --- compatibility aliases ---
 
-alias helix="hx"
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  alias bat="batcat"
-  alias fd="fdfind"
+# Ensure Helix editor is available and aliased correctly
+if command -v hx &> /dev/null; then
+  alias helix="hx"
+  alias h="hx"
+elif command -v helix &> /dev/null; then
+  alias hx="helix"
+  alias h="helix"
+else
+  echo "Warning: Helix editor (hx/helix) not found. Please install it for full functionality."
 fi
 
+# Ensure 'bat' command is available
+if ! command -v bat &> /dev/null; then
+  if command -v batcat &> /dev/null; then
+    alias bat="batcat"
+  else
+    alias bat="cat"  # Fallback to 'cat' if neither 'bat' nor 'batcat' is available
+  fi
+fi
+
+# Ensure 'fd' command is available
+if ! command -v fd &> /dev/null; then
+  if command -v fdfind &> /dev/null; then
+    alias fd="fdfind"
+  else
+    alias fd="find"  # Fallback to 'find' if neither 'fd' nor 'fdfind' is available
+  fi
+fi

@@ -1,0 +1,2 @@
+Host caladan.local
+    LogLevel QUIET

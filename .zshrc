@@ -1,30 +1,14 @@
 # === user config ===
 
-# --- mac specific area ---
-# TODO there's no need for this and I should likely use p10k on every system anyway
-# Check if the operating system is macOS
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  export ZPLUG_HOME=/opt/homebrew/opt/zplug
-  source $ZPLUG_HOME/init.zsh
-
-  # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-  # Initialization code that may require console input (password prompts, [y/n]
-  # confirmations, etc.) must go above this block; everything else may go below.
-  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-  fi
-
-  # Path to your oh-my-zsh installation.
-  export ZSH="$HOME/.oh-my-zsh"
-
-  ZSH_THEME="powerlevel10k/powerlevel10k"
-
-  source $ZSH/oh-my-zsh.sh
-
-  # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
+# Efficiently load completion system
+autoload -Uz compinit
+if [[ -n ${ZSH_COMPDUMP}(#qN.mh+24) ]]; then
+  compinit -d "$ZSH_COMPDUMP"
+else
+  compinit -C -d "$ZSH_COMPDUMP"
 fi
+
+[[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh" ]] || source "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh"
 
 # --- editor ---
 
@@ -54,18 +38,11 @@ setopt PUSHD_SILENT                    # don't print dir stack after pushd/popd
 setopt PUSHD_IGNORE_DUPS               # don't push duplicate dirs
 setopt PUSHD_MINUS                     # swap meaning of + and - for pushd
 
-# --- completion ---
-
-disable r                              # disable 'r' command (runs previous command)
-CASE_SENSITIVE="false"                 # case-insensitive completion
-HYPHEN_INSENSITIVE="false"             # treat hyphens and underscores as different
-
 # --- history settings ---
 
-export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"  # commands to ignore in history
-HIST_STAMPS="yyyy/mm/dd"               # set history timestamp format
-HIST_IGNORE_SPACE="true"               # don't save commands starting with space
-HISTFILE=~$HOME/.local/share/zsh/zsh_histor # history file location
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"  # history file location
+export HISTORY_IGNORE="(ls|cd|salsa|la|ll|h|yy|l|pwd|exit|sudo reboot|history|cd -|cd ..)"  # commands to ignore in history
+
 HISTSIZE=10000                         # number of lines in history file
 SAVEHIST=10000                         # number of lines in memory history
 setopt SHARE_HISTORY                   # share history between sessions
@@ -73,6 +50,8 @@ setopt INC_APPEND_HISTORY              # append to history file immediately
 setopt HIST_IGNORE_ALL_DUPS            # don't save duplicate commands
 setopt EXTENDED_HISTORY                # save timestamp and duration of commands
 setopt HIST_EXPIRE_DUPS_FIRST          # remove duplicates first when trimming history
+setopt HIST_IGNORE_SPACE               # don't save commands starting with space
+
 
 # --- path ---
 
@@ -87,9 +66,9 @@ if [ -d "/sbin" ] ; then PATH="/sbin:$PATH" ; fi
 if [ -d "/bin" ] ; then PATH="/bin:$PATH" ; fi
 if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH" ; fi
 
-# === plugin management ===
+# === zplug plugin management ===
 
-source "$HOME/.zplugrc"                # load plugin manager configuration
+source "$ZPLUG_RCFILE"
 
 # === shell parts ===
 
@@ -119,3 +98,12 @@ export GREP_COLORS="mt=1;35"
 # --- initial actions ---
 
 files                                  # list files when .zshrc loads
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+[[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh" ]] || source "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh"
+

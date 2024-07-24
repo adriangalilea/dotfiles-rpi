@@ -36,6 +36,14 @@
 !.config/bat/**
 !.config/wget/
 !.config/wget/**
+!.config/zplug/
+!.config/zplug/**
+!.config/ssh/
+!.config/ssh/**
+!.config/git/
+!.config/git/**
+!.config/p10k/
+!.config/p10k/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/vale/

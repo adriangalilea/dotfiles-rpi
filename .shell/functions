@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# --- history filtering ---
+zshaddhistory() {
+    emulate -L zsh
+    [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
+}
+
 # --- directories ---
 
 # Create directory and cd into it
@@ -23,11 +29,11 @@ d() {
 compdef _dirs d
 
 # Change to the previous directory only on non mac systems
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  -() {
-    cd -
-  }
-fi
+# if [[ "$(uname -s)" != "Darwin" ]]; then
+#   -() {
+#     cd -
+#   }
+# fi
 
 # --- file listing ---
 

@@ -115,6 +115,9 @@ ssh-add ~/.ssh/id_rsa
 ## main
 
 - [ ] chore: test install from scratch
+- [ ] feat: `.setup` -> `~/.config/setup` & `.shell` -> `~/.config/shell`
+- [ ] feat: git highilght in yazi
+- [ ] feat: slimmer navigation in yazi
 - [ ] merge with my own dotfiles and have just a single source of truth .setup/mac .setup/rpi
 - [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
 - [ ] add: calendar view for my tasks

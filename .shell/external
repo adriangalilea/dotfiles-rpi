@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # `.external` handles all complex external tools.
 
@@ -12,14 +12,20 @@ export DIRENV_LOG_FORMAT=
 
 # === fzf ===
 # https://github.com/junegunn/fzf
-
 if [[ ! "$PATH" == */opt/fzf/bin* ]]; then
   # Enable `fzf-git`:
   # https://github.com/junegunn/fzf-git.sh
-  source 'fzf-git.sh'  # installed via `zplug`
-
+  if [ -f "${ZPLUG_HOME:-$HOME/.zplug}/repos/junegunn/fzf-git.sh/fzf-git.sh" ]; then
+    source "${ZPLUG_HOME:-$HOME/.zplug}/repos/junegunn/fzf-git.sh/fzf-git.sh"
+  else
+    echo "fzf-git.sh not found. Please ensure it's properly installed via zplug."
+  fi
   # Enable `fzf`:
-  eval "$(fzf --zsh)"
+  if command -v fzf >/dev/null 2>&1; then
+    eval "$(fzf --zsh)"
+  else
+    echo "fzf command not found. Please ensure it's properly installed."
+  fi
 fi
 
 # fzf configuration:

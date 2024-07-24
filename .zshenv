@@ -1,52 +1,62 @@
 # This file is sourced for all shells, not just interactive ones like `.zshrc`.
 
-# Set ZDOTDIR to store all Zsh configuration and dump files in a specific directory to keep the home directory clean
-echo 'export ZDOTDIR=$HOME/.local/share/zsh'
+# The intention is to keep the ~/.zshrc while moving history to ~/.local/state/zsh/history and zcompdump to ~/.local/cache/zsh/zcompdump-*
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  alias bat="batcat"
+# Set XDG base directories if not already set
+# XDG: A standard for organizing user directories for config, data, cache, and state files
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"    # User-specific configuration files
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"   # User-specific data files
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.local/cache}"       # Note the cache folder by XDG standards is: $HOME/.cache
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}" # State files that should persist between application restarts
+
+# ssh config dir
+export SSH_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/ssh/config"
+
+# Zsh-specific configurations
+export ZDOTDIR="$HOME"                                        # Keep .zshrc in the home directory
+export HISTFILE="$XDG_STATE_HOME/zsh/history"                 # Store Zsh history in XDG state directory
+export ZSH_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"  # Store completion dump file in XDG cache directory
+
+# zplug configuration
+export ZPLUG_RCFILE="${XDG_CONFIG_HOME}/zplug/zplugrc"        # zplug configuration file
+
+# Set ZPLUG_HOME based on available locations
+if [ -d "/opt/homebrew/opt/zplug" ]; then
+    # macOS Homebrew installation
+    export ZPLUG_HOME="/opt/homebrew/opt/zplug"
+elif [ -d "${XDG_DATA_HOME}/zplug" ]; then
+    # XDG compliant location
+    export ZPLUG_HOME="${XDG_DATA_HOME}/zplug"
+else
+    # Default fallback
+    export ZPLUG_HOME="${HOME}/.zplug"
 fi
 
-_fzf_complete_realpath () {
-  # Used for `tab` completion in `shell/.completions` and `shell/.external`.
-  # Can be customized to behave differently for different objects.
-  local realpath="${1:--}"  # read the first arg or stdin if arg is missing
+# Ensure ZPLUG_HOME exists
+if [ ! -d "$ZPLUG_HOME" ]; then
+    echo "Warning: ZPLUG_HOME directory does not exist: $ZPLUG_HOME"
+    echo "You may need to install zplug or create this directory manually."
+fi
 
-  if [ "$realpath" = '-' ]; then
-    # It is a stdin, always a text content:
-    local stdin="$(< /dev/stdin)"
-    echo "$stdin" | bat \
-      --language=sh \
-      --plain \
-      --color=always \
-      --wrap=character \
-      --terminal-width="$FZF_PREVIEW_COLUMNS" \
-      --line-range :100
-    return
-  fi
+export ZPLUG_RCFILE="${XDG_CONFIG_HOME:-$HOME/.config}/zplug/zplugrc"
 
-  if [ -d "$realpath" ]; then
-    tree -a -I '.DS_Store|.localized' -C "$realpath" | head -100
-  elif [ -f "$realpath" ]; then
-    mime="$(file -Lbs --mime-type "$realpath")"
-    category="${mime%%/*}"
-    if [ "$category" = 'image' ]; then
-      # I guessed `60` to be fine for my exact terminal size
-      local default_width=$(( "$FZF_PREVIEW_COLUMNS" < 60 ? 60 : "$FZF_PREVIEW_COLUMNS" ))
-      catimg -r2 -w "$default_width" "$realpath"
-    elif [[ "$mime" =~ 'binary' ]]; then
-      hexyl --length 5KiB \
-        --border none \
-        --terminal-width "$FZF_PREVIEW_COLUMNS" \
-        "$realpath"
+# remove .terminfo from ~ 
+# TODO figure out why this causes corruption in kitty ssh sessions
+# export TERMINFO_DIRS="$XDG_STATE_HOME/.local/share/terminfo:/usr/share/terminfo"
+
+# Ensure directories exist
+mkdir -p "$XDG_STATE_HOME/zsh" "$XDG_CACHE_HOME/zsh" "${ZSH_COMPDUMP:h}"
+
+# Load fzf functions in non-interactive shells or when Zsh is the script interpreter
+if [[ ! $- == *i* ]] || [[ "${0:t}" = "zsh" ]]; then
+  # Ensure 'bat' command is available for fzf functions
+  if ! command -v bat &> /dev/null; then
+    if command -v batcat &> /dev/null; then
+      alias bat=batcat
     else
-      bat --number \
-        --color=always \
-        --line-range :100 \
-        "$realpath"
+      alias bat="cat"  # Fallback to 'cat' if neither 'bat' nor 'batcat' is available
     fi
-  else
-    # This is not a directory and not a file, just print the string.
-    echo "$realpath" | fold -w "$FZF_PREVIEW_COLUMNS"
   fi
-}
+  
+  source "$HOME/.shell/fzf_functions.zsh"
+fi
