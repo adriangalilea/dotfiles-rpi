@@ -83,6 +83,7 @@ autoload -U add-zsh-hook               # load the add-zsh-hook function
 add-zsh-hook chpwd files               # add hook to call files after every directory change
 
 # --- color settings ---
+# TODO this is a patch for a zplug plugin that is not updated, this should be removed eventually.
 
 unset GREP_COLOR
 export GREP_COLORS="mt=1;35"
