@@ -18,6 +18,8 @@ I also think I can make it even better, but if anyone is looking for a readymade
 
 
 # TODO
+- [ ] fix installing `ya` from `yazi` as is the package manager and is blocking:
+  - [ ] install [relative-motions](https://github.com/dedukun/relative-motions.yazi)
 - [ ] more architectures
 - [ ] interactive installs
 - [ ] .toml file to select installing packages on each category instead of main.py
