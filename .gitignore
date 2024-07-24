@@ -32,6 +32,8 @@
 !.config/serpl/**
 !.config/zellij/
 !.config/zellij/**
+!.config/bat/
+!.config/bat/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/vale/
