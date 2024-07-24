@@ -99,3 +99,7 @@ function yy() {
 	fi
 	rm -f -- "$tmp"
 }
+
+zle -N yy
+bindkey "^y" yy
+
