@@ -19,7 +19,7 @@ run_with_spinner() {
                 fi
             done
         }
-        source_files /home/adrian/.setup/installers
+        source_files /home/adrian/.config/setup/installers
         $*
     "
 }

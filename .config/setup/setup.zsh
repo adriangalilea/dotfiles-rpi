@@ -1,10 +1,10 @@
 #!/bin/zsh
 
-source ./lib/sys.sh
-source ./lib/ui.sh
+source ./lib/sys.zsh
+source ./lib/ui.zsh
 source ./installers/github/main.zsh
-source ./installers/apt.sh
-source ./installers/pipx.sh
+source ./installers/apt.zsh
+source ./installers/pipx.zsh
 
 main() {
     log "Starting setup..." debug
