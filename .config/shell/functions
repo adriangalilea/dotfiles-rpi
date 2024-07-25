@@ -111,3 +111,76 @@ function yy() {
 zle -N yy
 bindkey "^y" yy
 
+
+# --- add to .gitignore ---
+
+add_to_dotfiles() {
+  local path="${1:-.}"
+  local gitignore_path="$HOME/.gitignore"
+
+  echo
+
+  # Colors
+  local GREEN='\033[0;32m'
+  local RED='\033[0;31m'
+  local YELLOW='\033[0;33m'
+  local GRAY='\033[0;90m'
+  local NC='\033[0m' # No Color
+
+  # Help function
+  if [[ "$path" == "-h" || "$path" == "--help" ]]; then
+    echo -e "${GRAY}Usage:${NC} add [path]"
+    echo
+    echo "Add a file or directory to .gitignore"
+    echo "If no path is provided, the current directory will be added"
+    echo
+    echo -e "${GRAY}⚠ This is only useful if you have ~ as a git repo.${NC}"
+    return 0
+  fi
+
+  # Convert to relative path from home directory
+  [[ "$path" = /* ]] && path="${path#$HOME/}" || path="${PWD#$HOME/}/${path#./}"
+  path="${path#/}"
+  path="${path%/.}"
+
+  # Read .gitignore content
+  local gitignore_content
+  gitignore_content=$(<"$gitignore_path")
+
+  # Check if the path is already in .gitignore
+  if [[ $gitignore_content == *"!$path"* ]]; then
+    echo -e "${YELLOW}⚠ Path $path is already in .gitignore${NC}"
+    return 0
+  fi
+
+  local added=false
+
+  # If it's a directory, add it and its contents
+  if [[ -d "$HOME/$path" ]]; then
+    echo "!$path/" >> "$gitignore_path"
+    echo "!$path/**" >> "$gitignore_path"
+    echo -e ".gitignore  <--  ${GREEN}+ !$path/${NC}"
+    echo -e ".gitignore  <--  ${GREEN}+ !$path/**${NC}"
+    added=true
+  else
+    # It's a file, add it directly
+    echo "!$path" >> "$gitignore_path"
+    echo -e ".gitignore  <--  ${GREEN}+ !$path${NC}"
+    added=true
+  fi
+
+  # If it's a .config subdirectory, ensure the parent directory is also included
+  if [[ "$path" == .config/* ]]; then
+    local config_parent="${path%/*}"
+    if [[ $gitignore_content != *"!$config_parent/"* ]]; then
+      echo "!$config_parent/" >> "$gitignore_path"
+      echo -e ".gitignore  <--  ${GREEN}+ !$config_parent/${NC}"
+    fi
+  fi
+
+  if ! $added; then
+    echo -e "${RED}✘ No changes were made to .gitignore${NC}"
+  fi
+}
+
+alias add="add_to_dotfiles"
