@@ -64,3 +64,5 @@
 # (New paths will be added here by the add_to_gitignore function)
 !.config/glow/
 !.config/glow/**
+!.config/lazygit/
+!.config/lazygit/**
