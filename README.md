@@ -1,12 +1,19 @@
-# RPi dotfiles
+# `~` <--> git
 
-[This git repo is meant to be used as home `~`.](https://drewdevault.com/2019/12/30/dotfiles.html)
+[This git repo is your home, literally.](https://drewdevault.com/2019/12/30/dotfiles.html)
 
-This repo is an attempt to have sane defaults for the various rpi's I have, the idea is to run the main.py as a boot script and have the very same environment in every rpi I flash.
+This allows me to track down my dotfiles without requiring any dependency besides git.
 
-Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://github.com/sobolevn/dotfiles) with many modifications, also merged my own dotfiles, tailored for the RPi's.
+I merged all the tools I uses in my mac and linux(RPi's) into this unified dotfiles.
 
-Assumes aarch64.
+Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://github.com/sobolevn/dotfiles) with many modifications.
+
+
+> [!WARN]  
+> WIP
+> `.config` dotfiles are mostly complete, but I'm yet to test a full install on a new device.
+> If you decide to use any of the scripts here, you do it on your own, I'm not responsible, feel free to check and judge on your own.
+
 
 # Batteries included
 
@@ -117,10 +124,7 @@ ssh-add ~/.ssh/id_rsa
 ## main
 
 - [ ] chore: test install from scratch
-- [ ] feat: git highilght in yazi
-- [ ] feat: slimmer navigation in yazi
 - [ ] merge with my own dotfiles and have just a single source of truth .config/setup/mac .config/setup/rpi
-- [ ] feat: shell prompt that has username + hostname IF ssh session, otherwise username
 - [ ] add: calendar view for my tasks
   - [ ] [`calcurse`](https://calcurse.org/)
   - [ ] [`calcure`](https://github.com/anufrievroman/calcure)

@@ -13,3 +13,7 @@ The search filtering occurs in the HEADER not in the popup as it is occurring no
 - Ideally yazi UI remains when static but rather than morphing into a full fledged fzf like when you press <kbd>z</kbd> it should stay with a semblance of yazi that allows you to fzf/broot
 
 Two shortcuts may work for the 2 different flows, maybe: <kbd>/</kbd> <kbd>\\</kbd>
+
+# TODO
+- [.] feat: git highilght in yazi <-- [tracked here](https://github.com/sxyazi/yazi/issues/51)
+- [ ] feat: slimmer navigation in yazi
