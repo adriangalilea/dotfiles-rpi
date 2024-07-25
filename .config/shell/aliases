@@ -24,6 +24,7 @@ alias \?="mods"
 alias grep="grep --color=auto"         # colorize output (good for log files)
 alias cat="bat --paging never --decorations never --plain"
 alias wget='wget -o /dev/null'
+alias reboot="sudo reboot"
 
 # --- python venv ---
 
