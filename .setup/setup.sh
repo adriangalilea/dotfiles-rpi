@@ -8,7 +8,10 @@ source ./installers/pipx.sh
 
 main() {
     gum log --structured --level info "Starting setup..."
+    
     increase_swap_size 1024
+
+    setup_custom_motd
 
     # APT packages
     local apt_packages=(

@@ -44,6 +44,8 @@
 !.config/git/**
 !.config/p10k/
 !.config/p10k/**
+!.config/motd/
+!.config/motd/**
 
 # Explicitly allow specific files in .config subdirectories
 !.config/vale/

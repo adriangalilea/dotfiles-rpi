@@ -34,6 +34,86 @@ increase_swap_size() {
     gum log --structured --level info "Swap size increased to ${new_size}MB."
 }
 
+setup_custom_motd() {
+    local custom_motd_path="${1:-$HOME/.config/motd/custom_motd.sh}"
+    local wrapper_path="/etc/update-motd.d/99-custom-motd"
+    local sshd_config="/etc/ssh/sshd_config"
+    local backup_dir="$HOME/.local/share/motd_backups"
+    local date_stamp=$(date +"%Y%m%d_%H%M%S")
+    local changes_made=0
+
+    # Create backup directory if it doesn't exist
+    mkdir -p "$backup_dir"
+
+    # Check if custom MOTD script exists
+    if [[ ! -f "$custom_motd_path" ]]; then
+        gum log --structured --level error "Custom MOTD script not found at $custom_motd_path"
+        return 1
+    fi
+
+    # Check and update PrintLastLog in sshd_config
+    if ! grep -q "^PrintLastLog no" "$sshd_config"; then
+        gum log --structured --level info "Updating PrintLastLog setting in sshd_config..."
+        sudo cp "$sshd_config" "$backup_dir/sshd_config.bak_${date_stamp}"
+        sudo sed -i 's/^PrintLastLog.*/PrintLastLog no/' "$sshd_config"
+        if ! grep -q "^PrintLastLog no" "$sshd_config"; then
+            echo "PrintLastLog no" | sudo tee -a "$sshd_config" > /dev/null
+        fi
+        changes_made=1
+    else
+        gum log --structured --level info "PrintLastLog already set to no in sshd_config"
+    fi
+
+    # Check for 10-uname file
+    if [[ -f "/etc/update-motd.d/10-uname" ]]; then
+        gum log --structured --level info "Backing up and removing 10-uname..."
+        sudo cp "/etc/update-motd.d/10-uname" "$backup_dir/10-uname.bak_${date_stamp}"
+        sudo rm "/etc/update-motd.d/10-uname"
+        changes_made=1
+    else
+        gum log --structured --level info "10-uname not found, skipping..."
+    fi
+
+    # Create or update the custom MOTD wrapper
+    local current_wrapper_content=""
+    if [[ -f "$wrapper_path" ]]; then
+        current_wrapper_content=$(cat "$wrapper_path")
+    fi
+    local new_wrapper_content="#!/bin/bash
+export TERM=xterm-256color
+$custom_motd_path"
+
+    if [[ "$current_wrapper_content" != "$new_wrapper_content" ]]; then
+        gum log --structured --level info "Updating custom MOTD wrapper..."
+        echo "$new_wrapper_content" | sudo tee "$wrapper_path" > /dev/null
+        sudo chmod 755 "$wrapper_path"
+        changes_made=1
+    else
+        gum log --structured --level info "Custom MOTD wrapper is up to date"
+    fi
+
+    # Verify PAM configuration
+    local pam_files=("/etc/pam.d/sshd" "/etc/pam.d/login")
+    for pam_file in $pam_files; do
+        if ! sudo grep -q "pam_motd.so.*motd=/run/motd.dynamic" "$pam_file"; then
+            gum log --structured --level warn "Expected PAM configuration not found in $pam_file"
+            gum log --structured --level warn "You may need to manually add: session optional pam_motd.so motd=/run/motd.dynamic"
+        else
+            gum log --structured --level info "PAM configuration in $pam_file is correct."
+        fi
+    done
+
+    # Restart SSH service only if changes were made
+    if (( changes_made == 1 )); then
+        gum log --structured --level info "Changes made, restarting SSH service..."
+        sudo systemctl restart ssh
+        gum log --structured --level info "Custom MOTD setup complete. Backups stored in $backup_dir"
+        gum log --structured --level info "Please test by logging in again."
+    else
+        gum log --structured --level info "No changes were necessary. Custom MOTD setup is already correct."
+    fi
+}
+
 get_system_info() {
     local arch=$(uname -m)
     local os=$(uname -s)
