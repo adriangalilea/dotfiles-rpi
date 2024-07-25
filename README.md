@@ -10,11 +10,11 @@ Assumes aarch64.
 
 # Batteries included
 
-## [Automated install of packages](./.setup/README.md)
+## [Automated install of packages](./.setup)
 
-## [MOTD](./.config/motd/README.md)
+## [MOTD](./.config/motd)
 
-## [HELIX](./.config/helix/README.md)
+## [HELIX](./.config/helix)
 
 List of included apt packages: [pending]
 List of included github binaries that install automatically: [pending]
