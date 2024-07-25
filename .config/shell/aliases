@@ -2,7 +2,7 @@
 
 # --- overrides ---
 
-alias ex="~/.shell/utils/ex" # I want my extraction command rather than the ex command I never use
+alias ex="~/.config/shell/utils/ex" # I want my extraction command rather than the ex command I never use
 alias extract="ex"
 
 # Disable 'r' command (if it exists)

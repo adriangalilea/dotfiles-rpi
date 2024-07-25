@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # eza binary on git repo
-export PATH="$HOME/.shell/bin:$PATH"
+export PATH="$HOME/.config/shell/bin:$PATH"
 
 # zoxide directory
 export PATH="$HOME/.local/bin:$PATH"

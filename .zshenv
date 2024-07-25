@@ -80,5 +80,5 @@ if [[ ! $- == *i* ]] || [[ "${0:t}" = "zsh" ]]; then
         fi
     fi
     
-    source "$HOME/.shell/fzf_functions.zsh"
+    source "$HOME/.config/shell/fzf_functions.zsh"
 fi

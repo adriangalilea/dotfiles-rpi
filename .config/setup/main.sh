@@ -2,7 +2,7 @@
 
 echo
 
-# Go to setup.sh if you want to edit anything.
+# Go to setup.zsh if you want to edit anything.
 # This file just serves as an entry point to install gum if it's not installed since it's used throughout the program
 
 install_gum() {
@@ -27,10 +27,10 @@ install_gum() {
 }
 
 run_system_setup() {
-    if [ -f "./setup.sh" ]; then
-        ./setup.sh
+    if [ -f "./setup.zsh" ]; then
+        ./setup.zsh
     else
-        gum log --structured --level error "setup.sh not found in the current directory."
+        gum log --structured --level error "setup.zsh not found in the current directory."
         exit 1
     fi
 }

@@ -9,7 +9,7 @@
 # A file comparison tool that wraps `delta` and adds support for GitHub repositories.
 # Both raw and normal URL's to files are accepted.
 # GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}"
-# ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases (it infers main/master if not specified)
+# ex: git:adriangalilea/dotfiles-rpi:.config/shell/.aliases (it infers main/master if not specified)
 #
 # Usage:
 #   dif <file1> <file2>
@@ -26,31 +26,31 @@ show_help() {
     echo "Supported formats:"
     echo "  - Local files"
     echo "  - GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}"
-    echo "    ex: git:adriangalilea/dotfiles-rpi:.shell/.aliases"
-    echo "  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases"
-    echo "  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.shell/.aliases"
+    echo "    ex: git:adriangalilea/dotfiles-rpi:.config/shell/.aliases"
+    echo "  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.aliases"
+    echo "  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.config/shell/.aliases"
     echo
     echo "Examples:"
     echo "  1. Compare local file to GitHub shorthand:"
-    echo "     dif ~/.shell/.aliases git:adriangalilea/dotfiles-rpi:.shell/.aliases"
+    echo "     dif ~/.config/shell/.aliases git:adriangalilea/dotfiles-rpi:.config/shell/.aliases"
     echo
     echo "  2. Compare two GitHub repositories using shorthand:"
-    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.aliases git:sobolevn/dotfiles:shell/.aliases"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.config/shell/.aliases git:sobolevn/dotfiles:shell/.aliases"
     echo
     echo "  3. Compare GitHub shorthand to GitHub regular URL:"
-    echo "     dif git:adriangalilea/dotfiles-rpi:.shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions"
+    echo "     dif git:adriangalilea/dotfiles-rpi:.config/shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions"
     echo
     echo "  4. Compare local file to GitHub raw URL:"
-    echo "     dif ~/.shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions"
+    echo "     dif ~/.config/shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions"
     echo
     echo "  5. Compare GitHub regular URL to GitHub raw URL:"
-    echo "     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases"
+    echo "     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases"
     echo
     echo "  6. Compare two local files:"
-    echo "     dif ~/.shell/.aliases ~/.shell/.completions"
+    echo "     dif ~/.config/shell/.aliases ~/.config/shell/.completions"
     echo
     echo "  7. Compare GitHub shorthand with specific branch to GitHub regular URL:"
-    echo "     dif git:adriangalilea/dotfiles-rpi:main:.shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases"
+    echo "     dif git:adriangalilea/dotfiles-rpi:main:.config/shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases"
 }
 
 parse_github_input() {

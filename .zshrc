@@ -56,8 +56,8 @@ setopt HIST_IGNORE_SPACE    # Don't save commands starting with space
 #└─────────────────────────────────────────────────┘
 # Note: This section needs to be set before all other modifications
 path=(
-  "$HOME/.shell/utils"
-  "$HOME/.shell/utils/dl"
+  "$HOME/.config/shell/utils"
+  "$HOME/.config/shell/utils/dl"
   "/usr/local/sbin"
   "/usr/local/bin"
   "/usr/sbin"
@@ -77,11 +77,11 @@ source "$ZPLUG_RCFILE"
 #┌─────────────────────────────────────────────────┐
 #│               Shell Components                  │
 #└─────────────────────────────────────────────────┘
-source "$HOME/.shell/exports"     # Load custom exports
-source "$HOME/.shell/aliases"     # Load custom aliases
-source "$HOME/.shell/functions"   # Load custom functions
-source "$HOME/.shell/external"    # Load external configurations
-source "$HOME/.shell/completions" # Load custom completions
+source "$HOME/.config/shell/exports"     # Load custom exports
+source "$HOME/.config/shell/aliases"     # Load custom aliases
+source "$HOME/.config/shell/functions"   # Load custom functions
+source "$HOME/.config/shell/external"    # Load external configurations
+source "$HOME/.config/shell/completions" # Load custom completions
 
 #┌─────────────────────────────────────────────────┐
 #│            Environment Variables                │

@@ -23,5 +23,5 @@ I also think I can make it even better, but if anyone is looking for a readymade
 - [ ] more architectures
 - [ ] interactive installs
 - [ ] .toml file to select installing packages on each category instead of main.py
-- [ ] feat: alias that executes `~/.setup/main.sh` for convenience on first git pull
+- [ ] feat: alias that executes `~/.setup/main.zsh` for convenience on first git pull
 - [ ] script the install on first rpi boot, hijacking the script.sh perhaps.

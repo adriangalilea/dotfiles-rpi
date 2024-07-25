@@ -33,11 +33,11 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
 fi
 
 # Source common utilities
-source "${HOME}/.shell/utils/lib/common.sh"
+source "${HOME}/.config/shell/utils/lib/common.sh"
 
 # Source specific downloaders
-source "${HOME}/.shell/utils/dl/github.sh"
-source "${HOME}/.shell/utils/dl/youtube.sh"
+source "${HOME}/.config/shell/utils/dl/github.sh"
+source "${HOME}/.config/shell/utils/dl/youtube.sh"
 
 # Function to display help
 show_help() {

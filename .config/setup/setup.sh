@@ -2,7 +2,7 @@
 
 source ./lib/sys.sh
 source ./lib/ui.sh
-source ./installers/github/main.sh
+source ./installers/github/main.zsh
 source ./installers/apt.sh
 source ./installers/pipx.sh
 

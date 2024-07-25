@@ -11,14 +11,14 @@
 !.tmux.conf
 
 # Explicitly allow specific directories and their contents
-!.setup/
-!.setup/**
-!.shell/
-!.shell/**
-!.shell/lib/
-!.shell/lib/**
-!.shell/db/
-!.shell/db/**
+!.config/setup/
+!.config/setup/**
+!.config/shell/
+!.config/shell/**
+!.config/shell/lib/
+!.config/shell/lib/**
+!.config/shell/db/
+!.config/shell/db/**
 !.config/
 !.config/helix/
 !.config/helix/**
