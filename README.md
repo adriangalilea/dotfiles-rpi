@@ -12,6 +12,8 @@ Assumes aarch64.
 
 ## [Automated install of packages](./.setup/README.md)
 
+## [MOTD](./.config/motd/README.md)
+
 ## [HELIX](./.config/helix/README.md)
 
 List of included apt packages: [pending]
