@@ -1,5 +1,8 @@
-# === user config ===
+# .zshrc
 
+#┌─────────────────────────────────────────────────┐
+#│               Completion System                 │
+#└─────────────────────────────────────────────────┘
 # Efficiently load completion system
 autoload -Uz compinit
 if [[ -n ${ZSH_COMPDUMP}(#qN.mh+24) ]]; then
@@ -8,102 +11,112 @@ else
   compinit -C -d "$ZSH_COMPDUMP"
 fi
 
-[[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh" ]] || source "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh"
+#┌─────────────────────────────────────────────────┐
+#│                     Core                        │
+#└─────────────────────────────────────────────────┘
+# --- Editor ---
+export EDITOR="hx"  # Set default editor to helix
 
-# --- editor ---
-
-export EDITOR="hx"                     # set default editor to helix
-
-# --- locale and time ---
-export LANG="en_US.UTF-8"              # base locale: US english for number formatting
-export LC_ALL="en_US.UTF-8"            # set all locales to en_US.UTF-8 for consistency
-export LANGUAGE="en_US"                # english
-export LC_MESSAGES="en_US.UTF-8"       # ensure English for system messages
-export TZ="Europe/Madrid"              # set time zone to Madrid, Spain
+# --- Locale and Time ---
+export LANG="en_US.UTF-8"        # Base locale: US English for number formatting
+export LC_ALL="en_US.UTF-8"      # Set all locales to en_US.UTF-8 for consistency
+export LANGUAGE="en_US"          # English
+export LC_MESSAGES="en_US.UTF-8" # Ensure English for system messages
+export TZ="Europe/Madrid"        # Set time zone to Madrid, Spain
+export LC_NUMERIC="en_US.UTF-8"  # Ensure US-style number formatting
 
 # Custom date format
 export DATE_FORMAT="%Y/%m/%d"
-
-# Additional settings that won't cause locale errors
-export LC_NUMERIC="en_US.UTF-8"        # ensure US-style number formatting
-export TIME_STYLE="+%Y/%m/%d"          # custom time style for ls and other GNU utilities
+export TIME_STYLE="+%Y/%m/%d"    # Custom time style for ls and other GNU utilities
 
 # Note: To use the metric system, euro currency, and Spanish date formats,
 # you may need to configure these on an application-by-application basis.
 
-# --- directory stack ---
+# --- Directory stack ---
+setopt AUTO_PUSHD           # Automatically push dirs to stack
+setopt PUSHD_SILENT         # Don't print dir stack after pushd/popd
+setopt PUSHD_IGNORE_DUPS    # Don't push duplicate dirs
+setopt PUSHD_MINUS          # Swap meaning of + and - for pushd
 
-setopt AUTO_PUSHD                      # automatically push dirs to stack
-setopt PUSHD_SILENT                    # don't print dir stack after pushd/popd
-setopt PUSHD_IGNORE_DUPS               # don't push duplicate dirs
-setopt PUSHD_MINUS                     # swap meaning of + and - for pushd
+# --- History ---
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"  # History file location
+export HISTORY_IGNORE="(ls|cd|salsa|la|ll|h|yy|l|pwd|exit|sudo reboot|history|cd -|cd ..)"  # Commands to ignore in history
 
-# --- history settings ---
+HISTSIZE=10000              # Number of lines in history file
+SAVEHIST=10000              # Number of lines in memory history
+setopt SHARE_HISTORY        # Share history between sessions
+setopt INC_APPEND_HISTORY   # Append to history file immediately
+setopt HIST_IGNORE_ALL_DUPS # Don't save duplicate commands
+setopt EXTENDED_HISTORY     # Save timestamp and duration of commands
+setopt HIST_EXPIRE_DUPS_FIRST # Remove duplicates first when trimming history
+setopt HIST_IGNORE_SPACE    # Don't save commands starting with space
 
-HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"  # history file location
-export HISTORY_IGNORE="(ls|cd|salsa|la|ll|h|yy|l|pwd|exit|sudo reboot|history|cd -|cd ..)"  # commands to ignore in history
+#┌─────────────────────────────────────────────────┐
+#│                  PATH Setup                     │
+#└─────────────────────────────────────────────────┘
+# Note: This section needs to be set before all other modifications
+path=(
+  "$HOME/.shell/utils"
+  "$HOME/.shell/utils/dl"
+  "/usr/local/sbin"
+  "/usr/local/bin"
+  "/usr/sbin"
+  "/usr/bin"
+  "/sbin"
+  "/bin"
+  "$HOME/.local/bin"
+  $path
+)
+export PATH
 
-HISTSIZE=10000                         # number of lines in history file
-SAVEHIST=10000                         # number of lines in memory history
-setopt SHARE_HISTORY                   # share history between sessions
-setopt INC_APPEND_HISTORY              # append to history file immediately
-setopt HIST_IGNORE_ALL_DUPS            # don't save duplicate commands
-setopt EXTENDED_HISTORY                # save timestamp and duration of commands
-setopt HIST_EXPIRE_DUPS_FIRST          # remove duplicates first when trimming history
-setopt HIST_IGNORE_SPACE               # don't save commands starting with space
-
-
-# --- path ---
-
-# this section needs to be set before all other modifications
-if [ -d "$HOME/.shell/utils" ] ; then PATH="$HOME/.shell/utils:$PATH" ; fi  # bespoke CLI utils
-if [ -d "$HOME/.shell/utils/dl" ] ; then PATH="$HOME/.shell/utils/dl:$PATH" ; fi  # bespoke CLI utils
-if [ -d "/usr/local/sbin" ] ; then PATH="/usr/local/sbin:$PATH" ; fi
-if [ -d "/usr/local/bin" ] ; then PATH="/usr/local/bin:$PATH" ; fi
-if [ -d "/usr/sbin" ] ; then PATH="/usr/sbin:$PATH" ; fi
-if [ -d "/usr/bin" ] ; then PATH="/usr/bin:$PATH" ; fi
-if [ -d "/sbin" ] ; then PATH="/sbin:$PATH" ; fi
-if [ -d "/bin" ] ; then PATH="/bin:$PATH" ; fi
-if [ -d "$HOME/.local/bin" ] ; then PATH="$HOME/.local/bin:$PATH" ; fi
-
-# === zplug plugin management ===
-
+#┌─────────────────────────────────────────────────┐
+#│             zplug Plugin Management             │
+#└─────────────────────────────────────────────────┘
 source "$ZPLUG_RCFILE"
 
-# === shell parts ===
+#┌─────────────────────────────────────────────────┐
+#│               Shell Components                  │
+#└─────────────────────────────────────────────────┘
+source "$HOME/.shell/exports"     # Load custom exports
+source "$HOME/.shell/aliases"     # Load custom aliases
+source "$HOME/.shell/functions"   # Load custom functions
+source "$HOME/.shell/external"    # Load external configurations
+source "$HOME/.shell/completions" # Load custom completions
 
-source "$HOME/.shell/exports"         # load custom exports
-source "$HOME/.shell/aliases"         # load custom aliases
-source "$HOME/.shell/functions"       # load custom functions
-source "$HOME/.shell/external"        # load external configurations
-source "$HOME/.shell/completions"     # load custom completions
+#┌─────────────────────────────────────────────────┐
+#│            Environment Variables                │
+#└─────────────────────────────────────────────────┘
+[[ -f "$HOME/.env" ]] && source "$HOME/.env"  # Load .env file if it exists
 
-# --- environment variables ---
+#┌─────────────────────────────────────────────────┐
+#│                   Zsh Hooks                     │
+#└─────────────────────────────────────────────────┘
+autoload -U add-zsh-hook              # Load the add-zsh-hook function
+add-zsh-hook chpwd files              # Add hook to call files after every directory change
 
-if [ -f "$HOME/.env" ]; then           # load .env file if it exists
-  source "$HOME/.env"
-fi
-
-# --- zsh hooks ---
-
-autoload -U add-zsh-hook               # load the add-zsh-hook function
-add-zsh-hook chpwd files               # add hook to call files after every directory change
-
-# --- color settings ---
-# TODO this is a patch for a zplug plugin that is not updated, this should be removed eventually.
-
+#┌─────────────────────────────────────────────────┐
+#│               Color Settings                    │
+#└─────────────────────────────────────────────────┘
+# TODO: This is a patch for a zplug plugin that is not updated, this should be removed eventually.
 unset GREP_COLOR
 export GREP_COLORS="mt=1;35"
 
-# --- initial actions ---
+#┌─────────────────────────────────────────────────┐
+#│               Initial Actions                   │
+#└─────────────────────────────────────────────────┘
+files  # List files when .zshrc loads
 
-files                                  # list files when .zshrc loads
-
+#┌─────────────────────────────────────────────────┐
+#│                 Powerlevel10k                   │
+#└─────────────────────────────────────────────────┘
+# --- Instant prompt ---
+# NOTE: It's so down here because it was complaining constantly.
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-[[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh" ]] || source "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh"
 
+# --- Configuration ---
+[[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh" ]] || source "${XDG_CONFIG_HOME:-$HOME/.config}/p10k/p10k.zsh"
