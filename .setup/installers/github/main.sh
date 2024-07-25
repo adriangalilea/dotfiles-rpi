@@ -12,29 +12,29 @@ process_package() {
 
     echo "🌐 $repo 📦 $binary"
     if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $repo"); then
-        echo "❌ Failed to fetch the latest release for $repo"
+        log "❌ Failed to fetch the latest release for $repo" "error"
         return 1
     fi
 
     if ! { read -r version; read -r assets; } < <(extract_release_info "$latest_release_json"); then
-        echo "❌ Failed to extract release information"
+        log "❌ Failed to extract release information" "error"
         return 1
     fi
     update_static_line "🌐 $repo 📦 $binary 🏷️ $version"
 
     if ! asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'"); then
-        echo "❌ Failed to find best asset"
+        log "❌ Failed to find best asset" "error"
         return 1
     fi
 
     local asset_name=$(echo "$asset_url" | awk -F/ '{print $NF}')
     if ! run_with_spinner "⚙️ Installing..." "download_and_extract_asset '$asset_url' '$binary'"; then
-        echo "❌ Failed to download or extract asset"
+        log "❌ Failed to download or extract asset" "error"
         return 1
     fi
 
     if ! command -v "$binary" &> /dev/null; then
-        echo "❌ Installation failed: $binary not found in PATH"
+        log "❌ Installation failed: $binary not found in PATH" "error"
         return 1
     fi
     update_static_line "🌐 $repo 📦 $binary 🏷️ $version installed ✅"
@@ -44,9 +44,11 @@ process_package() {
 install_from_github() {
     local github_packages=("$@")
 
+    log "Installing binaries from github..." debug
+
     for package in "${github_packages[@]}"; do
         if [[ ! "$package" =~ ^[^:]+:[^:]+$ ]]; then
-            echo "❌ Invalid package format: $package. Expected format: owner/repo:binary"
+            log "❌ Invalid package format: $package. Expected format: owner/repo:binary" "error"
             continue
         fi
     
@@ -59,4 +61,5 @@ install_from_github() {
             update_static_line "❌ Skipping $package: Failed to process package"
         fi
     done
+    echo
 }

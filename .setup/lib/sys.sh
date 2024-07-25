@@ -4,34 +4,40 @@ increase_swap_size() {
     local new_size=$1
     local current_size
 
+    log "Increasing swap size..." debug
+
     if [[ -z "$new_size" ]]; then
-        gum log --structured --level error "Please provide the new swap size in MB."
+        log "Please provide the new swap size in MB." error
         return 1
     fi
 
     current_size=$(grep CONF_SWAPSIZE /etc/dphys-swapfile | cut -d= -f2)
 
     if (( current_size >= new_size )); then
-        gum log --structured --level warn "Current swap size ($current_size MB) is already greater than or equal to requested size ($new_size MB). Skipping."
+        log "Current swap size ($current_size MB) is already greater than or equal to requested size ($new_size MB). Skipping." debug
+        echo
         return 0
     fi
     
-    gum log --structured --level info "Increasing swap from $current_size MB to $new_size MB"
+    log "Increasing swap from $current_size MB to $new_size MB" debug
     
     local result
     result=$(sudo sed -i "s/CONF_SWAPSIZE=.*/CONF_SWAPSIZE=${new_size}/" /etc/dphys-swapfile)
     if (( $? != 0 )); then
-        gum log --structured --level error "Failed to update swap size in /etc/dphys-swapfile"
+        log "Failed to update swap size in /etc/dphys-swapfile" error
+        echo
         return 1
     fi
     
     result=$(sudo systemctl restart dphys-swapfile.service)
     if (( $? != 0 )); then
-        gum log --structured --level error "Failed to restart dphys-swapfile service"
+        log "Failed to restart dphys-swapfile service" error
+        echo
         return 1
     fi
     
-    gum log --structured --level info "Swap size increased to ${new_size}MB."
+    log "Swap size increased to ${new_size}MB." info
+    echo
 }
 
 setup_custom_motd() {
@@ -47,13 +53,14 @@ setup_custom_motd() {
 
     # Check if custom MOTD script exists
     if [[ ! -f "$custom_motd_path" ]]; then
-        gum log --structured --level error "Custom MOTD script not found at $custom_motd_path"
+        log "Custom MOTD script not found at $custom_motd_path" error
+        echo
         return 1
     fi
 
     # Check and update PrintLastLog in sshd_config
     if ! grep -q "^PrintLastLog no" "$sshd_config"; then
-        gum log --structured --level info "Updating PrintLastLog setting in sshd_config..."
+        log "Updating PrintLastLog setting in sshd_config..." debug
         sudo cp "$sshd_config" "$backup_dir/sshd_config.bak_${date_stamp}"
         sudo sed -i 's/^PrintLastLog.*/PrintLastLog no/' "$sshd_config"
         if ! grep -q "^PrintLastLog no" "$sshd_config"; then
@@ -61,17 +68,17 @@ setup_custom_motd() {
         fi
         changes_made=1
     else
-        gum log --structured --level info "PrintLastLog already set to no in sshd_config"
+        log "PrintLastLog already set to no in sshd_config" debug
     fi
 
     # Check for 10-uname file
     if [[ -f "/etc/update-motd.d/10-uname" ]]; then
-        gum log --structured --level info "Backing up and removing 10-uname..."
+        log "Backing up and removing 10-uname..." debug
         sudo cp "/etc/update-motd.d/10-uname" "$backup_dir/10-uname.bak_${date_stamp}"
         sudo rm "/etc/update-motd.d/10-uname"
         changes_made=1
     else
-        gum log --structured --level info "10-uname not found, skipping..."
+        log "10-uname not found, skipping..." debug
     fi
 
     # Create or update the custom MOTD wrapper
@@ -84,42 +91,43 @@ export TERM=xterm-256color
 $custom_motd_path"
 
     if [[ "$current_wrapper_content" != "$new_wrapper_content" ]]; then
-        gum log --structured --level info "Updating custom MOTD wrapper..."
+        log "Updating custom MOTD wrapper..." debug
         echo "$new_wrapper_content" | sudo tee "$wrapper_path" > /dev/null
         sudo chmod 755 "$wrapper_path"
         changes_made=1
     else
-        gum log --structured --level info "Custom MOTD wrapper is up to date"
+        log "Custom MOTD wrapper is up to date" debug
     fi
 
     # Verify PAM configuration
     local pam_files=("/etc/pam.d/sshd" "/etc/pam.d/login")
     for pam_file in $pam_files; do
         if ! sudo grep -q "pam_motd.so.*motd=/run/motd.dynamic" "$pam_file"; then
-            gum log --structured --level warn "Expected PAM configuration not found in $pam_file"
-            gum log --structured --level warn "You may need to manually add: session optional pam_motd.so motd=/run/motd.dynamic"
+            log "Expected PAM configuration not found in $pam_file" warn
+            log "You may need to manually add: session optional pam_motd.so motd=/run/motd.dynamic" warn
         else
-            gum log --structured --level info "PAM configuration in $pam_file is correct."
+            log "PAM configuration in $pam_file is correct." debug
         fi
     done
 
     # Restart SSH service only if changes were made
     if (( changes_made == 1 )); then
-        gum log --structured --level info "Changes made, restarting SSH service..."
+        log "Changes made, restarting SSH service..." info
         sudo systemctl restart ssh
-        gum log --structured --level info "Custom MOTD setup complete. Backups stored in $backup_dir"
-        gum log --structured --level info "Please test by logging in again."
+        log "Custom MOTD setup complete. Backups stored in $backup_dir" info
+        log "Please test by logging in again." info
     else
-        gum log --structured --level info "No changes were necessary. Custom MOTD setup is already correct."
+        log "No changes were necessary. Custom MOTD setup is already correct." debug
     fi
+    echo
 }
 
 get_system_info() {
     local arch=$(uname -m)
     local os=$(uname -s)
     
-    gum log --structured --level debug "Raw arch: $arch"
-    gum log --structured --level debug "Raw OS: $os"
+    log "Raw arch: $arch" debug
+    log "Raw OS: $os" debug
 
     case $arch in
         x86_64)
@@ -148,11 +156,12 @@ get_system_info() {
             ;;
     esac
 
-    gum log --structured --level debug "Processed arch: $arch"
-    gum log --structured --level debug "Processed OS: $os"
+    log "Processed arch: $arch" debug
+    log "Processed OS: $os" debug
 
     echo "$arch"
     echo "$os"
+    echo
 }
 
 setup_ssh_clipboard_forwarding() {
@@ -172,7 +181,8 @@ setup_ssh_clipboard_forwarding() {
                     "$SSHD_CONFIG")
     
     if (( $? != 0 )); then
-        gum log --structured --level error "Failed to update SSH configuration"
+        log "Failed to update SSH configuration" error
+        echo
         return 1
     fi
     
@@ -184,9 +194,12 @@ setup_ssh_clipboard_forwarding() {
     fi
     
     if (( $? != 0 )); then
-        gum log --structured --level error "Failed to restart SSH service"
+        log "Failed to restart SSH service" error
+        echo
         return 1
     fi
     
-    gum log --structured --level info "Clipboard forwarding set up and SSH service restarted."
+    log "Clipboard forwarding set up and SSH service restarted." info
+    echo
 }
+

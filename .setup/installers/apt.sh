@@ -1,28 +1,31 @@
 #!/bin/zsh
 
 update_package_lists() {
-    gum log --structured --level info "Updating package lists..."
+    log "Updating APT packages..." debug 
     if sudo apt-get update -qq; then
-        gum log --structured --level info "Package lists updated successfully."
+        log "APT updated." debug 
+        echo
         return 0
     else
-        gum log --structured --level error "Failed to update package lists."
+        log "Failed to update package lists." error 
+        echo
         return 1
     fi
 }
 
 install_apt_packages() {
     local apt_packages=("$@")
-    gum log --structured --level info "Installing required packages..."
     
     # Update package lists
     update_package_lists || return 1
     # Install packages quietly, suppressing most output
-    gum log --structured --level info "Installing APT packages..."
+    log "Installing APT packages..." debug 
     if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${apt_packages[@]}" > /dev/null 2>&1; then
-        gum log --structured --level info "APT packages installed successfully.✅"
+        log "APT packages installed. ✅" info 
+        echo
     else
-        gum log --structured --level error "Error installing APT packages."
+        log "Error installing APT packages." error 
+        echo
         return 1
     fi
 }

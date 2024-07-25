@@ -2,14 +2,15 @@
 
 install_pipx_packages() {
     local pipx_packages=("$@")
-    gum log --structured --level info "Installing pipx packages..."
+    log "Installing pipx packages..." debug 
     local pipx_output=""
     
     # Ensure pipx is installed
     if ! command -v pipx &> /dev/null; then
-        gum log --structured --level info "pipx not found, installing pipx..."
+        log "pipx not found, installing pipx..." debug 
         python3 -m pip install --user pipx
         python3 -m pipx ensurepath
+        log "pipx installed. ✅" info
     fi
     
     # Install packages with pipx
@@ -19,11 +20,12 @@ install_pipx_packages() {
     done
 
     if [ $? -eq 0 ]; then
-        gum log --structured --level info "pipx packages installed successfully. ✅"
+        log "pipx packages installed successfully. ✅" info 
     else
-        gum log --structured --level error "Error installing pipx packages. Details:"
+        log "Error installing pipx packages. Details:" error 
         echo "$pipx_output"
-        gum log --structured --level warn "pipx package installation failed. Continuing with setup..."
+        log "pipx package installation failed. Continuing with setup..." warn 
     fi
+    echo
 }
 

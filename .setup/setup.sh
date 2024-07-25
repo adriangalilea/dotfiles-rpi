@@ -7,7 +7,8 @@ source ./installers/apt.sh
 source ./installers/pipx.sh
 
 main() {
-    gum log --structured --level info "Starting setup..."
+    log "Starting setup..." debug
+    echo
     
     increase_swap_size 1024
 
@@ -17,15 +18,15 @@ main() {
     local apt_packages=(
         zsh git wget curl jq tar xz-utils htop neofetch bat
         build-essential dh-make devscripts golang python3-pip fd-find tree tmux shellcheck
-        glow
+        glow freeze
     )
     install_apt_packages "${apt_packages[@]}" || {
-        gum log --structured --level error "Failed to install APT packages. Exiting."
+        log "Failed to install APT packages. Exiting." error 
         exit 1
     }
 
     install_pipx_packages dtj tldr yt-dlp periodic-table-cli || {
-        gum log --structured --level error "Failed to install pipx packages. Exiting."
+        log "Failed to install pipx packages. Exiting." error 
         exit 1
     }
 
@@ -53,23 +54,25 @@ main() {
         "Feel-ix-343/markdown-oxide:markdown-oxide"
     )
     install_from_github "${github_packages[@]}" || {
-        gum log --structured --level error "Failed to install GitHub packages. Exiting."
+        log "Failed to install GitHub packages. Exiting." error 
         exit 1
     }
 
     # install clipboard `cb`
     curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh
+    echo
 
     # install direnv
-    curl -sfL https://direnv.net/install.sh | bash
+    curl -sfL https://direnv.net/install.sh | bash > /dev/null
+    echo
 
     setup_ssh_clipboard_forwarding || {
-        gum log --structured --level error "Failed to set up SSH clipboard forwarding. Exiting."
+        log "Failed to set up SSH clipboard forwarding. Exiting." error 
         exit 1
     }
 
-    gum log --structured --level info "Setup complete! Please reboot to apply all changes."
-    gum log --structured --level info --time rfc822 "Setup finished at $(date)"
+    log "Setup complete! Please reboot to apply all changes." info 
+    log --time rfc822 "Setup finished at $(date)" info 
 }
 
 main
