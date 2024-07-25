@@ -107,6 +107,8 @@ x = ":buffer-close"
 "tab" = "rotate_view"
 t = ':insert-output date "+%H:%M:%S - %d %B %Y"'
 
+R = ":sh zellij run -f -x 10% -y 10% --width 80% --height 80% --close-on-exit -- serpl"
+
 [keys.normal.m]
 n = "expand_selection"
 
