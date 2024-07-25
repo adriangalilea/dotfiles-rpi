@@ -2,33 +2,31 @@
 
 [This git repo is your home, literally.](https://drewdevault.com/2019/12/30/dotfiles.html)
 
-This allows me to track down my dotfiles without requiring any dependency besides git.
+Easily track down dotfiles without requiring any dependency besides git.
 
-I merged all the tools I uses in my mac and linux(RPi's) into this unified dotfiles.
+Merged all the tools that I curated for Mac and Linux into these dotfiles.
 
 Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://github.com/sobolevn/dotfiles) with many modifications.
 
-
-> [!WARN]  
+> [!WARNING]  
 > WIP
-> `.config` dotfiles are mostly complete, but I'm yet to test a full install on a new device.
+>
+> Yet to be tested in a fresh install from scratch.
 > If you decide to use any of the scripts here, you do it on your own, I'm not responsible, feel free to check and judge on your own.
-
-
+> `.config` dotfiles are stable. 
 # Batteries included
 
-## [Automated install of packages](./.config/setup)
+1. [`~/.config/setup`](./.config/setup): automated install of software & system config.
 
-## [MOTD](./.config/motd)
+2. [`~/.config/shell/utils`](./.config/shell/utils)
 
-## [HELIX](./.config/helix)
+3. Custom [MOTD](./.config/motd) (Message Of The Day --> the message ssh greets you with)
 
-List of included apt packages: [pending]
-List of included github binaries that install automatically: [pending]
+4. [Helix editor config](./.config/helix) + [Zellij config(WIP)](./.config/zellij)
 
-## [aliases & shortcuts](https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.aliases)
+5. [`~/.config/shell/functions`](./.config/shell/functions)
 
-Notably:
+6. [`~/.config/shell/aliases`](./.config/shell/aliases)
 
 <kbd>ctrl</kbd>+<kbd>s</kbd> --> `source ~/.zshrc`
 
@@ -45,79 +43,6 @@ Notably:
 `alt` + `↓` - fuzzy find directory below current one
 `alt` + `←` - go back in directory history
 `alt` + `→` - go forward in directory history
-
-## utilities: [shell functions](https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.functions)
-
-### [`sys`](https://github.com/adriangalilea/dotfiles-rpi/blob/92afee4de28aa5e26dffc438d71364bd00f50998/.config/shell/.functions#L62)
-<img width="260" alt="image" src="https://github.com/user-attachments/assets/59c06811-b290-4351-a6e4-c3e91c4ec1b4">
-
-### [`dif`](https://github.com/adriangalilea/dotfiles-rpi/blob/92afee4de28aa5e26dffc438d71364bd00f50998/.config/shell/.functions#L154)
-
-<img width="765" alt="image" src="https://github.com/user-attachments/assets/af434b5f-908d-4945-bec0-8459d3b1a54f">
-
-
-```
-» dif -h                                                                                                            
-Usage: dif <file1> <file2>
-Compare two files or URLs, including GitHub repositories.
-
-Supported formats:
-  - Local files
-  - GitHub shorthand: git:{repo}:{[optional, default=main/master]branch}:{filepath}
-    ex: git:adriangalilea/dotfiles-rpi:.config/shell/.aliases
-  - GitHub regular URLs: https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.aliases
-  - GitHub raw URLs: https://raw.githubusercontent.com/adriangalilea/dotfiles-rpi/master/.config/shell/.aliases
-
-Examples:
-  1. Compare local file to GitHub shorthand:
-     dif ~/.config/shell/.aliases git:adriangalilea/dotfiles-rpi:.config/shell/.aliases
-
-  2. Compare two GitHub repositories using shorthand:
-     dif git:adriangalilea/dotfiles-rpi:.config/shell/.aliases git:sobolevn/dotfiles:shell/.aliases
-
-  3. Compare GitHub shorthand to GitHub regular URL:
-     dif git:adriangalilea/dotfiles-rpi:.config/shell/.completions https://github.com/sobolevn/dotfiles/blob/master/shell/.completions
-
-  4. Compare local file to GitHub raw URL:
-     dif ~/.config/shell/.completions https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.completions
-
-  5. Compare GitHub regular URL to GitHub raw URL:
-     dif https://github.com/adriangalilea/dotfiles-rpi/blob/master/.config/shell/.aliases https://raw.githubusercontent.com/sobolevn/dotfiles/master/shell/.aliases
-
-  6. Compare two local files:
-     dif ~/.config/shell/.aliases ~/.config/shell/.completions
-
-  7. Compare GitHub shorthand with specific branch to GitHub regular URL:
-     dif git:adriangalilea/dotfiles-rpi:main:.config/shell/.aliases https://github.com/sobolevn/dotfiles/blob/master/shell/.aliases
-```
-
-# [@self] SSH Configuration Instructions
-
-> [!NOTE]  
-> This is meant so that I can push from the device to github repo's may not be necessary or desired by you.
-
-To configure SSH for seamless Git operations with GitHub, follow these steps:
-
-1. **Generate SSH Keys:**
-
-```sh
-ssh-keygen -t rsa -b 4096 -C "adriangalilea"
-```
-
-2. **Add SSH Key to SSH Agent:**
-
-```sh
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
-```
-
-3. **Add SSH Key to GitHub:**
-  ```sh
-  cat ~/.ssh/id_rsa.pu
-  ```
-
-   Copy the key and add it to your GitHub account:
-   - GitHub: [Settings -> SSH and GPG keys -> New SSH key](https://github.com/settings/keys)
 
 # TODO
 
