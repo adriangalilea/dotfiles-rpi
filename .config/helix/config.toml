@@ -75,7 +75,7 @@ C-l = ["delete_selection", "paste_after"] # move right
 C-h = ["delete_selection", "move_char_left", "paste_before"] #move left
 
 "C-S-j" = ["extend_to_line_bounds", "yank", "paste_after"] # duplicate line down
-"C-S-k" = ["extend_to_line_bounds", "yank", "move_line_up", "paste_before"] # duplicate line up
+"C-S-k" = ["extend_to_line_bounds", "yank", "paste_before"] # duplicate line up
 "C-S-l" = ["yank", "paste_after"] # duplicate right
 "C-S-h" = ["yank", "move_char_left", "paste_before"] # duplicate left
 

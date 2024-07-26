@@ -2,6 +2,11 @@
 
 ## cheat
 
+
+hey, good morning mr sandman.
+
+All the cli commands have a -h parameter that outputs you the help.
+
 [config.toml](./config.toml)
 
 ```
@@ -66,4 +71,10 @@ which was working for me before with the fix propose on [this issue](https://git
 
 # TODO
 
+- [ ] Using pipes for AI
+  - [ ] learn how to use pipes
+  - [ ] claude-engineer
+  - [ ] mods
+
+## check
 - [ ] [simple-completion-language-server](https://github.com/estin/simple-completion-language-server)
