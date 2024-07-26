@@ -21,13 +21,13 @@ I also think I can make it even better, but if anyone is looking for a readymade
 
 
 # TODO
-- [ ] fix installing `ya` from `yazi` as is the package manager and is blocking:
-  - [ ] install [relative-motions](https://github.com/dedukun/relative-motions.yazi)
-- [ ] more architectures
-- [ ] interactive installs
-- [ ] .toml file to select installing packages on each category instead of main.py
+- [ ] feat: script the install on first rpi boot, hijacking the script.sh perhaps.
+- [ ] feat: store the version installed so that we can then eventually check for updates.
 - [ ] feat: alias that executes `~/.setup/main.zsh` for convenience on first git pull
-- [ ] script the install on first rpi boot, hijacking the script.sh perhaps.
+- [ ] fix installing `ya` from `yazi` as is the package manager and is blocking:
+- [ ] .toml file to select installing packages on each category instead of main.py
+- [ ] feat: more architectures
+- [ ] feat: interactive installs
 
 # [@self] SSH Configuration Instructions
 
