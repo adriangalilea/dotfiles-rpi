@@ -11,6 +11,7 @@ alias extract="ex"
 # --- general aliases ---
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
+alias s="ssh"
 alias salsa="source ~/.zshrc"
 alias x="chmod +x"
 alias x\*="x *"
@@ -44,7 +45,6 @@ alias df="df -h"                       # human-readable sizes
 alias diskspace="df /"
 alias disk="diskspace"
 alias space="diskspace"
-alias s="diskspace"
 
 # --- process management ---
 
