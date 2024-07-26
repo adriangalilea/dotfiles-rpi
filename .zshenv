@@ -35,21 +35,7 @@ export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:$HOME/.terminfo:/usr/share/terminf
 #│                    zplug                        │
 #└─────────────────────────────────────────────────┘
 export ZPLUG_RCFILE="$XDG_CONFIG_HOME/zplug/zplugrc"
-
-# Set ZPLUG_HOME based on available locations
-if [ -d "/opt/homebrew/opt/zplug" ]; then
-    export ZPLUG_HOME="/opt/homebrew/opt/zplug"       # macOS Homebrew installation
-elif [ -d "$XDG_DATA_HOME/zplug" ]; then
-    export ZPLUG_HOME="$XDG_DATA_HOME/zplug"          # XDG compliant location
-else
-    export ZPLUG_HOME="$HOME/.zplug"                  # Default fallback
-fi
-
-# Ensure ZPLUG_HOME exists
-if [ ! -d "$ZPLUG_HOME" ]; then
-    echo "Warning: ZPLUG_HOME directory does not exist: $ZPLUG_HOME"
-    echo "You may need to install zplug or create this directory manually."
-fi
+export ZPLUG_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zplug"
 
 #┌─────────────────────────────────────────────────┐
 #│       Ensure required directories exist         │

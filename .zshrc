@@ -70,8 +70,19 @@ path=(
 export PATH
 
 #┌─────────────────────────────────────────────────┐
-#│             zplug Plugin Management             │
+#│                     zplug                       │
 #└─────────────────────────────────────────────────┘
+
+# Run the zplug installer if ZPLUG_HOME does not exist
+if [ ! -d "$ZPLUG_HOME" ]; then
+    curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+
+    # Check again if ZPLUG_HOME exists after running the installer
+    if [ ! -d "$ZPLUG_HOME" ]; then
+        echo "Warning: ZPLUG_HOME directory does not exist: $ZPLUG_HOME"
+    fi
+fi
+
 source "$ZPLUG_RCFILE"
 
 #┌─────────────────────────────────────────────────┐
