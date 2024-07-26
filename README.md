@@ -48,7 +48,9 @@ Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://
 
 ## main
 
-- [ ] chore: test install from scratch
+- [ ] chore: test install from scratch when I receive the microSD card in a week.
+- [ ] aider
+- [ ] nfty
 - [ ] merge with my own dotfiles and have just a single source of truth .config/setup/mac .config/setup/rpi
 - [ ] add: calendar view for my tasks
   - [ ] [`calcurse`](https://calcurse.org/)
