@@ -9,11 +9,9 @@
 # XDG: A standard for organizing user directories for config, data, cache, and state files
 # More info: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"    # User-specific configuration files
-export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"   # User-specific data files
-export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}" # State files that should persist between application restarts
-# Note: This cache is in a non-standard location. The standard location is $HOME/.cache
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.local/cache}" # User-specific cache files
+eval "$(/usr/local/bin/xdg_user_dirs_update_cross)"
+
+# custom go program (xdg_user_dirs_update_cross)(https://github.com/adriangalilea/xdg-user-dirs-update-cross)
 
 #┌─────────────────────────────────────────────────┐
 #│                      Zsh                        │
@@ -21,6 +19,10 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.local/cache}" # User-specific ca
 export ZDOTDIR="$HOME"                                        # Keep .zshrc in the home directory
 export HISTFILE="$XDG_STATE_HOME/zsh/history"                 # Store Zsh history in XDG state directory
 export ZSH_COMPDUMP="$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"  # Store completion dump file in XDG cache directory
+mkdir -p \
+    "$XDG_STATE_HOME/zsh" \
+    "$XDG_CACHE_HOME/zsh" \
+    "${ZSH_COMPDUMP:h}" 
 
 #┌─────────────────────────────────────────────────┐
 #│                     Misc                        │
@@ -30,25 +32,13 @@ export SSH_CONFIG="$XDG_CONFIG_HOME/ssh/config"
 
 # Terminfo directories
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:$HOME/.terminfo:/usr/share/terminfo"
+mkdir -p "$XDG_DATA_HOME/terminfo"
 
 #┌─────────────────────────────────────────────────┐
 #│                    zplug                        │
 #└─────────────────────────────────────────────────┘
 export ZPLUG_RCFILE="$XDG_CONFIG_HOME/zplug/zplugrc"
 export ZPLUG_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zplug"
-
-#┌─────────────────────────────────────────────────┐
-#│       Ensure required directories exist         │
-#└─────────────────────────────────────────────────┘
-mkdir -p \
-    "$XDG_CONFIG_HOME" \
-    "$XDG_DATA_HOME" \
-    "$XDG_CACHE_HOME" \
-    "$XDG_STATE_HOME" \
-    "$XDG_STATE_HOME/zsh" \
-    "$XDG_CACHE_HOME/zsh" \
-    "${ZSH_COMPDUMP:h}" \
-    "$XDG_DATA_HOME/terminfo"
 
 #┌─────────────────────────────────────────────────┐
 #│       Load fzf functions for completions        │

@@ -184,3 +184,11 @@ add_to_dotfiles() {
 }
 
 alias add="add_to_dotfiles"
+
+# --- toptal gitignore ---
+# example usage `gi mac,go >> .gitignore`
+function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
+
+# alternatively this exists https://www.reddit.com/r/rust/comments/1657lyz/built_my_first_rust_app_cli_tool_to_generate/
+# https://github.com/reemus-dev/gitnr
+# but I find gi easier to use

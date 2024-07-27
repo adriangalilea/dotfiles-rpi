@@ -56,3 +56,6 @@ ssh-add ~/.ssh/id_rsa
 
    Copy the key and add it to your GitHub account:
    - GitHub: [Settings -> SSH and GPG keys -> New SSH key](https://github.com/settings/keys)
+
+# Useful tools that I did not install yet:
+- https://github.com/reemus-dev/gitnr gitignore generation TUI

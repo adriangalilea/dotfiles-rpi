@@ -44,12 +44,18 @@ export HISTORY_IGNORE="(ls|cd|salsa|la|ll|h|yy|l|pwd|exit|sudo reboot|history|cd
 
 HISTSIZE=10000              # Number of lines in history file
 SAVEHIST=10000              # Number of lines in memory history
+HISTDUP=erase               # Erase duplicates
 setopt SHARE_HISTORY        # Share history between sessions
 setopt INC_APPEND_HISTORY   # Append to history file immediately
-setopt HIST_IGNORE_ALL_DUPS # Don't save duplicate commands
 setopt EXTENDED_HISTORY     # Save timestamp and duration of commands
-setopt HIST_EXPIRE_DUPS_FIRST # Remove duplicates first when trimming history
 setopt HIST_IGNORE_SPACE    # Don't save commands starting with space
+setopt HIST_IGNORE_ALL_DUPS # Don't save duplicate commands
+setopt HIST_SAVE_NO_DUPS    # Don't save dups
+setopt HIST_FIND_NO_DUPS
+setopt HIST_EXPIRE_DUPS_FIRST # Remove duplicates first when trimming history
+
+bindkey '^p' history-search-backward # ctrl+p now only shows matching commands
+bindkey '^n' history-search-forward  # ctrl+n now only shows matching commands
 
 #┌─────────────────────────────────────────────────┐
 #│                  PATH Setup                     │
