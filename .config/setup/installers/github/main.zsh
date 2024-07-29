@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-source ./installers/github/utils.sh
+source ./installers/github/utils.zsh
 
 # TODO check [jpillora/instaler](https://github.com/jpillora/installer)
 # TODO check [@codelinkx gist](https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8?permalink_comment_id=4699831#gistcomment-4699831)
