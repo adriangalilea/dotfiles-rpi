@@ -52,6 +52,7 @@ main() {
         "yassinebridi/serpl:serpl"
         "zellij-org/zellij:zellij"
         "Feel-ix-343/markdown-oxide:markdown-oxide"
+        "adriangalilea/xdg-user-dirs-cross:xdg-user-dirs-cross"
     )
     install_from_github "${github_packages[@]}" || {
         log "Failed to install GitHub packages. Exiting." error 

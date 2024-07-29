@@ -66,3 +66,5 @@
 !.config/glow/**
 !.config/lazygit/
 !.config/lazygit/**
+!.config/xdg/user.dirs
+!.config/xdg/
