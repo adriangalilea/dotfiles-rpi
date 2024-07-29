@@ -2,11 +2,6 @@
 
 ## cheat
 
-
-hey, good morning mr sandman.
-
-All the cli commands have a -h parameter that outputs you the help.
-
 [config.toml](./config.toml)
 
 ```
@@ -15,6 +10,8 @@ All the cli commands have a -h parameter that outputs you the help.
 
 C-j move line/s down
 C-k move line/s up
+
+A-; jump between 2 ends of selection.
 
 A-o tree expand selection
 A-i tree shrink selection
@@ -75,6 +72,10 @@ which was working for me before with the fix propose on [this issue](https://git
   - [ ] learn how to use pipes
   - [ ] claude-engineer
   - [ ] mods
+
+## Learn
+- [ ] function navigation without tree-sitter
+- [ ] navigate between diagnostics faster than space-d for auto applying in batch mode
 
 ## check
 - [ ] [simple-completion-language-server](https://github.com/estin/simple-completion-language-server)
