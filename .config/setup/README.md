@@ -59,3 +59,8 @@ ssh-add ~/.ssh/id_rsa
 
 # Useful tools that I did not install yet:
 - https://github.com/reemus-dev/gitnr gitignore generation TUI
+
+# Things to check-out
+
+- [ ] [units](https://www.gnu.org/software/units/)
+- [ ] [qalc](https://github.com/Qalculate/libqalculate)
