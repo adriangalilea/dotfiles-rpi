@@ -13,24 +13,28 @@ package config
 	name:     string
 	type:     "apt"
 	packages: [...string]
+	comment?: string
 }
 
 #PipxStep: {
 	name:     string
 	type:     "pipx"
 	packages: [...string]
+	comment?: string
 }
 
 #GitHubStep: {
 	name:     string
 	type:     "github"
 	packages: [...#GitHubPackage]
+	comment?: string
 }
 
 #CommandStep: {
 	name:    string
 	type:    "command"
 	command: string
+	comment?: string
 }
 
 #FunctionStep: {
@@ -38,6 +42,7 @@ package config
 	type:     "function"
 	function: string
 	args?:    [...string]
+	comment?: string
 }
 
 // Union of all step types
