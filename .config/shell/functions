@@ -192,3 +192,71 @@ function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$
 # alternatively this exists https://www.reddit.com/r/rust/comments/1657lyz/built_my_first_rust_app_cli_tool_to_generate/
 # https://github.com/reemus-dev/gitnr
 # but I find gi easier to use
+
+# Navigation history array
+typeset -g -a _nav_history
+typeset -g _nav_index
+
+# Initialize navigation history
+_nav_init() {
+    _nav_history=("$PWD")
+    _nav_index=1
+}
+
+# Navigation function
+nav() {
+    case "$1" in
+        back)
+            if (( _nav_index > 1 )); then
+                (( _nav_index-- ))
+                cd "${_nav_history[$_nav_index]}"
+            fi
+            ;;
+        forward)
+            if (( _nav_index < ${#_nav_history[@]} )); then
+                (( _nav_index++ ))
+                cd "${_nav_history[$_nav_index]}"
+            fi
+            ;;
+        up)
+            cd ..
+            _nav_history[_nav_index]="$PWD"
+            ;;
+        down)
+            zi
+            _nav_history[_nav_index]="$PWD"
+            ;;
+        *)
+            if [[ -d "$1" ]]; then
+                cd "$1"
+                if [[ "${_nav_history[$_nav_index]}" != "$PWD" ]]; then
+                    _nav_history=(${_nav_history[1,$_nav_index]} "$PWD")
+                    _nav_index=${#_nav_history[@]}
+                fi
+            else
+                echo "Usage: nav [back|forward|up|down|directory]" >&2
+            fi
+            ;;
+    esac
+}
+
+# Initialize navigation history
+_nav_init
+
+# Key bindings
+bindkey -s '^[[1;2A' 'nav up\n'      # shift + up
+bindkey -s '^[[1;2B' 'nav down\n'    # shift + down
+bindkey -s '^[[1;2C' 'nav forward\n' # shift + right
+bindkey -s '^[[1;2D' 'nav back\n'    # shift + left
+
+
+# Add the current directory to history when changing directories
+chpwd() {
+    if [[ "${_nav_history[$_nav_index]}" != "$PWD" ]]; then
+        _nav_history=(${_nav_history[1,$_nav_index]} "$PWD")
+        _nav_index=${#_nav_history[@]}
+    fi
+}
+
+
+

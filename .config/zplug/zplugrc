@@ -12,7 +12,7 @@ zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-completions"
 zplug "MichaelAquilina/zsh-you-should-use"
 zplug "chrisgrieser/zsh-magic-dashboard", use:"magic_dashboard.zsh"
-zplug "betafcc/nav", use:"nav.zsh"
+# zplug "betafcc/nav", use:"nav.zsh"
 # zplug 'sobolevn/sobole-zsh-theme', as:theme, depth:1
 zplug "romkatv/powerlevel10k", as:theme, depth:1
 
@@ -20,12 +20,6 @@ zplug "romkatv/powerlevel10k", as:theme, depth:1
 if ! zplug check; then
     zplug install
 fi
-
-# Configure nav plugin
-bindkey '^[[1;2A' nav-up      # shift + up
-bindkey '^[[1;2B' nav-down    # shift + down
-bindkey '^[[1;2C' nav-forward # shift + right
-bindkey '^[[1;2D' nav-back    # shift + left
 
 # Load zplug plugins
 zplug load
