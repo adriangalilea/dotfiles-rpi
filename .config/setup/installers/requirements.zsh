@@ -3,7 +3,6 @@
 source ../lib/ui.zsh
 source ./apt.zsh
 source ./github/utils.zsh
-source ./repo.zsh
 
 install_gum() {
     log "Installing gum..." debug
