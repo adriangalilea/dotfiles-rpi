@@ -7,7 +7,28 @@ source ./github/utils.zsh
 install_gum() {
     echo "Installing gum..."
     add_repository "charm" "https://repo.charm.sh/apt/gpg.key" "https://repo.charm.sh/apt/ * *" "/etc/apt/sources.list.d/charm.list"
-    install_apt_packages "gum"
+    
+    # Update package lists
+    echo "Updating APT packages..."
+    if sudo apt-get update -qq; then
+        echo "APT updated."
+        echo
+    else
+        echo "Failed to update package lists."
+        echo
+        return 1
+    fi
+    
+    # Install gum package quietly, suppressing most output
+    echo "Installing gum..."
+    if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gum > /dev/null 2>&1; then
+        echo "gum installed. ✅"
+        echo
+    else
+        echo "Error installing gum."
+        echo
+        return 1
+    fi
 }
 
 install_cue() {
