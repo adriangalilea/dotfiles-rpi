@@ -65,3 +65,4 @@ ssh-add ~/.ssh/id_rsa
 
 - [ ] [units](https://www.gnu.org/software/units/)
 - [ ] [qalc](https://github.com/Qalculate/libqalculate)
+- [ ] [trash-cli](https://github.com/andreafrancia/trash-cli)
