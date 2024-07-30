@@ -36,21 +36,21 @@ add_repository() {
     local repo_url="$3"
     local repo_list_file="$4"
 
-    log "Adding $repo_name repository..." debug
+    echo "Adding $repo_name repository..."
 
     if [ ! -f "/etc/apt/keyrings/${repo_name}.gpg" ]; then
         sudo mkdir -p /etc/apt/keyrings
         if curl -fsSL "$gpg_key_url" | sudo gpg --dearmor -o "/etc/apt/keyrings/${repo_name}.gpg"; then
             echo "deb [signed-by=/etc/apt/keyrings/${repo_name}.gpg] $repo_url" | sudo tee "$repo_list_file" > /dev/null
-            log "$repo_name GPG key added." debug
+            echo "$repo_name GPG key added."
             sudo apt update
         else
-            log "Failed to add $repo_name GPG key. Skipping repository addition." error
+            echo "Failed to add $repo_name GPG key. Skipping repository addition."
             return 1
         fi
     else
-        log "$repo_name GPG key already exists. Skipping addition." debug
+        echo "$repo_name GPG key already exists. Skipping addition."
     fi
 
-    log "$repo_name repository process completed." debug
+    echo "$repo_name repository process completed."
 }
