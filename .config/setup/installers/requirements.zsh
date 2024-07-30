@@ -33,7 +33,7 @@ install_gum() {
 
 install_cue() {
     log "Installing cue..." debug
-    if ! install_from_github "cue-lang/cue:cue"; then
+    if ! install_from_github "cue-lang/cue" "cue"; then
         log "Failed to install cue" error
         return 1
     fi

@@ -42,24 +42,28 @@ process_package() {
 }
 
 install_from_github() {
-    local github_packages=("$@")
-
     log "Installing binaries from github..." debug
 
-    for package in "${github_packages[@]}"; do
-        if [[ ! "$package" =~ ^[^:]+:[^:]+$ ]]; then
-            log "❌ Invalid package format: $package. Expected format: owner/repo:binary" "error"
+    while (( $# > 0 )); do
+        local repo="$1"
+        shift
+        local binaries=()
+
+        while (( $# > 0 )) && [[ ! "$1" =~ ^[^/]+/[^/]+$ ]]; do
+            binaries+=("$1")
+            shift
+        done
+
+        if (( ${#binaries[@]} == 0 )); then
+            log "❌ Invalid package format for $repo. Expected format: owner/repo binary1 [binary2 ...]" "error"
             continue
         fi
-    
-        IFS=':' read -r repo binary <<< "$package"
 
-        repo=$(echo "$repo" | xargs)
-        binary=$(echo "$binary" | xargs)
-
-        if ! process_package "$repo" "$binary"; then
-            update_static_line "❌ Skipping $package: Failed to process package"
-        fi
+        for binary in "${binaries[@]}"; do
+            if ! process_package "$repo" "$binary"; then
+                update_static_line "❌ Skipping $repo $binary: Failed to process package"
+            fi
+        done
     done
     echo
 }
