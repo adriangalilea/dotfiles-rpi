@@ -5,6 +5,7 @@ package config
 	repo:     string // Format: "username/repo"
 	binaries: [...string] // List of binary names to install
 	asset?:   string // Optional: Specific asset to download (e.g., "broot.zip")
+	comment?: string // Optional: Comment or documentation for the package
 }
 
 // Define the structure for different types of steps

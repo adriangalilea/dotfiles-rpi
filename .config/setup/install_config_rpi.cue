@@ -53,7 +53,12 @@ rpiConfig: template & {
 				{repo: "zellij-org/zellij", binaries: ["zellij"]},
 				{repo: "Feel-ix-343/markdown-oxide", binaries: ["markdown-oxide"]},
 				{repo: "adriangalilea/xdg-dirs", binaries: ["xdg-dirs"]},
-				{repo: "Canop/broot", binaries: ["broot"], asset: "broot.zip"},
+				{
+					repo:     "Canop/broot",
+					binaries: ["broot"],
+					asset:    "broot.zip",
+					comment:  "Download the latest zip, unzip, contains all the binaries for each distribution, pick the right one, move to /usr/local/bin/."
+				},
 			]
 		},
 		{
