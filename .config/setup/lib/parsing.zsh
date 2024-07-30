@@ -103,14 +103,12 @@ execute_step() {
             ;;
         github)
             local packages=$(get_step_details "$step" "packages")
-            local repo
-            local binaries
             local github_args=()
-            while IFS= read -r package; do
-                repo=$(echo "$package" | yq e '.repo' -)
-                binaries=($(echo "$package" | yq e '.binaries[]' -))
+            echo "$packages" | while IFS= read -r package; do
+                local repo=$(echo "$package" | yq e '.repo' -)
+                local binaries=($(echo "$package" | yq e '.binaries[]' -))
                 github_args+=("$repo" "${binaries[@]}")
-            done < <(echo "$packages")
+            done
             install_from_github "${github_args[@]}"
             ;;
         command)
