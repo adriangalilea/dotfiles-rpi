@@ -9,7 +9,7 @@
 # XDG: A standard for organizing user directories for config, data, cache, and state files
 # More info: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 
-eval "$(/usr/local/bin/xdg_user_dirs_update_cross)"
+eval "$(/usr/local/bin/xdg-dirs)"
 
 # custom go program (xdg_user_dirs_update_cross)(https://github.com/adriangalilea/xdg-user-dirs-update-cross)
 
