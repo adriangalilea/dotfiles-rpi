@@ -5,9 +5,6 @@ echo
 # Go to setup.zsh if you want to edit anything.
 # This file just serves as an entry point to install gum if it's not installed since it's used throughout the program
 
-# Default install configuration file
-DEFAULT_INSTALL_CONFIG="install_config_rpi.cue"
-
 install_gum() {
     echo "Installing gum..."
     echo "Adding Charm repository..."
@@ -40,7 +37,18 @@ run_system_setup() {
 }
 
 # Main execution
-install_config="${1:-$DEFAULT_INSTALL_CONFIG}"
+if [ $# -eq 0 ]; then
+    echo "Error: No configuration file specified."
+    echo "Usage: $0 <config_file.cue>"
+    exit 1
+fi
+
+install_config="$1"
+
+if [ ! -f "$install_config" ]; then
+    echo "Error: Configuration file '$install_config' not found."
+    exit 1
+fi
 
 if command -v gum &> /dev/null; then
     echo "😎 gum was already installed. Running system setup..."
