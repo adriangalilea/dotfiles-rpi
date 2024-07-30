@@ -121,6 +121,8 @@ validate_config() {
                         if ! yq e ".binaries[]" <<< "$package" &> /dev/null; then
                             errors+=("Missing 'binaries' for a package in github step '$step'")
                         fi
+                        local repo=$(yq e ".repo" <<< "$package")
+                        errors+=("Validating package: $repo in github step '$step'")
                     done <<< "$packages"
                 fi
                 ;;
