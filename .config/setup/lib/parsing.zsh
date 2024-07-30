@@ -61,7 +61,14 @@ get_step_details() {
         type|function|command|comment)
             result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
-        packages|args)
+        packages)
+            if [[ $(yq e ".steps[] | select(.name == \"$step_name\") | .type" "$yaml_file") == "github" ]]; then
+                result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            else
+                result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
+            fi
+            ;;
+        args)
             result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             ;;
         *)
