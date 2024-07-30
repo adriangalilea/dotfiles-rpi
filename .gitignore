@@ -68,3 +68,5 @@
 !.config/lazygit/**
 !.config/xdg/user.dirs
 !.config/xdg/
+!.config/broot/
+!.config/broot/**
