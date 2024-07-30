@@ -53,7 +53,7 @@ get_step_details() {
     
     local result
     case "$detail" in
-        type|function|command)
+        type|function|command|comment)
             result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         packages|args)
@@ -104,9 +104,24 @@ validate_config() {
         fi
         
         case "$type" in
-            apt|pipx|github)
+            apt|pipx)
                 if ! get_step_details "$step" "packages" "$yaml_file" &> /dev/null; then
                     errors+=("Missing 'packages' for $type step '$step'")
+                fi
+                ;;
+            github)
+                local packages=$(get_step_details "$step" "packages" "$yaml_file")
+                if [[ -z "$packages" ]]; then
+                    errors+=("Missing 'packages' for github step '$step'")
+                else
+                    while IFS= read -r package; do
+                        if ! yq e ".repo" <<< "$package" &> /dev/null; then
+                            errors+=("Missing 'repo' for a package in github step '$step'")
+                        fi
+                        if ! yq e ".binaries[]" <<< "$package" &> /dev/null; then
+                            errors+=("Missing 'binaries' for a package in github step '$step'")
+                        fi
+                    done <<< "$packages"
                 fi
                 ;;
             command)
