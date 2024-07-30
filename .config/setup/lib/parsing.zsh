@@ -103,7 +103,8 @@ execute_step() {
             ;;
         github)
             local packages=$(get_step_details "$step" "packages")
-            local repo binaries
+            local repo
+            local binaries
             local github_args=()
             while IFS= read -r package; do
                 repo=$(echo "$package" | yq e '.repo' -)
