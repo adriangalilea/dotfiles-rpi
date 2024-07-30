@@ -1,7 +1,7 @@
 #!/bin/zsh
 
-source ./installers/requirements.zsh
-source ./lib/ui.zsh
+source "${0:A:h}/installers/requirements.zsh"
+source "${0:A:h}/lib/ui.zsh"
 
 run_system_setup() {
     local install_config="$1"

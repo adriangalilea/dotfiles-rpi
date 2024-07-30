@@ -1,8 +1,8 @@
 #!/bin/zsh
 
-source ../lib/ui.zsh
-source ./apt.zsh
-source ./github/utils.zsh
+source "${0:A:h}/../lib/ui.zsh"
+source "${0:A:h}/apt.zsh"
+source "${0:A:h}/github/utils.zsh"
 
 install_gum() {
     echo "Installing gum..."
