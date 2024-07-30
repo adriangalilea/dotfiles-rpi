@@ -5,7 +5,7 @@ import (
 )
 
 // Import the template
-import config "install_config_template.cue"
+import template "install_config_template.cue"
 
 // Extend the template for Raspberry Pi (Linux ARM64) configuration
 rpiConfig: template & {
