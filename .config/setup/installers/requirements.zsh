@@ -5,7 +5,7 @@ source ./apt.zsh
 source ./github/utils.zsh
 
 install_gum() {
-    log "Installing gum..." debug
+    echo "Installing gum..."
     add_repository "charm" "https://repo.charm.sh/apt/gpg.key" "https://repo.charm.sh/apt/ * *" "/etc/apt/sources.list.d/charm.list"
     install_apt_packages "gum"
 }
