@@ -110,7 +110,7 @@ execute_step() {
                 repo=$(echo "$package" | yq e '.repo' -)
                 binaries=($(echo "$package" | yq e '.binaries[]' -))
                 github_args+=("$repo" "${binaries[@]}")
-            done <<< "$packages"
+            done < <(echo "$packages")
             install_from_github "${github_args[@]}"
             ;;
         command)
