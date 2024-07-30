@@ -26,6 +26,7 @@ I also think I can make it even better, but if anyone is looking for a readymade
 - [ ] feat: alias that executes `~/.setup/main.zsh` for convenience on first git pull
 - [ ] fix installing `ya` from `yazi` as is the package manager and is blocking:
 - [ ] .toml file to select installing packages on each category instead of main.py
+  - [ ] use [yq](https://github.com/mikefarah/yq) to parse the toml
 - [ ] feat: more architectures
 - [ ] feat: interactive installs
 
