@@ -85,6 +85,57 @@ get_step_details() {
     echo "$result"
 }
 
+# Function to execute a step
+execute_step() {
+    local step="$1"
+    local step_type=$(get_step_details "$step" "type")
+    local step_name=$(get_step_details "$step" "name")
+    log "Executing step: $step_name" info
+    
+    case "$step_type" in
+        apt)
+            local packages=$(get_step_details "$step" "packages")
+            install_apt_packages $packages
+            ;;
+        pipx)
+            local packages=$(get_step_details "$step" "packages")
+            install_pipx_packages $packages
+            ;;
+        github)
+            local packages=$(get_step_details "$step" "packages")
+            local repo binaries
+            local github_args=()
+            while IFS= read -r package; do
+                repo=$(echo "$package" | yq e '.repo' -)
+                binaries=($(echo "$package" | yq e '.binaries[]' -))
+                github_args+=("$repo" "${binaries[@]}")
+            done <<< "$packages"
+            install_from_github "${github_args[@]}"
+            ;;
+        command)
+            local command=$(get_step_details "$step" "command")
+            log "Executing command: $command" debug
+            if ! eval "$command"; then
+                log "Command execution failed: $command" error
+            fi
+            ;;
+        function)
+            local function=$(get_step_details "$step" "function")
+            local args=$(get_step_details "$step" "args")
+            log "Calling function: $function" debug
+            if ! $function $args; then
+                log "Function call failed: $function" error
+            fi
+            ;;
+        *)
+            log "Unknown step type: $step_type" error
+            ;;
+    esac
+    
+    log "Step completed: $step_name" info
+    echo
+}
+
 # Function to get all step names
 get_step_names() {
     local yaml_file="${1:-$YAML_CONFIG_PATH}"
