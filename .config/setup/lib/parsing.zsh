@@ -37,6 +37,11 @@ parse_config() {
         return 1
     }
     
+    # Validate the configuration
+    if ! validate_config "$yaml_file"; then
+        return 1
+    fi
+    
     echo "$steps"
 }
 
