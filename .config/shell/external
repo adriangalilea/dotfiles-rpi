@@ -3,7 +3,6 @@
 # `.external` handles all complex external tools.
 
 # === broot ===
-# source "$HOME/.config/broot/launcher/bash/br"
 
 # === direnv ===
 eval "$(direnv hook zsh)"
@@ -70,13 +69,5 @@ _fzf_compgen_dir () {
 # === z ===
 # https://github.com/ajeetdsouza/zoxide
 
-# `zoxide` has an option to use `fzf` to provide completions natively,
-# but it works only for `z NAME<SPACE><TAB>`,
-# it does not work for `z NAME<TAB>`.
-# So, I have this usecase as a custom completion defined in `.completions`.
-eval "$(zoxide init zsh --no-cmd)"
+eval "$(zoxide init zsh)"
 
-z () {
-  # I need this function to setup custom code completion for `zoxide`.
-  \__zoxide_z "$@"
-}
