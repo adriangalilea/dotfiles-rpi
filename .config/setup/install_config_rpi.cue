@@ -1,11 +1,6 @@
-package config
+package rpi
 
-import (
-	"list"
-)
-
-// Import the template
-import template "install_config_template.cue"
+import "template"
 
 // Extend the template for Raspberry Pi (Linux ARM64) configuration
 rpiConfig: template & {
@@ -54,10 +49,10 @@ rpiConfig: template & {
 				{repo: "Feel-ix-343/markdown-oxide", binaries: ["markdown-oxide"]},
 				{repo: "adriangalilea/xdg-dirs", binaries: ["xdg-dirs"]},
 				{
-					repo:     "Canop/broot",
-					binaries: ["broot"],
-					asset:    "broot.zip",
-					comment:  "Download the latest zip, unzip, contains all the binaries for each distribution, pick the right one, move to /usr/local/bin/."
+					repo: "Canop/broot"
+					binaries: ["broot"]
+					asset:   "broot.zip"
+					comment: "Download the latest zip, unzip, contains all the binaries for each distribution, pick the right one, move to /usr/local/bin/."
 				},
 			]
 		},
@@ -80,7 +75,7 @@ rpiConfig: template & {
 			name:     "Increase Swap Size"
 			type:     "function"
 			function: "increase_swap_size"
-			args:     ["1024"]
+			args: ["1024"]
 		},
 		{
 			name:     "Setup Custom MOTD"

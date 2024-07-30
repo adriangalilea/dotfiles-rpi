@@ -156,7 +156,7 @@ validate_config() {
     if [[ ! -f "$yaml_file" ]]; then
         echo "Error: YAML file not found. Run parse_config first." >&2
         return 1
-    }
+    fi
     
     local valid_types=("apt" "pipx" "github" "command" "function")
     local errors=()
@@ -178,16 +178,16 @@ validate_config() {
                 if [[ -z "$packages" ]]; then
                     errors+=("Missing 'packages' for github step '$step'")
                 else
-                    while IFS= read -r package; do
-                        if ! yq e ".repo" <<< "$package" &> /dev/null; then
+                    echo "$packages" | while IFS= read -r package; do
+                        if ! echo "$package" | yq e ".repo" - &> /dev/null; then
                             errors+=("Missing 'repo' for a package in github step '$step'")
                         fi
-                        if ! yq e ".binaries[]" <<< "$package" &> /dev/null; then
+                        if ! echo "$package" | yq e ".binaries[]" - &> /dev/null; then
                             errors+=("Missing 'binaries' for a package in github step '$step'")
                         fi
-                        local repo=$(yq e ".repo" <<< "$package")
+                        local repo=$(echo "$package" | yq e ".repo" -)
                         errors+=("Validating package: $repo in github step '$step'")
-                    done <<< "$packages"
+                    done
                 fi
                 ;;
             command)

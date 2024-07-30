@@ -1,39 +1,39 @@
-package config
+package template
 
 // Define the structure for a GitHub package
 #GitHubPackage: {
-	repo:     string // Format: "username/repo"
+	repo: string // Format: "username/repo"
 	binaries: [...string] // List of binary names to install
-	asset?:   string // Optional: Specific asset to download (e.g., "broot.zip")
-	comment?: string // Optional: Comment or documentation for the package
+	asset?:               string // Optional: Specific asset to download (e.g., "broot.zip")
+	comment?:             string // Optional: Comment or documentation for the package
 }
 
 // Define the structure for different types of steps
 #AptStep: {
-	name:     string
-	type:     "apt"
+	name: string
+	type: "apt"
 	packages: [...string]
 	comment?: string
 }
 
 #PipxStep: {
-	name:     string
-	type:     "pipx"
+	name: string
+	type: "pipx"
 	packages: [...string]
 	comment?: string
 }
 
 #GitHubStep: {
-	name:     string
-	type:     "github"
+	name: string
+	type: "github"
 	packages: [...#GitHubPackage]
 	comment?: string
 }
 
 #CommandStep: {
-	name:    string
-	type:    "command"
-	command: string
+	name:     string
+	type:     "command"
+	command:  string
 	comment?: string
 }
 
@@ -41,7 +41,7 @@ package config
 	name:     string
 	type:     "function"
 	function: string
-	args?:    [...string]
+	args?: [...string]
 	comment?: string
 }
 
