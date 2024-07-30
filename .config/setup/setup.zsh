@@ -16,12 +16,7 @@ main() {
 
     # Parse and validate the configuration
     steps=$(parse_config "$cue_file") || {
-        log "Failed to parse configuration." error
-        exit 1
-    }
-
-    validate_config || {
-        log "Configuration validation failed." error
+        log "Failed to parse or validate configuration." error
         exit 1
     }
 
