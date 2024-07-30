@@ -38,11 +38,13 @@ main() {
             github)
                 local packages=$(get_step_details "$step" "packages")
                 local repo binaries
+                local github_args=()
                 while IFS= read -r package; do
                     repo=$(echo "$package" | yq e '.repo' -)
                     binaries=($(echo "$package" | yq e '.binaries[]' -))
-                    install_from_github "$repo" "${binaries[@]}"
+                    github_args+=("$repo" "${binaries[@]}")
                 done <<< "$packages"
+                install_from_github "${github_args[@]}"
                 ;;
             command)
                 local command=$(get_step_details "$step" "command")
