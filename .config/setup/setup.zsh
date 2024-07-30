@@ -23,6 +23,9 @@ main() {
     # Execute each step
     while IFS= read -r step; do
         local step_type=$(get_step_details "$step" "type")
+        local step_name=$(get_step_details "$step" "name")
+        log "Executing step: $step_name" info
+        
         case "$step_type" in
             apt)
                 local packages=$(get_step_details "$step" "packages")
@@ -38,21 +41,29 @@ main() {
                 ;;
             command)
                 local command=$(get_step_details "$step" "command")
-                eval "$command"
+                log "Executing command: $command" debug
+                if ! eval "$command"; then
+                    log "Command execution failed: $command" error
+                fi
                 ;;
             function)
                 local function=$(get_step_details "$step" "function")
                 local args=$(get_step_details "$step" "args")
-                $function $args
+                log "Calling function: $function" debug
+                if ! $function $args; then
+                    log "Function call failed: $function" error
+                fi
                 ;;
             *)
                 log "Unknown step type: $step_type" error
                 ;;
         esac
+        
+        log "Step completed: $step_name" info
+        echo
     done <<< "$steps"
 
     log "Setup complete! Please reboot to apply all changes." info
-    log --time rfc822 "Setup finished at $(date)" info
 }
 
-main
+main "$@"
