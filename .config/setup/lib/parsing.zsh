@@ -104,9 +104,11 @@ execute_step() {
         github)
             local packages=$(get_step_details "$step" "packages")
             local github_args=()
+            local repo
+            local binaries
             echo "$packages" | while IFS= read -r package; do
-                local repo=$(echo "$package" | yq e '.repo' -)
-                local binaries=($(echo "$package" | yq e '.binaries[]' -))
+                repo=$(echo "$package" | yq e '.repo' -)
+                binaries=($(echo "$package" | yq e '.binaries[]' -))
                 github_args+=("$repo" "${binaries[@]}")
             done
             install_from_github "${github_args[@]}"
