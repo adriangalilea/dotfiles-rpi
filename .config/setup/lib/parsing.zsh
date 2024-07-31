@@ -47,7 +47,7 @@ parse_config() {
 
     local steps
     log "Parsing steps from JSON" debug
-    if ! steps=$(jq -r '.config.steps[] | "\(.name)|\(.type)"' "$json_file"); then
+    if ! steps=$(jq -r '.steps[] | "\(.name)|\(.type)"' "$json_file"); then
         log "Failed to parse steps from JSON" error
         return 1
     fi
@@ -62,37 +62,37 @@ parse_config() {
 }
                                                                                                       
  # Function to get step details                                                                       
- get_step_details() {                                                                                 
-     local step_name="$1"                                                                             
-     local detail="$2"                                                                                
-     local json_file="${3:-$JSON_CONFIG_PATH}"                                                        
-                                                                                                      
-     if [[ ! -f "$json_file" ]]; then                                                                 
-         log "Error: JSON file not found. Run parse_config first." error                              
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     local result                                                                                     
-     case "$detail" in                                                                                
-         name)                                                                                        
-             result="$step_name"                                                                      
-             ;;                                                                                       
+ get_step_details() {
+     local step_name="$1"
+     local detail="$2"
+     local json_file="${3:-$JSON_CONFIG_PATH}"
+
+     if [[ ! -f "$json_file" ]]; then
+         log "Error: JSON file not found. Run parse_config first." error
+         return 1
+     fi
+
+     local result
+     case "$detail" in
+         name)
+             result="$step_name"
+             ;;
          type|function|command|comment|args|packages|repo|binaries|asset)
-             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.rpiConfig.steps[] | select(.name == $name) | .[$detail]' "$json_file")
-             ;;                                                                                       
-         *)                                                                                           
-             log "Error: Unknown detail type '$detail'." error                                        
-             return 1                                                                                 
-             ;;                                                                                       
-     esac                                                                                             
-                                                                                                      
-     if [[ -z "$result" || "$result" == "null" ]]; then                                               
-         log "Error: Failed to retrieve '$detail' for step '$step_name'." error                       
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     echo "$result"                                                                                   
- }                                                                                                    
+             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.steps[] | select(.name == $name) | .[$detail]' "$json_file")
+             ;;
+         *)
+             log "Error: Unknown detail type '$detail'." error
+             return 1
+             ;;
+     esac
+
+     if [[ -z "$result" || "$result" == "null" ]]; then
+         log "Error: Failed to retrieve '$detail' for step '$step_name'." error
+         return 1
+     fi
+
+     echo "$result"
+ }
                                                                                                       
  # Function to execute a step                                                                         
  execute_step() {                                                                                     
