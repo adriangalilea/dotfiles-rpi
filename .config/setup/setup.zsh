@@ -11,7 +11,7 @@ main() {
     log "Starting setup..." debug
     echo
     
-    local cue_file="${1:-install_config_rpi.cue}"
+    local cue_file="${1:-rpi_aarch64.cue}"
     local steps
 
     # Parse and validate the configuration
