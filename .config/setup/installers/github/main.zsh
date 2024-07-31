@@ -8,7 +8,7 @@ source ./installers/github/utils.zsh
 process_package() {
     local repo=$1
     local binary=$2
-    local latest_release_json version assets asset_url
+    local latest_release_json version assets asset_url asset
 
     echo "🌐 $repo 📦 $binary"
     if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $repo"); then
@@ -22,7 +22,13 @@ process_package() {
     fi
     update_static_line "🌐 $repo 📦 $binary 🏷️ $version"
 
-    if ! asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'"); then
+    if [[ -n "$asset" ]]; then
+        asset_url=$(echo "$assets" | jq -r --arg asset "$asset" '.[] | select(.name == $asset) | .browser_download_url')
+    else
+        asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'")
+    fi
+
+    if [[ -z "$asset_url" ]]; then
         log "❌ Failed to find best asset" "error"
         return 1
     fi
@@ -54,7 +60,8 @@ install_from_github() {
     while (( $# >= 2 )); do
         local repo="$1"
         local binary="$2"
-        shift 2
+        local asset="$3"
+        shift 3
 
         log "Processing repo: $repo" debug
         log "Processing binary: $binary" debug

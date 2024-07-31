@@ -77,7 +77,7 @@ parse_config() {
          name)                                                                                        
              result="$step_name"                                                                      
              ;;                                                                                       
-         type|function|command|comment|args|packages)
+         type|function|command|comment|args|packages|repo|binaries|asset)
              result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.steps[] | select(.name == $name) | .[$detail]' "$json_file")
              ;;                                                                                       
          *)                                                                                           
@@ -132,9 +132,10 @@ parse_config() {
              while IFS= read -r package; do
                  local repo=$(echo "$package" | jq -r '.repo')
                  local binaries=($(echo "$package" | jq -r '.binaries[]'))
+                 local asset=$(echo "$package" | jq -r '.asset')
                  if [[ -n "$repo" && ${#binaries[@]} -gt 0 ]]; then
                      for binary in "${binaries[@]}"; do
-                         github_args+=("$repo" "$binary")
+                         github_args+=("$repo" "$binary" "$asset")
                      done
                  else
                      log "Warning: Invalid package format for '$repo'. Skipping." warn
