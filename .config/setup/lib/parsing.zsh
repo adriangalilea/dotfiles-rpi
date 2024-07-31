@@ -143,9 +143,13 @@ execute_step() {
             while IFS= read -r package; do
                 local repo=$(echo "$package" | yq e '.repo' -)
                 local binaries=($(echo "$package" | yq e '.binaries[]' -))
-                for binary in "${binaries[@]}"; do
-                    github_args+=("$repo" "$binary")
-                done
+                if [[ -n "$repo" && ${#binaries[@]} -gt 0 ]]; then
+                    for binary in "${binaries[@]}"; do
+                        github_args+=("$repo" "$binary")
+                    done
+                else
+                    log "Warning: Invalid package format for '$repo'. Skipping." warn
+                fi
             done < <(echo "$packages")
             log "Calling install_from_github with args: ${github_args[@]}" debug
             if [[ ${#github_args[@]} -eq 0 ]]; then
