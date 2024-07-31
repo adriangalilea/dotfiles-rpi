@@ -124,7 +124,7 @@ execute_step() {
     log "Executing step: $step_name (Type: $step_type)" info
     
     case "$step_type" in
-        apt)
+        github)
             local packages=$(get_step_details "$step" "packages")
             if [[ -z "$packages" ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
