@@ -48,10 +48,11 @@ Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://
 
 ## main
 
+- [ ] merge with my own dotfiles and have just a single source of truth .config/setup/mac .config/setup/rpi
 - [ ] chore: test install from scratch when I receive the microSD card in a week.
+- [ ] fix: zellij keybinding conflicts
 - [ ] aider
 - [ ] nfty
-- [ ] merge with my own dotfiles and have just a single source of truth .config/setup/mac .config/setup/rpi
 - [ ] add: calendar view for my tasks
   - [ ] [`calcurse`](https://calcurse.org/)
   - [ ] [`calcure`](https://github.com/anufrievroman/calcure)
@@ -63,10 +64,6 @@ Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://
   
 ## side-quests 
 - [ ] [research more zsh config](https://github.com/changs/slimzsh?tab=readme-ov-file#fasd)
-- [ ] mod [`betafcc/nav`](https://github.com/betafcc/nav) nav-down into fzf like @sobolevn does, works way better
-- [ ] taskwarrior
-  - [ ] client
-  - [ ] server
 - [ ] run lsp's in another computer on the network for the zero's
 - [ ] feat: github-rsolver or `gr`
 
