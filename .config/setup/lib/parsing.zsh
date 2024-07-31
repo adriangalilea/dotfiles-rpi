@@ -78,9 +78,8 @@ parse_config() {
          name)                                                                                        
              result="$step_name"                                                                      
              ;;                                                                                       
-         type|function|command|comment|args|packages)                                                 
-             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.config.steps[] |         
- select(.name == $name) | .[$detail]' "$json_file")                                                   
+         type|function|command|comment|args|packages)
+             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.steps[] | select(.name == $name) | .[$detail]' "$json_file")
              ;;                                                                                       
          *)                                                                                           
              log "Error: Unknown detail type '$detail'." error                                        
