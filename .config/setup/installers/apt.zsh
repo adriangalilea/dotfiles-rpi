@@ -7,10 +7,23 @@ move_legacy_apt_keys() {
     if [[ -f "$legacy_keyring" ]]; then
         log "Moving legacy APT keys to new location..." debug
         sudo mkdir -p "$new_keyring_dir"
+
+        # Extract and move the azlux.fr key
+        sudo apt-key export 379CE192D401AB61 | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg"
+        
+        # Update the azlux.fr repository configuration
+        sudo sed -i 's|deb https://packages.azlux.fr/debian/ stable main|deb [signed-by=/etc/apt/keyrings/azlux.gpg] https://packages.azlux.fr/debian/ stable main|' /etc/apt/sources.list.d/azlux.list
+
+        # Move other legacy keys
         sudo cp "$legacy_keyring" "$new_keyring_dir/legacy-trusted.gpg"
+        
+        # Remove keys from the legacy keyring
         sudo apt-key del $(sudo apt-key list | grep -E '^pub' | awk '{print $2}' | cut -d'/' -f2)
+        
+        # Backup and remove the legacy keyring
         sudo mv "$legacy_keyring" "${legacy_keyring}.bak"
-        log "Legacy APT keys moved." debug
+        
+        log "Legacy APT keys moved and repository configurations updated." debug
     else
         log "No legacy APT keyring found. Skipping key migration." debug
     fi
