@@ -19,17 +19,6 @@ I concluded that I don't have much to miss in that, didn't work for packages tha
 
 I also think I can make it even better, but if anyone is looking for a readymade alternative, dra is great, and dev is very active.
 
-
-# TODO
-- [ ] feat: script the install on first rpi boot, hijacking the script.sh perhaps.
-- [ ] feat: store the version installed so that we can then eventually check for updates.
-- [ ] feat: alias that executes `~/.setup/main.zsh` for convenience on first git pull
-- [ ] fix installing `ya` from `yazi` as is the package manager and is blocking:
-- [ ] .toml file to select installing packages on each category instead of main.py
-  - [ ] use [yq](https://github.com/mikefarah/yq) to parse the toml
-- [ ] feat: more architectures
-- [ ] feat: interactive installs
-
 # [@self] SSH Configuration Instructions
 
 > [!NOTE]  
@@ -60,9 +49,3 @@ ssh-add ~/.ssh/id_rsa
 
 # Useful tools that I did not install yet:
 - https://github.com/reemus-dev/gitnr gitignore generation TUI
-
-# Things to check-out
-
-- [ ] [units](https://www.gnu.org/software/units/)
-- [ ] [qalc](https://github.com/Qalculate/libqalculate)
-- [ ] [trash-cli](https://github.com/andreafrancia/trash-cli)
