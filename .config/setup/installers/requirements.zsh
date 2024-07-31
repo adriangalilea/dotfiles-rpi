@@ -5,67 +5,76 @@ source "${0:A:h}/apt.zsh"
 source "${0:A:h}/github/utils.zsh"
 source "${0:A:h}/github/main.zsh"
 
+REQUIRED_BINS=("gum" "cue" "jq")
+
 install_gum() {
     echo "Installing gum..."
-    add_repository "charm" "https://repo.charm.sh/apt/gpg.key" "https://repo.charm.sh/apt/ * *" "/etc/apt/sources.list.d/charm.list"
-    
-    # Update package lists
-    echo "Updating APT packages..."
-    if sudo apt-get update -qq; then
-        echo "APT updated."
-        echo
+
+    if [ "$(uname)" = "Darwin" ]; then
+        echo "Detected macOS."
+
+        # Check if Homebrew is installed
+        if ! command -v brew &>/dev/null; then
+            echo "Homebrew not found. Installing Homebrew..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+
+        # Install gum using Homebrew
+        if brew install gum; then
+            echo "gum installed. ✅"
+        else
+            echo "Error installing gum."
+            return 1
+        fi
     else
-        echo "Failed to update package lists."
-        echo
-        return 1
-    fi
-    
-    # Install gum package quietly, suppressing most output
-    echo "Installing gum..."
-    if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gum > /dev/null 2>&1; then
-        echo "gum installed. ✅"
-        echo
-    else
-        echo "Error installing gum."
-        echo
-        return 1
+        echo "Detected Linux."
+
+        # Add repository and key using the add_repository function
+        add_repository "charm" "https://repo.charm.sh/apt/gpg.key" "deb [signed-by=/usr/share/keyrings/charm-archive-keyring.gpg] https://repo.charm.sh/apt/ * *" "/etc/apt/sources.list.d/charm.list"
+
+        # Update package lists and install gum
+        if sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq gum > /dev/null 2>&1; then
+            echo "gum installed. ✅"
+        else
+            echo "Error installing gum."
+            return 1
+        fi
     fi
 }
 
 install_cue() {
     log "Installing cue..." debug
-    if ! install_from_github "cue" "cue-lang" "cue"; then
+    if ! install_from_github "cue-lang" "cue" "cue"; then
         log "Failed to install cue" error
         return 1
     fi
     log "cue installed successfully." info
 }
 
-install_yq() {
-    log "Installing yq..." debug
-    if ! install_from_github "yq" "mikefarah" "yq"; then
-        log "Failed to install yq" error
+install_jq() {
+    log "Installing jq..." debug
+    if ! install_from_github "jqlang" "jq" "jq"; then
+        log "Failed to install jq" error
         return 1
     fi
-    log "yq installed successfully." info
+    log "jq installed successfully." info
 }
 
 install_requirements() {
-    if ! command -v gum &> /dev/null; then
-        install_gum
-    else
-        log "gum is already installed." debug
-    fi
+    for bin in "${REQUIRED_BINS[@]}"; do
+        if ! command -v "$bin" &> /dev/null; then
+            "install_$bin"
+        else
+            log "$bin is already installed." debug
+        fi
+    done
+}
 
-    if ! command -v cue &> /dev/null; then
-        install_cue
-    else
-        log "cue is already installed." debug
-    fi
-
-    if ! command -v yq &> /dev/null; then
-        install_yq
-    else
-        log "yq is already installed." debug
-    fi
+check_requirements_installed() {
+    for bin in "${REQUIRED_BINS[@]}"; do
+        if ! command -v "$bin" &> /dev/null; then
+            return 1
+        fi
+    done
+    return 0
 }

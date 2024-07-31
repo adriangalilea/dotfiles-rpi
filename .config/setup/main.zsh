@@ -30,7 +30,7 @@ fi
 echo "Installing requirements..."
 install_requirements
 
-if command -v gum &> /dev/null && command -v cue &> /dev/null && command -v yq &> /dev/null; then
+if check_requirements_installed; then
     log "😎 Requirements are installed. Running system setup..." info
     echo
     run_system_setup "$install_config"

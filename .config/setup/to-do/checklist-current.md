@@ -10,7 +10,8 @@ Rules:
 
 ## PENDING (ordered by urgency)
 
-- [NEXT] fix broot install
+- [NEXT] template should have a specific target system, e.g.: `{ OS: "Linux", arch: "aarch64" }` just so I can't ever accidentally install something for an unintended system.
+- [HIGH] fix broot install
   - [ ] github/utils.zsh should handle broot that is a zip file in which inside there is all binaries, and should perform the version selection after the zip is unzipped not before on github curl, but solution should be generic enough
 - [MEDIUM] taskwarrior
   - [ ] server
@@ -21,7 +22,6 @@ Rules:
 - [LOW] [github] track installed versions, so we can check for updates.
 
 ## DOING
-- [ ] make all the requirements installs cross-platform.
 
 ## BLOCKED (until)
 
