@@ -37,7 +37,7 @@ parse_config() {
     fi
     
     local steps
-    steps=$(yq e '.steps[].name' "$yaml_file") || {
+    steps=$(yq e '.config.steps[].name' "$yaml_file") || {
         echo "Error: Failed to parse steps from YAML." >&2
         return 1
     }
@@ -64,17 +64,17 @@ get_step_details() {
     local result
     case "$detail" in
         type|function|command|comment)
-            result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         packages)
-            if [[ $(yq e ".steps[] | select(.name == \"$step_name\") | .type" "$yaml_file") == "github" ]]; then
-                result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            if [[ $(yq e ".config.steps[] | select(.name == \"$step_name\") | .type" "$yaml_file") == "github" ]]; then
+                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             else
-                result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
+                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             fi
             ;;
         args)
-            result=$(yq e ".steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
+            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
