@@ -36,12 +36,19 @@ log() {
   local log_level="${2:-info}"
   local log_section="${3:-${funcstack[2]:-}}"
 
-  # Initialize if not already done
+  # Initialize if not already done and debug is enabled
   if [[ -z "$LOG_INITIALIZED" ]]; then
-    local script_path="${0:A}"
-    gum log --level debug --time "15:04:05" "Executed by $USER" --prefix="$script_path"
+    if [[ "$DEBUG" -eq 1 ]]; then
+      local script_path="${0:A}"
+      gum log --level debug --time "15:04:05" "Executed by $USER" --prefix="$script_path"
+    fi
     LOG_INITIALIZED=1
     echo
+  fi
+
+  # Handle debug level logging
+  if [[ "$log_level" == "debug" && "$DEBUG" -ne 1 ]]; then
+    return
   fi
 
   # Validate log level
