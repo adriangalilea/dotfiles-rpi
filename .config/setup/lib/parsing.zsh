@@ -24,43 +24,43 @@
      log "Successfully generated JSON from CUE" info                                                  
  }                                                                                                    
                                                                                                       
- # Function to parse the configuration                                                                
- parse_config() {                                                                                     
-     local cue_file="$1"                                                                              
-     local json_file="${2:-$JSON_CONFIG_PATH}"                                                        
-                                                                                                      
-     log "Generating JSON from CUE file: $cue_file" debug                                             
-     if ! generate_json_from_cue "$cue_file" "$json_file"; then                                       
-         log "Failed to generate JSON from CUE file" error                                            
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     if ! command -v jq &> /dev/null; then                                                            
-         log "Error: 'jq' command not found. Please install jq." error                                
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     log "Validating configuration" debug                                                             
-     if ! validate_config "$json_file"; then                                                          
-         log "Configuration validation failed" error                                                  
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     local steps                                                                                      
-     log "Parsing steps from JSON" debug                                                              
-     if ! steps=$(jq -r '.config.steps[] | "\(.name)|\(.type)"' "$json_file"); then                   
-         log "Failed to parse steps from JSON" error                                                  
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     if [[ -z "$steps" ]]; then                                                                       
-         log "No steps found in the configuration" error                                              
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     log "Successfully parsed configuration" info                                                     
-     echo "$steps"                                                                                    
- }                                                                                                    
+# Function to parse the configuration
+parse_config() {
+    local cue_file="$1"
+    local json_file="${2:-$JSON_CONFIG_PATH}"
+
+    log "Generating JSON from CUE file: $cue_file" debug
+    if ! generate_json_from_cue "$cue_file" "$json_file"; then
+        log "Failed to generate JSON from CUE file" error
+        return 1
+    fi
+
+    if ! command -v jq &> /dev/null; then
+        log "Error: 'jq' command not found. Please install jq." error
+        return 1
+    fi
+
+    log "Validating configuration" debug
+    if ! validate_config "$json_file"; then
+        log "Configuration validation failed" error
+        return 1
+    fi
+
+    local steps
+    log "Parsing steps from JSON" debug
+    if ! steps=$(jq -r '.steps[] | "\(.name)|\(.type)"' "$json_file"); then
+        log "Failed to parse steps from JSON" error
+        return 1
+    fi
+
+    if [[ -z "$steps" ]]; then
+        log "No steps found in the configuration" error
+        return 1
+    fi
+
+    log "Successfully parsed configuration" info
+    echo "$steps"
+}
                                                                                                       
  # Function to get step details                                                                       
  get_step_details() {                                                                                 
