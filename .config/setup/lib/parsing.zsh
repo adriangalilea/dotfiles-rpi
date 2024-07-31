@@ -3,27 +3,27 @@
 # Global variables
 YAML_CONFIG_PATH="/tmp/install_config.yaml"
 
-# Function to generate YAML from CUE
-generate_yaml_from_cue() {
+# Function to generate JSON from CUE
+generate_json_from_cue() {
     local cue_file="$1"
-    local yaml_file="${2:-$YAML_CONFIG_PATH}"
+    local json_file="${2:-$JSON_CONFIG_PATH}"
     
     if ! command -v cue &> /dev/null; then
         log "Error: 'cue' command not found. Please install CUE." error
         return 1
     fi
     
-    log "Exporting CUE to YAML: $cue_file -> $yaml_file" debug
-    if ! cue export "$cue_file" --out yaml > "$yaml_file"; then
-        log "Error: Failed to generate YAML from CUE file." error
+    log "Exporting CUE to JSON: $cue_file -> $json_file" debug
+    if ! cue export "$cue_file" --out json > "$json_file"; then
+        log "Error: Failed to generate JSON from CUE file." error
         log "CUE file contents:" debug
         cat "$cue_file" >&2
         return 1
     fi
     
-    log "Successfully generated YAML from CUE" info
-    log "Generated YAML contents:" debug
-    cat "$yaml_file" >&2
+    log "Successfully generated JSON from CUE" info
+    log "Generated JSON contents:" debug
+    cat "$json_file" >&2
 }
 
 # Function to parse the configuration
