@@ -83,6 +83,10 @@ get_step_details() {
                     return 1
                     ;;
             esac
+            # If result is empty, try without array notation
+            if [[ -z "$result" ]]; then
+                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            fi
             ;;
         repo)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
@@ -133,20 +137,20 @@ execute_step() {
     
     case "$step_type" in
         apt)
-            local packages=$(get_step_details "$step" "packages")
-            if [[ -z "$packages" ]]; then
+            local packages=($(get_step_details "$step" "packages"))
+            if [[ ${#packages[@]} -eq 0 ]]; then
                 log "Error: No packages specified for apt step '$step_name'" error
                 return 1
             fi
-            install_apt_packages $packages
+            install_apt_packages "${packages[@]}"
             ;;
         pipx)
-            local packages=$(get_step_details "$step" "packages")
-            if [[ -z "$packages" ]]; then
+            local packages=($(get_step_details "$step" "packages"))
+            if [[ ${#packages[@]} -eq 0 ]]; then
                 log "Error: No packages specified for pipx step '$step_name'" error
                 return 1
             fi
-            install_pipx_packages $packages
+            install_pipx_packages "${packages[@]}"
             ;;
         github)
             local repos=($(get_step_details "$step" "repo"))
