@@ -5,20 +5,20 @@ import "dotfiles.install/template"
 // Extend the template for Raspberry Pi (Linux ARM64) configuration
 rpiConfig: template & {
 	steps: [
-		{
-			name: "Install APT Packages"
-			type: "apt"
-			packages: [
-				{name: "zsh"}, {name: "git"}, {name: "wget"}, {name: "curl"}, {name: "jq"}, {name: "tar"}, {name: "xz-utils"}, {name: "htop"}, {name: "neofetch"}, {name: "bat"},
-				{name: "build-essential"}, {name: "dh-make"}, {name: "devscripts"}, {name: "golang"}, {name: "python3-pip"}, {name: "fd-find"}, {name: "tree"}, {name: "tmux"}, {name: "shellcheck"},
-				{name: "glow"}, {name: "freeze"},
-			]
-		},
-		{
-			name: "Install PIPX Packages"
-			type: "pipx"
-			packages: [{name: "dtj"}, {name: "tldr"}, {name: "yt-dlp"}, {name: "periodic-table-cli"}]
-		},
+		// {
+		// 	name: "Install APT Packages"
+		// 	type: "apt"
+		// 	packages: [
+		// 		{name: "zsh"}, {name: "git"}, {name: "wget"}, {name: "curl"}, {name: "jq"}, {name: "tar"}, {name: "xz-utils"}, {name: "htop"}, {name: "neofetch"}, {name: "bat"},
+		// 		{name: "build-essential"}, {name: "dh-make"}, {name: "devscripts"}, {name: "golang"}, {name: "python3-pip"}, {name: "fd-find"}, {name: "tree"}, {name: "tmux"}, {name: "shellcheck"},
+		// 		{name: "glow"}, {name: "freeze"},
+		// 	]
+		// },
+		// {
+		// 	name: "Install PIPX Packages"
+		// 	type: "pipx"
+		// 	packages: [{name: "dtj"}, {name: "tldr"}, {name: "yt-dlp"}, {name: "periodic-table-cli"}]
+		// },
 		{
 			name: "Install GitHub Packages"
 			type: "github"
