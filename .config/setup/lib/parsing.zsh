@@ -77,16 +77,15 @@ get_step_details() {
                     ;;
                 apt|pipx)
                     result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
+                    if [[ -z "$result" ]]; then
+                        result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+                    fi
                     ;;
                 *)
                     echo "Error: Unknown step type '$step_type' for packages detail." >&2
                     return 1
                     ;;
             esac
-            # If result is empty, try without array notation
-            if [[ -z "$result" ]]; then
-                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
-            fi
             ;;
         repo)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
