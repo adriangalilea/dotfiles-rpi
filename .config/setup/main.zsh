@@ -27,6 +27,7 @@ if [ ! -f "$install_config" ]; then
     exit 1
 fi
 
+log "Installing requirements..." info
 install_requirements
 
 if command -v gum &> /dev/null && command -v cue &> /dev/null && command -v yq &> /dev/null; then
