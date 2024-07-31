@@ -31,16 +31,16 @@ parse_config() {
         return 1
     fi
     
+    # Validate the configuration
+    if ! validate_config "$yaml_file"; then
+        return 1
+    fi
+    
     local steps
     steps=$(yq e '.steps[] | .name' "$yaml_file") || {
         echo "Error: Failed to parse steps from YAML." >&2
         return 1
     }
-    
-    # Validate the configuration
-    if ! validate_config "$yaml_file"; then
-        return 1
-    fi
     
     echo "$steps"
 }
@@ -216,5 +216,5 @@ validate_config() {
         return 1
     fi
     
-    echo "Configuration validation passed."
+    return 0
 }
