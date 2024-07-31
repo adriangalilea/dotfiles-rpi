@@ -70,8 +70,11 @@ which was working for me before with the fix propose on [this issue](https://git
 
 - [ ] Using pipes for AI
   - [ ] learn how to use pipes
-  - [ ] claude-engineer
   - [ ] mods
+    - [ ] system prompt that limits output to only the returning stuff, 0 extra.
+    - [ ] can be improved by fine-tuning
+    - [ ] can be improved by wrapping it with xml tags and allowing <thinking></thinking>
+  - [ ] claude-engineer
 
 ## Learn
 - [ ] function navigation without tree-sitter
