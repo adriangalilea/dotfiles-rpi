@@ -1,7 +1,24 @@
 #!/bin/zsh
 
+move_legacy_apt_keys() {
+    local legacy_keyring="/etc/apt/trusted.gpg"
+    local new_keyring_dir="/etc/apt/keyrings"
+
+    if [[ -f "$legacy_keyring" ]]; then
+        log "Moving legacy APT keys to new location..." debug
+        sudo mkdir -p "$new_keyring_dir"
+        sudo cp "$legacy_keyring" "$new_keyring_dir/legacy-trusted.gpg"
+        sudo apt-key del $(sudo apt-key list | grep -E '^pub' | awk '{print $2}' | cut -d'/' -f2)
+        sudo mv "$legacy_keyring" "${legacy_keyring}.bak"
+        log "Legacy APT keys moved." debug
+    else
+        log "No legacy APT keyring found. Skipping key migration." debug
+    fi
+}
+
 update_package_lists() {
     log "Updating APT packages..." debug 
+    move_legacy_apt_keys
     if sudo apt-get update -qq; then
         log "APT updated." debug 
         echo
