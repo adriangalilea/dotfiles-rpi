@@ -29,7 +29,7 @@ fi
 
 install_requirements
 
-if command -v gum &> /dev/null && command -v cue &> /dev/null; then
+if command -v gum &> /dev/null && command -v cue &> /dev/null && command -v yq &> /dev/null; then
     log "😎 Requirements are installed. Running system setup..." info
     echo
     run_system_setup "$install_config"
