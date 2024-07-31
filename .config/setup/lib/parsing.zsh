@@ -70,11 +70,19 @@ get_step_details() {
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         packages)
-            if [[ $(yq e ".config.steps[] | select(.name == \"$step_name\") | .type" "$yaml_file") == "github" ]]; then
-                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
-            else
-                result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
-            fi
+            local step_type=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .type" "$yaml_file")
+            case "$step_type" in
+                github)
+                    result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+                    ;;
+                apt|pipx)
+                    result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
+                    ;;
+                *)
+                    echo "Error: Unknown step type '$step_type' for packages detail." >&2
+                    return 1
+                    ;;
+            esac
             ;;
         repo)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
