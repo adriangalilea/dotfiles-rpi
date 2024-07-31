@@ -66,35 +66,17 @@ get_step_details() {
         name)
             result="$step_name"
             ;;
-        type|function|command|comment)
+        type|function|command|comment|args)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         packages)
-            local step_type=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .type" "$yaml_file")
-            case "$step_type" in
-                github)
-                    result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
-                    ;;
-                apt|pipx)
-                    result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
-                    if [[ -z "$result" ]]; then
-                        result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
-                    fi
-                    ;;
-                *)
-                    echo "Error: Unknown step type '$step_type' for packages detail." >&2
-                    return 1
-                    ;;
-            esac
+            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].name" "$yaml_file")
             ;;
         repo)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
             ;;
         binaries)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].binaries[]" "$yaml_file")
-            ;;
-        args)
-            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
