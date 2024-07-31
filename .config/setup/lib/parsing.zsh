@@ -6,7 +6,7 @@ YAML_CONFIG_PATH="/tmp/install_config.yaml"
 # Function to generate JSON from CUE
 generate_json_from_cue() {
     local cue_file="$1"
-    local json_file="${2:-$JSON_CONFIG_PATH}"
+    local json_file="${2:-/tmp/install_config.json}"
     
     if ! command -v cue &> /dev/null; then
         log "Error: 'cue' command not found. Please install CUE." error
@@ -29,7 +29,7 @@ generate_json_from_cue() {
 # Function to parse the configuration
 parse_config() {
     local cue_file="$1"
-    local json_file="${2:-$JSON_CONFIG_PATH}"
+    local json_file="${2:-/tmp/install_config.json}"
     
     log "Generating JSON from CUE file: $cue_file" debug
     if ! generate_json_from_cue "$cue_file" "$json_file"; then
