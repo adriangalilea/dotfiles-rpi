@@ -16,7 +16,7 @@ package template
 		comment?: string
 		content: [...{
 			ghUsername: string
-			ghRepoName: string
+			ghReponame: string
 			binaries: [...string]
 		}]
 	}

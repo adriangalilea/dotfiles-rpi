@@ -66,20 +66,20 @@ update_package_lists() {
 
 install_apt_packages() {
     local apt_packages=("$@")
-    
+
+    # Update package lists
     update_package_lists || return 1
 
     # Install packages quietly, suppressing most output
-    log "Installing APT packages..." debug 
+    log "Installing APT packages: ${apt_packages[*]}" debug 
     if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${apt_packages[@]}" > /dev/null 2>&1; then
-        log "APT packages installed. ✅" info 
-        echo
+        log "APT packages installed successfully. ✅" info
     else
-        log "Error installing APT packages." error 
-        echo
+        log "Error installing APT packages." error
         return 1
     fi
 }
+
 
 add_repository() {
     local repo_name="$1"

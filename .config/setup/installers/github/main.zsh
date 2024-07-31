@@ -5,24 +5,36 @@ source ./installers/github/utils.zsh
 # TODO check [jpillora/instaler](https://github.com/jpillora/installer)
 # TODO check [@codelinkx gist](https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8?permalink_comment_id=4699831#gistcomment-4699831)
     
-process_package() {    
-    local name="$1"
-    local username="$2"
+process_package() {
+    local ghUsername="$1"
+    local ghReponame="$2"
     local binaries=("${@:3}")
 
-    local latest_release_json version assets asset_url asset
+    local latest_release_json version assets
 
-    echo "📦 $name"
-    if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $username $name"); then
-        log "❌ Failed to fetch the latest release for $name" "error"
+    echo "📦 $ghReponame"
+    if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $ghUsername $ghReponame"); then
+        log "Debug: fetch_latest_release output: $latest_release_json" "debug"
+        log "❌ Failed to fetch the latest release for $ghReponame" "error"
         return 1
     fi
 
     if ! { read -r version; read -r assets; } < <(extract_release_info "$latest_release_json"); then
         log "❌ Failed to extract release information" "error"
+        log "Debug: extract_release_info failed" "debug"
+        log "Debug: Latest release JSON:" "debug"
+        log "$latest_release_json" "debug"
         return 1
     fi
-    update_static_line "📦 $name 🏷️ $version"
+
+    if [[ -z "$version" || -z "$assets" ]]; then
+        log "❌ Failed to extract version or assets" "error"
+        log "Debug: Extracted version: $version" "debug"
+        log "Debug: Extracted assets: $assets" "debug"
+        return 1
+    fi
+
+    update_static_line "📦 $ghReponame 🏷️ $version"
 
     if [[ -n "$asset" ]]; then
         asset_url=$(echo "$assets" | jq -r --arg asset "$asset" '.[] | select(.name == $asset) | .browser_download_url')
@@ -69,28 +81,29 @@ process_package() {
         fi
     done
     
-    update_static_line "📦 $name 🏷️ $version installed ✅"
+    update_static_line "📦 $ghReponame 🏷️ $version installed ✅"
     return 0
 }
 
 install_from_github() {
-    log "Installing binaries from github..." debug
+    log "Installing binaries from GitHub..." debug
     log "Number of arguments: $#" debug
-    log "Arguments: $@" debug
+    log "Arguments: $*" debug
 
     if [[ $# -lt 3 ]]; then
         log "❌ Insufficient arguments provided to install_from_github" "error"
-        log "Usage: install_from_github name username binary1 [binary2 ...]" "error"
+        log "Usage: install_from_github ghUsername ghReponame binary1 [binary2 ...]" "error"
         return 1
     fi
 
-    local name="$1"
-    local username="$2"
+    local ghUsername="$1"
+    local ghReponame="$2"
     local binaries=("${@:3}")
     
-    if ! process_package "$name" "$username" "${binaries[@]}"; then
-        update_static_line "❌ Skipping $name: Failed to process package"
+    if ! process_package "$ghUsername" "$ghReponame" "${binaries[@]}"; then
+        update_static_line "❌ Skipping $ghReponame: Failed to process package"
     fi
 
     echo
 }
+

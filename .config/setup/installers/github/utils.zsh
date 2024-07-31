@@ -28,17 +28,17 @@ check_rate_limit() {
 }
 
 fetch_latest_release() {
-    local username=$1
-    local name=$2
-    
+    local ghUsername=$1
+    local ghReponame=$2
+
     if [[ $RATE_LIMIT_REMAINING -le 0 ]]; then
         check_rate_limit
     fi
-    local url="https://api.github.com/repos/$username/$name/releases/latest"
+    local url="https://api.github.com/repos/$ghUsername/$ghReponame/releases/latest"
     local response=$(curl -s "$url")
     RATE_LIMIT_REMAINING=$((RATE_LIMIT_REMAINING - 1))
     if [[ -z "$response" ]]; then
-        echo "Failed to fetch latest release for $name."
+        echo "Failed to fetch latest release for $repo."
         return 1
     fi
     echo -E "$response"
@@ -109,8 +109,6 @@ find_best_asset() {
     echo "$best_asset"
 }
 
-#!/bin/zsh
-
 # Download the asset
 download_asset() {
     local asset_url=$1
@@ -121,7 +119,6 @@ download_asset() {
         echo "Failed to download $asset_url"
         return 1
     fi
-    echo "$tmp_file"
 }
 
 # Extract the downloaded asset

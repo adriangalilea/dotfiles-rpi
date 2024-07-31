@@ -66,8 +66,8 @@ validate_step() {
 execute_package_step() {
     local type="$1"
     local content="$2"
-    local packages=$(echo "$content" | jq -r '.[]')
-    "install_${type}_packages" $packages
+    local packages=($(echo "$content" | jq -r '.[]'))
+    "install_${type}_packages" "${packages[@]}"
 }
 
 # Function to execute a github step
@@ -75,9 +75,12 @@ execute_github_step() {
     local content="$1"
     echo "$content" | jq -c '.[]' | while read -r repo; do
         local ghUsername=$(echo "$repo" | jq -r '.ghUsername')
-        local ghRepoName=$(echo "$repo" | jq -r '.ghRepoName')
+        local ghReponame=$(echo "$repo" | jq -r '.ghReponame')
         local binaries=$(echo "$repo" | jq -r '.binaries[]')
-        install_from_github "$ghUsername/$ghRepoName" $binaries
+
+        for binary in $binaries; do
+            install_from_github "$ghUsername" "$ghReponame" "$binary"
+        done
     done
 }
 

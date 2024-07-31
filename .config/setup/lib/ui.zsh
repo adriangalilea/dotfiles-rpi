@@ -9,19 +9,25 @@ update_static_line() {
 run_with_spinner() {
     local title=$1
     shift
-    gum spin --spinner dot --title "$title" --show-output -- zsh -c "
-        source_files() {
-            for file in \"\$1\"/*; do
-                if [[ -f \"\$file\" ]]; then
-                    source \"\$file\"
-                elif [[ -d \"\$file\" ]]; then
-                    source_files \"\$file\"
-                fi
-            done
-        }
-        source_files /home/adrian/.config/setup/installers
+
+    if [[ $DEBUG == 1 ]]; then
         $*
-    "
+    else
+        # Run with spinner
+        gum spin --spinner dot --title "$title" --show-output -- zsh -c "
+            source_files() {
+                for file in \"\$1\"/*; do
+                    if [[ -f \"\$file\" ]]; then
+                        source \"\$file\"
+                    elif [[ -d \"\$file\" ]]; then
+                        source_files \"\$file\"
+                    fi
+                done
+            }
+            source_files /home/adrian/.config/setup/installers
+            $*
+        "
+    fi
 }
 
 # Single logging function that handles initialization and logging
