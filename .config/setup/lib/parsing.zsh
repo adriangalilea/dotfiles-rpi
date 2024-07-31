@@ -47,7 +47,7 @@ parse_config() {
 
     local steps
     log "Parsing steps from JSON" debug
-    if ! steps=$(jq -r '.steps[] | "\(.name)|\(.type)"' "$json_file"); then
+    if ! steps=$(jq -r '.rpiConfig.steps[] | "\(.name)|\(.type)"' "$json_file"); then
         log "Failed to parse steps from JSON" error
         return 1
     fi
@@ -78,7 +78,7 @@ parse_config() {
              result="$step_name"
              ;;
          type|function|command|comment|args|packages|repo|binaries|asset)
-             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.steps[] | select(.name == $name) | .[$detail]' "$json_file")
+             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.rpiConfig.steps[] | select(.name == $name) | .[$detail]' "$json_file")
              ;;
          *)
              log "Error: Unknown detail type '$detail'." error
