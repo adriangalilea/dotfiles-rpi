@@ -5,6 +5,24 @@ import "dotfiles.install/template"
 
 steps: [
 	template.#Step & {
+		apt: {
+			message: "Install essential system packages"
+			comment: "These packages are required for basic system functionality and development"
+			content: [
+				"zsh", "git", "wget", "curl", "jq", "tar", "xz-utils", "htop", "neofetch", "bat",
+				"build-essential", "dh-make", "devscripts", "golang", "python3-pip", "fd-find", "tree", "tmux", "shellcheck",
+				"glow", "freeze",
+			]
+		}
+	},
+	{
+		pipx: {
+			message: "Install Python packages globally"
+			comment: "These Python tools are installed globally using pipx"
+			content: ["dtj", "tldr", "yt-dlp", "periodic-table-cli"]
+		}
+	},
+	{
 		github: {
 			message: "Install tools from GitHub repositories"
 			comment: "These tools are downloaded and installed directly from GitHub"
@@ -56,21 +74,3 @@ steps: [
 	},
 ]
 
-// {
-// 	apt: {
-// 		message: "Install essential system packages"
-// 		comment: "These packages are required for basic system functionality and development"
-// 		content: [
-// 			"zsh", "git", "wget", "curl", "jq", "tar", "xz-utils", "htop", "neofetch", "bat",
-// 			"build-essential", "dh-make", "devscripts", "golang", "python3-pip", "fd-find", "tree", "tmux", "shellcheck",
-// 			"glow", "freeze",
-// 		]
-// 	}
-// },
-// {
-// 	pipx: {
-// 		message: "Install Python packages globally"
-// 		comment: "These Python tools are installed globally using pipx"
-// 		content: ["dtj", "tldr", "yt-dlp", "periodic-table-cli"]
-// 	}
-// },
