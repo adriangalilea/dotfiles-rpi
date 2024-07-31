@@ -148,8 +148,8 @@ execute_step() {
             fi
             local github_args=()
             while IFS= read -r package; do
-                local repo=$(echo "$package" | yq e '.repo' -)
-                local binaries=($(echo "$package" | yq e '.binaries[]' -))
+                local repo=$(echo "$package" | jq -r '.repo')
+                local binaries=($(echo "$package" | jq -r '.binaries[]'))
                 if [[ -n "$repo" && ${#binaries[@]} -gt 0 ]]; then
                     for binary in "${binaries[@]}"; do
                         github_args+=("$repo" "$binary")
@@ -157,7 +157,7 @@ execute_step() {
                 else
                     log "Warning: Invalid package format for '$repo'. Skipping." warn
                 fi
-            done < <(yq e '.packages[]' <<< "$packages")
+            done < <(echo "$packages" | jq -c '.[]')
             log "Calling install_from_github with args: ${github_args[@]}" debug
             if [[ ${#github_args[@]} -eq 0 ]]; then
                 log "Error: No valid GitHub packages found for step '$step_name'" error
