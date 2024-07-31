@@ -1,6 +1,6 @@
 package rpi
 
-import "template"
+import "dotfiles.install/template"
 
 // Extend the template for Raspberry Pi (Linux ARM64) configuration
 rpiConfig: template & {
