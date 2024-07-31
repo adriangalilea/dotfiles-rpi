@@ -10,25 +10,18 @@ Rules:
 
 ## PENDING (ordered by urgency)
 
-- [NEXT] make all the requirements installs cross-platform.
-- [ ] print pipx packages that were installed
-- [ ] print apt packages that were installed
-- [ ] use gum to let me choose which steps to proceed, even with subitems. 
-- [ ] ```❯ ./main.zsh rpi_aarch64.cue
-03:13:37 DEBUG /home/adrian/.config/setup/log: Executed by adrian
-
-03:13:38 INFO Installing requirements...
-03:13:38 DEBUG install_requirements: gum is already installed.
-03:13:38 DEBUG install_requirements: cue is already installed.```
-
-order is incorrect
-- [MEDIUM] fix broot install
+- [NEXT] fix broot install
   - [ ] github/utils.zsh should handle broot that is a zip file in which inside there is all binaries, and should perform the version selection after the zip is unzipped not before on github curl, but solution should be generic enough
-- [LOW] taskwarrior
+- [MEDIUM] taskwarrior
   - [ ] server
   - [ ] client
+- [MEDIUM] print pipx packages that were installed
+- [MEDIUM] print apt packages that were installed
+- [LOW] use gum to let me choose which steps to proceed, even with sub-items.
+- [LOW] [github] track installed versions, so we can check for updates.
 
 ## DOING
+- [ ] make all the requirements installs cross-platform.
 
 ## BLOCKED (until)
 
