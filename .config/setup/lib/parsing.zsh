@@ -70,10 +70,10 @@ parse_config() {
 get_step_details() {
     local step_name="$1"
     local detail="$2"
-    local yaml_file="${3:-$YAML_CONFIG_PATH}"
+    local json_file="${3:-/tmp/install_config.json}"
     
-    if [[ ! -f "$yaml_file" ]]; then
-        echo "Error: YAML file not found. Run parse_config first." >&2
+    if [[ ! -f "$json_file" ]]; then
+        echo "Error: JSON file not found. Run parse_config first." >&2
         return 1
     fi
     
@@ -83,7 +83,7 @@ get_step_details() {
             result="$step_name"
             ;;
         type|function|command|comment|args|packages)
-            result=$(yq ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            result=$(jq -r ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$json_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
@@ -91,7 +91,7 @@ get_step_details() {
             ;;
     esac
     
-    if [[ -z "$result" ]]; then
+    if [[ -z "$result" || "$result" == "null" ]]; then
         echo "Error: Failed to retrieve '$detail' for step '$step_name'." >&2
         return 1
     fi
@@ -125,22 +125,6 @@ execute_step() {
     
     case "$step_type" in
         apt)
-            local packages=($(get_step_details "$step" "packages"))
-            if [[ ${#packages[@]} -eq 0 ]]; then
-                log "Error: No packages specified for apt step '$step_name'" error
-                return 1
-            fi
-            install_apt_packages "${packages[@]}"
-            ;;
-        pipx)
-            local packages=($(get_step_details "$step" "packages"))
-            if [[ ${#packages[@]} -eq 0 ]]; then
-                log "Error: No packages specified for pipx step '$step_name'" error
-                return 1
-            fi
-            install_pipx_packages "${packages[@]}"
-            ;;
-        github)
             local packages=$(get_step_details "$step" "packages")
             if [[ -z "$packages" ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
