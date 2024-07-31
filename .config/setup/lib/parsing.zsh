@@ -70,13 +70,7 @@ get_step_details() {
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         packages)
-            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].name" "$yaml_file")
-            ;;
-        repo)
-            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
-            ;;
-        binaries)
-            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].binaries[]" "$yaml_file")
+            result=$(yq e ".steps[] | select(.name == \"$step_name\") | .packages" "$yaml_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
@@ -150,7 +144,7 @@ execute_step() {
                 else
                     log "Warning: Invalid package format for '$repo'. Skipping." warn
                 fi
-            done < <(echo "$packages")
+            done < <(yq e '.packages[]' <<< "$packages")
             log "Calling install_from_github with args: ${github_args[@]}" debug
             if [[ ${#github_args[@]} -eq 0 ]]; then
                 log "Error: No valid GitHub packages found for step '$step_name'" error
