@@ -42,6 +42,8 @@ files() {
         echo -e "\033[1;33mMagic Dashboard: \`eza\` not installed.\033[0m" && return 1
     fi
     echo
+
+    zoxide add "$PWD"
     
     eza --icons --color=always --git -d "$PWD"
     
