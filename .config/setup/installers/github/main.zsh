@@ -49,6 +49,13 @@ install_from_github() {
         shift
         local binaries=()
 
+        # Ensure we have at least one binary
+        if [[ "$1" != *"/"* ]]; then
+            binaries+=("$1")
+            shift
+        fi
+
+        # Add any additional binaries
         while (( $# > 0 )) && [[ "$1" != *"/"* ]]; do
             binaries+=("$1")
             shift
