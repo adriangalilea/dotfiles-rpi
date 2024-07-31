@@ -153,9 +153,16 @@ execute_step() {
                 return 1
             fi
             log "Executing command: $command" debug
-            if ! eval "$command"; then
+            local output
+            if ! output=$(eval "$command" 2>&1); then
                 log "Command execution failed: $command" error
+                log "Error output: $output" error
                 return 1
+            else
+                log "Command executed successfully: $command" info
+                if [[ -n "$output" ]]; then
+                    log "Command output: $output" debug
+                fi
             fi
             ;;
         function)
