@@ -67,8 +67,14 @@ update_package_lists() {
 install_apt_packages() {
     local apt_packages=("$@")
     
-    # Update package lists
-    update_package_lists || return 1
+    # Update package lists only if it hasn't been done recently
+    if [[ ! -f "/tmp/apt_updated" || $(($(date +%s) - $(stat -c %Y "/tmp/apt_updated"))) -gt 3600 ]]; then
+        update_package_lists || return 1
+        touch "/tmp/apt_updated"
+    else
+        log "Skipping APT update as it was done recently." debug
+    fi
+
     # Install packages quietly, suppressing most output
     log "Installing APT packages..." debug 
     if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${apt_packages[@]}" > /dev/null 2>&1; then

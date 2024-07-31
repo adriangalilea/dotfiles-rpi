@@ -6,11 +6,6 @@ import "dotfiles.install/template"
 rpiConfig: template & {
 	steps: [
 		{
-			name:     "Update APT"
-			type:     "function"
-			function: "update_package_lists"
-		},
-		{
 			name: "Install APT Packages"
 			type: "apt"
 			packages: [
