@@ -38,7 +38,7 @@ rpiConfig: template & {
 				{name: "kondo", repo: "tbillington/kondo", binaries: ["kondo"]},
 				{name: "jnv", repo: "ynqa/jnv", binaries: ["jnv"]},
 				{name: "jwtui", repo: "jwt-rs/jwt-ui", binaries: ["jwtui"]},
-				{name: "csvlens", repo: "csvlens/releases", binaries: ["csvlens"]},
+				{name: "csvlens", repo: "csvlens/csvlens", binaries: ["csvlens"]},
 				{name: "serpl", repo: "yassinebridi/serpl", binaries: ["serpl"]},
 				{name: "zellij", repo: "zellij-org/zellij", binaries: ["zellij"]},
 				{name: "markdown-oxide", repo: "Feel-ix-343/markdown-oxide", binaries: ["markdown-oxide"]},

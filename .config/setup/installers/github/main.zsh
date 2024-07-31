@@ -49,14 +49,16 @@ install_from_github() {
         shift
         local binaries=()
 
+        log "Processing repo: $repo" debug
+
         # Ensure we have at least one binary
-        if [[ "$1" != *"/"* ]]; then
+        if [[ -n "$1" && "$1" != *"/"* ]]; then
             binaries+=("$1")
             shift
         fi
 
         # Add any additional binaries
-        while (( $# > 0 )) && [[ "$1" != *"/"* ]]; do
+        while (( $# > 0 )) && [[ -n "$1" && "$1" != *"/"* ]]; do
             binaries+=("$1")
             shift
         done
@@ -66,9 +68,15 @@ install_from_github() {
             continue
         fi
 
+        log "Binaries for $repo: ${binaries[*]}" debug
+
         for binary in "${binaries[@]}"; do
-            if ! process_package "$repo" "$binary"; then
-                update_static_line "❌ Skipping $repo $binary: Failed to process package"
+            if [[ -n "$binary" ]]; then
+                if ! process_package "$repo" "$binary"; then
+                    update_static_line "❌ Skipping $repo $binary: Failed to process package"
+                fi
+            else
+                log "Skipping empty binary for $repo" debug
             fi
         done
     done
