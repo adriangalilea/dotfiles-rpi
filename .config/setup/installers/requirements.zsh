@@ -41,6 +41,15 @@ install_cue() {
     log "cue installed successfully." info
 }
 
+install_yq() {
+    log "Installing yq..." debug
+    if ! install_from_github "mikefarah/yq" "yq"; then
+        log "Failed to install yq" error
+        return 1
+    fi
+    log "yq installed successfully." info
+}
+
 install_requirements() {
     if ! command -v gum &> /dev/null; then
         install_gum
@@ -52,5 +61,11 @@ install_requirements() {
         install_cue
     else
         log "cue is already installed." debug
+    fi
+
+    if ! command -v yq &> /dev/null; then
+        install_yq
+    else
+        log "yq is already installed." debug
     fi
 }
