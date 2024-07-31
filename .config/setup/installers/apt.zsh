@@ -4,18 +4,26 @@ move_legacy_apt_keys() {
     local legacy_keyring="/etc/apt/trusted.gpg"
     local new_keyring_dir="/etc/apt/keyrings"
 
+    log "Updating APT keys..." debug
+    sudo mkdir -p "$new_keyring_dir"
+
+    # Download and add the new azlux.fr GPG key
+    if curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg" 2>/dev/null; then
+        log "Downloaded and added new azlux.fr GPG key." debug
+    else
+        log "Failed to download or add new azlux.fr GPG key." error
+    fi
+
+    # Update the azlux.fr repository configuration
+    if [[ -f /etc/apt/sources.list.d/azlux.list ]]; then
+        sudo sed -i 's|deb https://packages.azlux.fr/debian/ stable main|deb [signed-by=/etc/apt/keyrings/azlux.gpg] https://packages.azlux.fr/debian/ stable main|' /etc/apt/sources.list.d/azlux.list 2>/dev/null
+        log "Updated azlux.fr repository configuration." debug
+    else
+        log "azlux.fr repository configuration not found." debug
+    fi
+
     if [[ -f "$legacy_keyring" ]]; then
         log "Moving legacy APT keys..." debug
-        sudo mkdir -p "$new_keyring_dir"
-
-        # Extract and move the azlux.fr key
-        sudo apt-key export 379CE192D401AB61 2>/dev/null | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg" 2>/dev/null
-        
-        # Update the azlux.fr repository configuration
-        sudo sed -i 's|deb https://packages.azlux.fr/debian/ stable main|deb [signed-by=/etc/apt/keyrings/azlux.gpg] https://packages.azlux.fr/debian/ stable main|' /etc/apt/sources.list.d/azlux.list 2>/dev/null
-
-        # Download and add the new azlux.fr GPG key
-        curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg" 2>/dev/null
 
         # Move other legacy keys
         sudo cp "$legacy_keyring" "$new_keyring_dir/legacy-trusted.gpg" 2>/dev/null
@@ -26,10 +34,12 @@ move_legacy_apt_keys() {
         # Backup and remove the legacy keyring
         sudo mv "$legacy_keyring" "${legacy_keyring}.bak" 2>/dev/null
         
-        log "Legacy APT keys moved and azlux.fr key updated." debug
+        log "Legacy APT keys moved." debug
     else
         log "No legacy APT keyring found." debug
     fi
+
+    log "APT keys update completed." debug
 }
 
 update_package_lists() {
