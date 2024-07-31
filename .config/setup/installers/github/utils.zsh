@@ -28,15 +28,17 @@ check_rate_limit() {
 }
 
 fetch_latest_release() {
-    local repo=$1
+    local username=$1
+    local name=$2
+    
     if [[ $RATE_LIMIT_REMAINING -le 0 ]]; then
         check_rate_limit
     fi
-    local url="https://api.github.com/repos/$repo/releases/latest"
+    local url="https://api.github.com/repos/$username/$name/releases/latest"
     local response=$(curl -s "$url")
     RATE_LIMIT_REMAINING=$((RATE_LIMIT_REMAINING - 1))
     if [[ -z "$response" ]]; then
-        echo "Failed to fetch latest release for $repo."
+        echo "Failed to fetch latest release for $name."
         return 1
     fi
     echo -E "$response"
@@ -107,16 +109,26 @@ find_best_asset() {
     echo "$best_asset"
 }
 
-download_and_extract_asset() {
+#!/bin/zsh
+
+# Download the asset
+download_asset() {
     local asset_url=$1
-    local binary_name=$2
-    local tmp_dir="/tmp/$binary_name"
+    local tmp_dir=$2
     local tmp_file="$tmp_dir/$(basename "$asset_url")"
-    mkdir -p "$tmp_dir"
+    
     if ! curl -s -L "$asset_url" -o "$tmp_file"; then
         echo "Failed to download $asset_url"
         return 1
     fi
+    echo "$tmp_file"
+}
+
+# Extract the downloaded asset
+extract_asset() {
+    local tmp_file=$1
+    local tmp_dir=$2
+    
     case "$tmp_file" in
         *.tar.gz|*.tar.xz|*.tgz|*.tar|*.tar.bz2|*.tbz2)
             tar -xf "$tmp_file" -C "$tmp_dir" || return 1
@@ -126,7 +138,6 @@ download_and_extract_asset() {
             ;;
         *.AppImage|*.sh|*.bin|*.run)
             chmod +x "$tmp_file"
-            sudo mv "$tmp_file" /usr/local/bin/"$binary_name" || return 1
             return 0
             ;;
         *.deb)
@@ -138,20 +149,38 @@ download_and_extract_asset() {
             return 1
             ;;
     esac
-    [ -f "$tmp_file" ] && rm "$tmp_file"
-    local extracted_file=$(find "$tmp_dir" -type f -executable -name "*$binary_name*" -print -quit)
-    if [ -z "$extracted_file" ]; then
-        extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
+    return 0
+}
+
+# Find and install a single binary
+install_binary() {
+    local tmp_dir=$1
+    local binary=$2
+    local tmp_file=$3
+    
+    if [[ "$tmp_file" == *.AppImage || "$tmp_file" == *.sh || "$tmp_file" == *.bin || "$tmp_file" == *.run ]]; then
+        sudo cp "$tmp_file" /usr/local/bin/"$binary" || return 1
+    else
+        local extracted_file=$(find "$tmp_dir" -type f -executable -name "*$binary*" -print -quit)
+        if [ -z "$extracted_file" ]; then
+            extracted_file=$(find "$tmp_dir" -type f -executable -print -quit)
+        fi
+        if [ -z "$extracted_file" ]; then
+            echo "$binary not found in the extracted files."
+            return 1
+        fi
+        if [[ "$extracted_file" != *"$binary"* ]]; then
+            mv "$extracted_file" "$tmp_dir/$binary"
+            extracted_file="$tmp_dir/$binary"
+        fi
+        sudo mv "$extracted_file" /usr/local/bin/"$binary" || return 1
     fi
-    if [ -z "$extracted_file" ]; then
-        echo "$binary_name not found in the extracted files."
-        return 1
-    fi
-    if [[ "$extracted_file" != *"$binary_name"* ]]; then
-        mv "$extracted_file" "$tmp_dir/$binary_name"
-        extracted_file="$tmp_dir/$binary_name"
-    fi
-    sudo mv "$extracted_file" /usr/local/bin/"$binary_name" || return 1
-    sudo chmod +x /usr/local/bin/"$binary_name"
+    sudo chmod +x /usr/local/bin/"$binary"
+    return 0
+}
+
+# Clean up temporary files
+cleanup() {
+    local tmp_dir=$1
     rm -rf "$tmp_dir"
 }

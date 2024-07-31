@@ -3,83 +3,73 @@ package rpi
 import "dotfiles.install/template"
 
 // Extend the template for Raspberry Pi (Linux ARM64) configuration
-rpiConfig: template & {
-	steps: [
-		// {
-		// 	name: "Install APT Packages"
-		// 	type: "apt"
-		// 	packages: [
-		// 		{name: "zsh"}, {name: "git"}, {name: "wget"}, {name: "curl"}, {name: "jq"}, {name: "tar"}, {name: "xz-utils"}, {name: "htop"}, {name: "neofetch"}, {name: "bat"},
-		// 		{name: "build-essential"}, {name: "dh-make"}, {name: "devscripts"}, {name: "golang"}, {name: "python3-pip"}, {name: "fd-find"}, {name: "tree"}, {name: "tmux"}, {name: "shellcheck"},
-		// 		{name: "glow"}, {name: "freeze"},
-		// 	]
-		// },
-		// {
-		// 	name: "Install PIPX Packages"
-		// 	type: "pipx"
-		// 	packages: [{name: "dtj"}, {name: "tldr"}, {name: "yt-dlp"}, {name: "periodic-table-cli"}]
-		// },
-		{
-			name: "Install GitHub Packages"
-			type: "github"
-			packages: [
-				{name: "helix", repo: "helix-editor/helix", binaries: ["hx"]},
-				{name: "eza", repo: "eza-community/eza", binaries: ["eza"]},
-				{name: "lazygit", repo: "jesseduffield/lazygit", binaries: ["lazygit"]},
-				{name: "gdu", repo: "dundee/gdu", binaries: ["gdu"]},
-				{name: "fzf", repo: "junegunn/fzf", binaries: ["fzf"]},
-				{name: "delta", repo: "dandavison/delta", binaries: ["delta"]},
-				{name: "vale", repo: "errata-ai/vale", binaries: ["vale"]},
-				{name: "vale-ls", repo: "errata-ai/vale-ls", binaries: ["vale-ls"]},
-				{name: "yazi", repo: "sxyazi/yazi", binaries: ["yazi", "ya"]},
-				{name: "ticker", repo: "achannarasappa/ticker", binaries: ["ticker"]},
-				{name: "humanlog", repo: "humanlogio/humanlog", binaries: ["humanlog"]},
-				{name: "openapi-tui", repo: "zaghaghi/openapi-tui", binaries: ["openapi-tui"]},
-				{name: "kondo", repo: "tbillington/kondo", binaries: ["kondo"]},
-				{name: "jnv", repo: "ynqa/jnv", binaries: ["jnv"]},
-				{name: "jwtui", repo: "jwt-rs/jwt-ui", binaries: ["jwtui"]},
-				{name: "csvlens", repo: "csvlens/csvlens", binaries: ["csvlens"]},
-				{name: "serpl", repo: "yassinebridi/serpl", binaries: ["serpl"]},
-				{name: "zellij", repo: "zellij-org/zellij", binaries: ["zellij"]},
-				{name: "markdown-oxide", repo: "Feel-ix-343/markdown-oxide", binaries: ["markdown-oxide"]},
-				{name: "xdg-dirs", repo: "adriangalilea/xdg-dirs", binaries: ["xdg-dirs"]},
-				{
-					name: "broot"
-					repo: "Canop/broot"
-					binaries: ["broot"]
-					asset:   "broot.zip"
-					comment: "Download the latest zip, unzip, contains all the binaries for each distribution, pick the right one, move to /usr/local/bin/."
-				},
+steps: [...template.#Step] & [
+	{
+		apt: {
+			message: "Install essential system packages"
+			comment: "These packages are required for basic system functionality and development"
+			content: [
+				"zsh", "git", "wget", "curl", "jq", "tar", "xz-utils", "htop", "neofetch", "bat",
+				"build-essential", "dh-make", "devscripts", "golang", "python3-pip", "fd-find", "tree", "tmux", "shellcheck",
+				"glow", "freeze",
 			]
-		},
-		{
-			name:    "Install Clipboard"
-			type:    "command"
-			command: "curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh"
-		},
-		{
-			name:    "Install Direnv"
-			type:    "command"
-			command: "curl -sfL https://direnv.net/install.sh | bash"
-		},
-		{
-			name:     "Setup SSH Clipboard Forwarding"
-			type:     "function"
-			function: "setup_ssh_clipboard_forwarding"
-		},
-		{
-			name:     "Increase Swap Size"
-			type:     "function"
-			function: "increase_swap_size"
-			args: ["1024"]
-		},
-		{
-			name:     "Setup Custom MOTD"
-			type:     "function"
-			function: "setup_custom_motd"
-		},
-	]
-}
-
-// Validate the configuration
-config: rpiConfig
+		}
+	},
+	{
+		pipx: {
+			message: "Install Python packages globally"
+			comment: "These Python tools are installed globally using pipx"
+			content: ["dtj", "tldr", "yt-dlp", "periodic-table-cli"]
+		}
+	},
+	{
+		github: {
+			message: "Install tools from GitHub repositories"
+			comment: "These tools are downloaded and installed directly from GitHub"
+			content: [
+				{ghUsername: "helix-editor", ghRepoName: "helix", binaries: ["hx"]},
+				{ghUsername: "eza-community", ghRepoName: "eza", binaries: ["eza"]},
+				{ghUsername: "jesseduffield", ghRepoName: "lazygit", binaries: ["lazygit"]},
+				{ghUsername: "dundee", ghRepoName: "gdu", binaries: ["gdu"]},
+				{ghUsername: "junegunn", ghRepoName: "fzf", binaries: ["fzf"]},
+				{ghUsername: "dandavison", ghRepoName: "delta", binaries: ["delta"]},
+				{ghUsername: "errata-ai", ghRepoName: "vale", binaries: ["vale"]},
+				{ghUsername: "errata-ai", ghRepoName: "vale-ls", binaries: ["vale-ls"]},
+				{ghUsername: "sxyazi", ghRepoName: "yazi", binaries: ["yazi", "ya"]},
+				{ghUsername: "achannarasappa", ghRepoName: "ticker", binaries: ["ticker"]},
+				{ghUsername: "humanlogio", ghRepoName: "humanlog", binaries: ["humanlog"]},
+				{ghUsername: "zaghaghi", ghRepoName: "openapi-tui", binaries: ["openapi-tui"]},
+				{ghUsername: "tbillington", ghRepoName: "kondo", binaries: ["kondo"]},
+				{ghUsername: "ynqa", ghRepoName: "jnv", binaries: ["jnv"]},
+				{ghUsername: "jwt-rs", ghRepoName: "jwtui", binaries: ["jwtui"]},
+				{ghUsername: "csvlens", ghRepoName: "csvlens", binaries: ["csvlens"]},
+				{ghUsername: "yassinebridi", ghRepoName: "serpl", binaries: ["serpl"]},
+				{ghUsername: "zellij-org", ghRepoName: "zellij", binaries: ["zellij"]},
+				{ghUsername: "Feel-ix-343", ghRepoName: "markdown-oxide", binaries: ["markdown-oxide"]},
+				{ghUsername: "adriangalilea", ghRepoName: "xdg-dirs", binaries: ["xdg-dirs"]},
+				{ghUsername: "Canop", ghRepoName: "broot", binaries: ["broot"]},
+			]
+		}
+	},
+	{
+		command: {
+			message: "Install additional tools"
+			comment: "Install Clipboard and Direnv using their installation scripts"
+			content: [
+				"curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh",
+				"curl -sfL https://direnv.net/install.sh | bash",
+			]
+		}
+	},
+	{
+		function: {
+			message: "Configure system settings"
+			comment: "Set up various system configurations"
+			content: [
+				{name: "setup_ssh_clipboard_forwarding", args: []},
+				{name: "increase_swap_size", args: ["1024"]},
+				{name: "setup_custom_motd", args: []},
+			]
+		}
+	},
+]

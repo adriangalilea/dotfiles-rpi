@@ -5,14 +5,16 @@ source ./installers/github/utils.zsh
 # TODO check [jpillora/instaler](https://github.com/jpillora/installer)
 # TODO check [@codelinkx gist](https://gist.github.com/steinwaywhw/a4cd19cda655b8249d908261a62687f8?permalink_comment_id=4699831#gistcomment-4699831)
     
-process_package() {
-    local repo=$1
-    local binary=$2
+process_package() {    
+    local name="$1"
+    local username="$2"
+    local binaries=("${@:3}")
+
     local latest_release_json version assets asset_url asset
 
-    echo "🌐 $repo 📦 $binary"
-    if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $repo"); then
-        log "❌ Failed to fetch the latest release for $repo" "error"
+    echo "📦 $name"
+    if ! latest_release_json=$(run_with_spinner "🔍 looking for the right version..." "fetch_latest_release $username $name"); then
+        log "❌ Failed to fetch the latest release for $name" "error"
         return 1
     fi
 
@@ -20,12 +22,12 @@ process_package() {
         log "❌ Failed to extract release information" "error"
         return 1
     fi
-    update_static_line "🌐 $repo 📦 $binary 🏷️ $version"
+    update_static_line "📦 $name 🏷️ $version"
 
     if [[ -n "$asset" ]]; then
         asset_url=$(echo "$assets" | jq -r --arg asset "$asset" '.[] | select(.name == $asset) | .browser_download_url')
     else
-        asset_url=$(run_with_spinner "🧠 Selecting the right binary..." "find_best_asset '$assets'")
+        asset_url=$(run_with_spinner "🧠 Selecting the right name..." "find_best_asset '$assets'")
     fi
 
     if [[ -z "$asset_url" ]]; then
@@ -34,16 +36,40 @@ process_package() {
     fi
 
     local asset_name=$(echo "$asset_url" | awk -F/ '{print $NF}')
-    if ! run_with_spinner "⚙️ Installing..." "download_and_extract_asset '$asset_url' '$binary'"; then
-        log "❌ Failed to download or extract asset" "error"
+    local tmp_dir="/tmp/github_install_$(date +%s)"
+    mkdir -p "$tmp_dir"
+
+    if ! run_with_spinner "⬇️ Downloading..." "download_asset '$asset_url' '$tmp_dir'"; then
+        log "❌ Failed to download asset" "error"
+        cleanup "$tmp_dir"
         return 1
     fi
 
-    if ! command -v "$binary" &> /dev/null; then
-        log "❌ Installation failed: $binary not found in PATH" "error"
+    local tmp_file="$tmp_dir/$asset_name"
+    if ! run_with_spinner "📦 Extracting..." "extract_asset '$tmp_file' '$tmp_dir'"; then
+        log "❌ Failed to extract asset" "error"
+        cleanup "$tmp_dir"
         return 1
     fi
-    update_static_line "🌐 $repo 📦 $binary 🏷️ $version installed ✅"
+
+    for binary in "${binaries[@]}"; do
+        if ! run_with_spinner "⚙️ Installing $binary..." "install_binary '$tmp_dir' '$binary' '$tmp_file'"; then
+            log "❌ Installation failed for $binary" "error"
+            cleanup "$tmp_dir"
+            return 1
+        fi
+    done
+
+    cleanup "$tmp_dir"
+
+    for binary in "${binaries[@]}"; do
+        if ! command -v "$binary" &> /dev/null; then
+            log "❌ Installation verification failed: $binary not found in PATH" "error"
+            return 1
+        fi
+    done
+    
+    update_static_line "📦 $name 🏷️ $version installed ✅"
     return 0
 }
 
@@ -52,32 +78,18 @@ install_from_github() {
     log "Number of arguments: $#" debug
     log "Arguments: $@" debug
 
-    if [[ $# -eq 0 ]]; then
-        log "❌ No arguments provided to install_from_github" "error"
+    if [[ $# -lt 3 ]]; then
+        log "❌ Insufficient arguments provided to install_from_github" "error"
+        log "Usage: install_from_github name username binary1 [binary2 ...]" "error"
         return 1
     fi
 
-    while (( $# >= 2 )); do
-        local repo="$1"
-        local binary="$2"
-        local asset="$3"
-        shift 3
-
-        log "Processing repo: $repo" debug
-        log "Processing binary: $binary" debug
-
-        if [[ -z "$repo" || -z "$binary" ]]; then
-            log "❌ Invalid package format. Expected format: owner/repo binary" "error"
-            continue
-        fi
-
-        if ! process_package "$repo" "$binary"; then
-            update_static_line "❌ Skipping $repo $binary: Failed to process package"
-        fi
-    done
-
-    if (( $# > 0 )); then
-        log "❌ Odd number of arguments. Last argument ignored: $1" "error"
+    local name="$1"
+    local username="$2"
+    local binaries=("${@:3}")
+    
+    if ! process_package "$name" "$username" "${binaries[@]}"; then
+        update_static_line "❌ Skipping $name: Failed to process package"
     fi
 
     echo

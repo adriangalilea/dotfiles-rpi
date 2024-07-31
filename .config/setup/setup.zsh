@@ -12,18 +12,32 @@ main() {
     echo
     
     local cue_file="${1:-rpi_aarch64.cue}"
-    local steps
+    if [[ -z "$cue_file" ]]; then
+        log "Error: No CUE file specified." error
+        log "Usage: $0 <cue_file>" error
+        return 1
+    fi
 
-    # Parse and validate the configuration
-    steps=$(parse_config "$cue_file") || {
-        log "Failed to parse or validate configuration." error
-        exit 1
-    }
+    if ! generate_json_from_cue "$cue_file"; then
+        log "Failed to generate JSON from CUE file" error
+        return 1
+    fi
+
+    if ! command -v jq &> /dev/null; then
+        log "Error: 'jq' command not found. Please install jq." error
+        return 1
+    fi
 
     # Execute each step
-    while IFS= read -r step; do
-        execute_step "$step"
-    done <<< "$steps"
+    parse_config "$JSON_CONFIG_PATH" | while read -r step; do
+        if ! validate_step "$step"; then
+            log "Step validation failed, skipping execution" error
+            continue
+        fi
+        if ! execute_step "$step"; then
+            log "Step execution failed" error
+        fi
+    done
 
     log "Setup complete! Please reboot to apply all changes." info
 }

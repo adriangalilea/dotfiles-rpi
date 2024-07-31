@@ -34,7 +34,7 @@ install_gum() {
 
 install_cue() {
     log "Installing cue..." debug
-    if ! install_from_github "cue-lang/cue" "cue"; then
+    if ! install_from_github "cue" "cue-lang" "cue"; then
         log "Failed to install cue" error
         return 1
     fi
@@ -43,7 +43,7 @@ install_cue() {
 
 install_yq() {
     log "Installing yq..." debug
-    if ! install_from_github "mikefarah/yq" "yq"; then
+    if ! install_from_github "yq" "mikefarah" "yq"; then
         log "Failed to install yq" error
         return 1
     fi

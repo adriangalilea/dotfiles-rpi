@@ -27,7 +27,7 @@ if [ ! -f "$install_config" ]; then
     exit 1
 fi
 
-log "Installing requirements..." info
+echo "Installing requirements..."
 install_requirements
 
 if command -v gum &> /dev/null && command -v cue &> /dev/null && command -v yq &> /dev/null; then
@@ -35,7 +35,7 @@ if command -v gum &> /dev/null && command -v cue &> /dev/null && command -v yq &
     echo
     run_system_setup "$install_config"
 else
-    log "Failed to install requirements. Please check your internet connection and try again." error
+    echo "Failed to install requirements. Please check your internet connection and try again."
     exit 1
 fi
 
