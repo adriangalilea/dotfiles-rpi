@@ -172,11 +172,18 @@ execute_step() {
                 log "Error: No function specified for function step '$step_name'" error
                 return 1
             fi
-            local args=$(get_step_details "$step" "args")
+            local args=$(get_step_details "$step" "args" 2>/dev/null)
             log "Calling function: $function" debug
-            if ! $function $args; then
-                log "Function call failed: $function" error
-                return 1
+            if [[ -n "$args" ]]; then
+                if ! $function $args; then
+                    log "Function call failed: $function" error
+                    return 1
+                fi
+            else
+                if ! $function; then
+                    log "Function call failed: $function" error
+                    return 1
+                fi
             fi
             ;;
         *)
