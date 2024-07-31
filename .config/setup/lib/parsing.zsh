@@ -76,6 +76,12 @@ get_step_details() {
                 result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             fi
             ;;
+        repo)
+            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].repo" "$yaml_file")
+            ;;
+        binaries)
+            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .packages[].binaries[]" "$yaml_file")
+            ;;
         args)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail[]" "$yaml_file")
             ;;
@@ -135,22 +141,15 @@ execute_step() {
             install_pipx_packages $packages
             ;;
         github)
-            local packages=$(get_step_details "$step" "packages")
-            if [[ -z "$packages" ]]; then
+            local repos=($(get_step_details "$step" "repo"))
+            local binaries=($(get_step_details "$step" "binaries"))
+            if [[ ${#repos[@]} -eq 0 || ${#binaries[@]} -eq 0 ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
                 return 1
             fi
             local github_args=()
-            local repo
-            local binaries
-            echo "$packages" | while IFS= read -r package; do
-                repo=$(echo "$package" | yq e '.repo' -)
-                binaries=($(echo "$package" | yq e '.binaries[]' -))
-                if [[ -z "$repo" || ${#binaries[@]} -eq 0 ]]; then
-                    log "Error: Invalid package specification in github step '$step_name'" error
-                    return 1
-                fi
-                github_args+=("$repo" "${binaries[@]}")
+            for ((i=0; i<${#repos[@]}; i++)); do
+                github_args+=("${repos[i]}" "${binaries[i]}")
             done
             install_from_github "${github_args[@]}"
             ;;
