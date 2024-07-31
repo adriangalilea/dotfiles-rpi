@@ -37,7 +37,7 @@ parse_config() {
     fi
     
     local steps
-    steps=$(yq e '.config.steps[].name' "$yaml_file") || {
+    steps=$(yq '.steps[].name' "$yaml_file") || {
         echo "Error: Failed to parse steps from YAML." >&2
         return 1
     }
@@ -66,11 +66,8 @@ get_step_details() {
         name)
             result="$step_name"
             ;;
-        type|function|command|comment|args)
-            result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
-            ;;
-        packages)
-            result=$(yq e ".steps[] | select(.name == \"$step_name\") | .packages" "$yaml_file")
+        type|function|command|comment|args|packages)
+            result=$(yq ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
@@ -210,7 +207,7 @@ get_step_names() {
         return 1
     fi
     
-    yq e '.steps[].name' "$yaml_file"
+    yq '.steps[].name' "$yaml_file"
 }
 
 # Function to validate the configuration
@@ -226,41 +223,41 @@ validate_config() {
     local errors=()
     
     while IFS= read -r step; do
-        local type=$(get_step_details "$step" "type" "$yaml_file")
+        local type=$(yq ".steps[] | select(.name == \"$step\") | .type" "$yaml_file")
         if [[ ! " ${valid_types[@]} " =~ " ${type} " ]]; then
             errors+=("Invalid type '$type' for step '$step'")
         fi
         
         case "$type" in
             apt|pipx)
-                if ! get_step_details "$step" "packages" "$yaml_file" &> /dev/null; then
+                if [[ -z $(yq ".steps[] | select(.name == \"$step\") | .packages" "$yaml_file") ]]; then
                     errors+=("Missing 'packages' for $type step '$step'")
                 fi
                 ;;
             github)
-                local packages=$(get_step_details "$step" "packages" "$yaml_file")
+                local packages=$(yq ".steps[] | select(.name == \"$step\") | .packages" "$yaml_file")
                 if [[ -z "$packages" ]]; then
                     errors+=("Missing 'packages' for github step '$step'")
                 else
                     while IFS= read -r package; do
-                        if ! echo "$package" | yq e ".repo" - &> /dev/null; then
+                        if [[ -z $(echo "$package" | yq ".repo") ]]; then
                             errors+=("Missing 'repo' for a package in github step '$step'")
                         fi
-                        if ! echo "$package" | yq e ".binaries[]" - &> /dev/null; then
+                        if [[ -z $(echo "$package" | yq ".binaries[]") ]]; then
                             errors+=("Missing 'binaries' for a package in github step '$step'")
                         fi
-                        local repo=$(echo "$package" | yq e ".repo" -)
+                        local repo=$(echo "$package" | yq ".repo")
                         log "Validating package: $repo in github step '$step'" debug
-                    done < <(echo "$packages")
+                    done < <(echo "$packages" | yq -o=json -I=0 '.')
                 fi
                 ;;
             command)
-                if ! get_step_details "$step" "command" "$yaml_file" &> /dev/null; then
+                if [[ -z $(yq ".steps[] | select(.name == \"$step\") | .command" "$yaml_file") ]]; then
                     errors+=("Missing 'command' for command step '$step'")
                 fi
                 ;;
             function)
-                if ! get_step_details "$step" "function" "$yaml_file" &> /dev/null; then
+                if [[ -z $(yq ".steps[] | select(.name == \"$step\") | .function" "$yaml_file") ]]; then
                     errors+=("Missing 'function' for function step '$step'")
                 fi
                 ;;
