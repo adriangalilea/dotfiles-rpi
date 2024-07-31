@@ -7,15 +7,14 @@ move_legacy_apt_keys() {
     log "Updating APT keys..." debug
     sudo mkdir -p "$new_keyring_dir"
 
-    # Download and add the new azlux.fr GPG key if it doesn't exist
-    if [[ ! -f "$new_keyring_dir/azlux.gpg" ]]; then
-        if curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg" 2>/dev/null; then
-            log "Downloaded and added new azlux.fr GPG key." debug
-        else
-            log "Failed to download or add new azlux.fr GPG key." error
-        fi
+    # Download and add the new azlux.fr GPG key
+    if curl -fsSL https://azlux.fr/repo.gpg.key | sudo gpg --dearmor -o "$new_keyring_dir/azlux.gpg" 2>/dev/null; then
+        log "Downloaded and added new azlux.fr GPG key." debug
+        # Explicitly add the key to apt
+        sudo apt-key add "$new_keyring_dir/azlux.gpg" 2>/dev/null
+        log "Added azlux.fr GPG key to apt." debug
     else
-        log "azlux.fr GPG key already exists. Skipping download." debug
+        log "Failed to download or add new azlux.fr GPG key." error
     fi
 
     # Update the azlux.fr repository configuration
