@@ -9,14 +9,21 @@ generate_yaml_from_cue() {
     local yaml_file="${2:-$YAML_CONFIG_PATH}"
     
     if ! command -v cue &> /dev/null; then
-        echo "Error: 'cue' command not found. Please install CUE." >&2
+        log "Error: 'cue' command not found. Please install CUE." error
         return 1
     fi
     
+    log "Exporting CUE to YAML: $cue_file -> $yaml_file" debug
     if ! cue export "$cue_file" --out yaml > "$yaml_file"; then
-        echo "Error: Failed to generate YAML from CUE file." >&2
+        log "Error: Failed to generate YAML from CUE file." error
+        log "CUE file contents:" debug
+        cat "$cue_file" >&2
         return 1
     fi
+    
+    log "Successfully generated YAML from CUE" info
+    log "Generated YAML contents:" debug
+    cat "$yaml_file" >&2
 }
 
 # Function to parse the configuration
@@ -24,29 +31,36 @@ parse_config() {
     local cue_file="$1"
     local yaml_file="${2:-$YAML_CONFIG_PATH}"
     
-    generate_yaml_from_cue "$cue_file" "$yaml_file" || return 1
-    
-    if ! command -v yq &> /dev/null; then
-        echo "Error: 'yq' command not found. Please install yq." >&2
+    log "Generating YAML from CUE file: $cue_file" debug
+    if ! generate_yaml_from_cue "$cue_file" "$yaml_file"; then
+        log "Failed to generate YAML from CUE file" error
         return 1
     fi
     
-    # Validate the configuration
+    if ! command -v yq &> /dev/null; then
+        log "Error: 'yq' command not found. Please install yq." error
+        return 1
+    fi
+    
+    log "Validating configuration" debug
     if ! validate_config "$yaml_file"; then
+        log "Configuration validation failed" error
         return 1
     fi
     
     local steps
-    steps=$(yq '.steps[].name' "$yaml_file") || {
-        echo "Error: Failed to parse steps from YAML." >&2
-        return 1
-    }
-    
-    if [[ -z "$steps" ]]; then
-        echo "Error: No steps found in the configuration." >&2
+    log "Parsing steps from YAML" debug
+    if ! steps=$(yq '.steps[].name' "$yaml_file"); then
+        log "Failed to parse steps from YAML" error
         return 1
     fi
     
+    if [[ -z "$steps" ]]; then
+        log "No steps found in the configuration" error
+        return 1
+    fi
+    
+    log "Successfully parsed configuration" info
     echo "$steps"
 }
 
