@@ -43,6 +43,8 @@ process_package() {
 
 install_from_github() {
     log "Installing binaries from github..." debug
+    log "Number of arguments: $#" debug
+    log "Arguments: $@" debug
 
     while (( $# > 0 )); do
         local repo="$1"
@@ -50,17 +52,20 @@ install_from_github() {
         local binaries=()
 
         log "Processing repo: $repo" debug
+        log "Remaining arguments: $@" debug
 
         # Ensure we have at least one binary
         if [[ -n "$1" && "$1" != *"/"* ]]; then
             binaries+=("$1")
             shift
+            log "Added binary: ${binaries[-1]}" debug
         fi
 
         # Add any additional binaries
         while (( $# > 0 )) && [[ -n "$1" && "$1" != *"/"* ]]; do
             binaries+=("$1")
             shift
+            log "Added additional binary: ${binaries[-1]}" debug
         done
 
         if (( ${#binaries[@]} == 0 )); then
@@ -72,6 +77,7 @@ install_from_github() {
 
         for binary in "${binaries[@]}"; do
             if [[ -n "$binary" ]]; then
+                log "Processing binary: $binary" debug
                 if ! process_package "$repo" "$binary"; then
                     update_static_line "❌ Skipping $repo $binary: Failed to process package"
                 fi

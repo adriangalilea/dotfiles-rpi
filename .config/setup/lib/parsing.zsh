@@ -136,6 +136,7 @@ execute_step() {
         github)
             local repos=($(get_step_details "$step" "repo"))
             local binaries=($(get_step_details "$step" "binaries"))
+            log "GitHub step: repos = ${repos[@]}, binaries = ${binaries[@]}" debug
             if [[ ${#repos[@]} -eq 0 || ${#binaries[@]} -eq 0 ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
                 return 1
@@ -144,6 +145,7 @@ execute_step() {
             for ((i=0; i<${#repos[@]}; i++)); do
                 github_args+=("${repos[i]}" "${binaries[i]}")
             done
+            log "Calling install_from_github with args: ${github_args[@]}" debug
             install_from_github "${github_args[@]}"
             ;;
         command)
