@@ -50,7 +50,7 @@ parse_config() {
     
     local steps
     log "Parsing steps from JSON" debug
-    if ! steps=$(jq -r '.config.steps[].name' "$json_file"); then
+    if ! steps=$(jq -r '.config.steps[] | "\(.name)|\(.type)"' "$json_file"); then
         log "Failed to parse steps from JSON" error
         return 1
     fi
@@ -60,7 +60,10 @@ parse_config() {
         return 1
     fi
     
-    log "Steps found: $steps" debug
+    log "Steps found:" debug
+    echo "$steps" | while IFS='|' read -r name type; do
+        log "  - $name (Type: $type)" debug
+    done
     
     log "Successfully parsed configuration" info
     echo "$steps"
@@ -102,32 +105,38 @@ get_step_details() {
 # Function to execute a step
 execute_step() {
     local step="$1"
+    local step_type="$2"
     
-    if [[ -z "$step" ]]; then
-        log "Error: Empty step name provided to execute_step" error
+    if [[ -z "$step" || -z "$step_type" ]]; then
+        log "Error: Empty step name or type provided to execute_step" error
         return 1
     fi
     
-    local step_type=$(get_step_details "$step" "type")
-    local step_name=$(get_step_details "$step" "name")
-    
-    if [[ -z "$step_type" ]]; then
-        log "Error: Failed to retrieve 'type' for step '$step'" error
-        return 1
-    fi
-    
-    if [[ -z "$step_name" ]]; then
-        log "Error: Failed to retrieve 'name' for step '$step'" error
-        return 1
-    fi
-    
-    log "Executing step: $step_name (Type: $step_type)" info
+    log "Executing step: $step (Type: $step_type)" info
     
     case "$step_type" in
+        apt)
+            local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
+                log "Error: No packages specified for apt step '$step'" error
+                return 1
+            fi
+            local apt_packages=($(echo "$packages" | jq -r '.[].name'))
+            install_apt_packages "${apt_packages[@]}"
+            ;;
+        pipx)
+            local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
+                log "Error: No packages specified for pipx step '$step'" error
+                return 1
+            fi
+            local pipx_packages=($(echo "$packages" | jq -r '.[].name'))
+            install_pipx_packages "${pipx_packages[@]}"
+            ;;
         github)
             local packages=$(get_step_details "$step" "packages")
             if [[ -z "$packages" ]]; then
-                log "Error: No packages specified for github step '$step_name'" error
+                log "Error: No packages specified for github step '$step'" error
                 return 1
             fi
             local github_args=()
@@ -144,7 +153,7 @@ execute_step() {
             done < <(echo "$packages" | jq -c '.[]')
             log "Calling install_from_github with args: ${github_args[@]}" debug
             if [[ ${#github_args[@]} -eq 0 ]]; then
-                log "Error: No valid GitHub packages found for step '$step_name'" error
+                log "Error: No valid GitHub packages found for step '$step'" error
                 return 1
             fi
             install_from_github "${github_args[@]}"
@@ -152,7 +161,7 @@ execute_step() {
         command)
             local command=$(get_step_details "$step" "command")
             if [[ -z "$command" ]]; then
-                log "Error: No command specified for command step '$step_name'" error
+                log "Error: No command specified for command step '$step'" error
                 return 1
             fi
             log "Executing command: $command" debug
@@ -171,7 +180,7 @@ execute_step() {
         function)
             local function=$(get_step_details "$step" "function")
             if [[ -z "$function" ]]; then
-                log "Error: No function specified for function step '$step_name'" error
+                log "Error: No function specified for function step '$step'" error
                 return 1
             fi
             local args=$(get_step_details "$step" "args" 2>/dev/null)
@@ -194,7 +203,7 @@ execute_step() {
             ;;
     esac
     
-    log "Step completed: $step_name" info
+    log "Step completed: $step" info
     echo
 }
 
