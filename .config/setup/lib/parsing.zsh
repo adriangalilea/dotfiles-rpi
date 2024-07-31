@@ -134,19 +134,19 @@ execute_step() {
             install_pipx_packages "${packages[@]}"
             ;;
         github)
-            local packages=($(get_step_details "$step" "packages"))
-            if [[ ${#packages[@]} -eq 0 ]]; then
+            local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
                 return 1
             fi
             local github_args=()
-            for package in "${packages[@]}"; do
+            while IFS= read -r package; do
                 local repo=$(echo "$package" | yq e '.repo' -)
                 local binaries=($(echo "$package" | yq e '.binaries[]' -))
                 for binary in "${binaries[@]}"; do
                     github_args+=("$repo" "$binary")
                 done
-            done
+            done < <(echo "$packages")
             log "Calling install_from_github with args: ${github_args[@]}" debug
             install_from_github "${github_args[@]}"
             ;;
@@ -240,7 +240,7 @@ validate_config() {
                 if [[ -z "$packages" ]]; then
                     errors+=("Missing 'packages' for github step '$step'")
                 else
-                    echo "$packages" | while IFS= read -r package; do
+                    while IFS= read -r package; do
                         if ! echo "$package" | yq e ".repo" - &> /dev/null; then
                             errors+=("Missing 'repo' for a package in github step '$step'")
                         fi
@@ -248,8 +248,8 @@ validate_config() {
                             errors+=("Missing 'binaries' for a package in github step '$step'")
                         fi
                         local repo=$(echo "$package" | yq e ".repo" -)
-                        errors+=("Validating package: $repo in github step '$step'")
-                    done
+                        log "Validating package: $repo in github step '$step'" debug
+                    done < <(echo "$packages")
                 fi
                 ;;
             command)
