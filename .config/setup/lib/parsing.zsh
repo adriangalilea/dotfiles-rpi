@@ -3,26 +3,25 @@
  # Global variables                                                                                   
  JSON_CONFIG_PATH="/tmp/install_config.json"                                                          
                                                                                                       
- # Function to generate JSON from CUE                                                                 
- generate_json_from_cue() {                                                                           
-     local cue_file="$1"                                                                              
-     local json_file="${2:-$JSON_CONFIG_PATH}"                                                        
-                                                                                                      
-     if ! command -v cue &> /dev/null; then                                                           
-         log "Error: 'cue' command not found. Please install CUE." error                              
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     log "Exporting CUE to JSON: $cue_file -> $json_file" debug                                       
-     if ! cue export "$cue_file" --out json > "$json_file"; then                                      
-         log "Error: Failed to generate JSON from CUE file." error                                    
-         log "CUE file contents:" debug                                                               
-         cat "$cue_file" >&2                                                                          
-         return 1                                                                                     
-     fi                                                                                               
-                                                                                                      
-     log "Successfully generated JSON from CUE" info                                                  
- }                                                                                                    
+# Function to generate JSON from CUE
+generate_json_from_cue() {
+    local cue_file="$1"
+
+    if ! command -v cue &> /dev/null; then
+        log "Error: 'cue' command not found. Please install CUE." error
+        return 1
+    fi
+
+    log "Exporting CUE to JSON: $cue_file -> $JSON_CONFIG_PATH" debug
+    if ! cue export "$cue_file" --out json > "$JSON_CONFIG_PATH"; then
+        log "Error: Failed to generate JSON from CUE file." error
+        log "CUE file contents:" debug
+        cat "$cue_file" >&2
+        return 1
+    fi
+
+    log "Successfully generated JSON from CUE" info
+}
                                                                                                       
 # Function to parse the configuration
 parse_config() {
