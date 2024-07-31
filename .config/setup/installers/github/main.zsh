@@ -46,6 +46,11 @@ install_from_github() {
     log "Number of arguments: $#" debug
     log "Arguments: $@" debug
 
+    if [[ $# -eq 0 ]]; then
+        log "❌ No arguments provided to install_from_github" "error"
+        return 1
+    fi
+
     while (( $# >= 2 )); do
         local repo="$1"
         local binary="$2"

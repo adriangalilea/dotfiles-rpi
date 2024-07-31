@@ -148,6 +148,10 @@ execute_step() {
                 done
             done < <(echo "$packages")
             log "Calling install_from_github with args: ${github_args[@]}" debug
+            if [[ ${#github_args[@]} -eq 0 ]]; then
+                log "Error: No valid GitHub packages found for step '$step_name'" error
+                return 1
+            fi
             install_from_github "${github_args[@]}"
             ;;
         command)
