@@ -50,7 +50,7 @@ parse_config() {
     
     local steps
     log "Parsing steps from YAML" debug
-    if ! steps=$(yq '.steps[].name' "$yaml_file"); then
+    if ! steps=$(yq '.config.steps[].name' "$yaml_file"); then
         log "Failed to parse steps from YAML" error
         return 1
     fi
@@ -59,6 +59,8 @@ parse_config() {
         log "No steps found in the configuration" error
         return 1
     fi
+    
+    log "Steps found: $steps" debug
     
     log "Successfully parsed configuration" info
     echo "$steps"
@@ -81,7 +83,7 @@ get_step_details() {
             result="$step_name"
             ;;
         type|function|command|comment|args|packages)
-            result=$(yq ".steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
+            result=$(yq ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
         *)
             echo "Error: Unknown detail type '$detail'." >&2
@@ -237,19 +239,19 @@ validate_config() {
     local errors=()
     
     while IFS= read -r step; do
-        local type=$(yq ".steps[] | select(.name == \"$step\") | .type" "$yaml_file")
+        local type=$(yq ".config.steps[] | select(.name == \"$step\") | .type" "$yaml_file")
         if [[ ! " ${valid_types[@]} " =~ " ${type} " ]]; then
             errors+=("Invalid type '$type' for step '$step'")
         fi
         
         case "$type" in
             apt|pipx)
-                if [[ -z $(yq ".steps[] | select(.name == \"$step\") | .packages" "$yaml_file") ]]; then
+                if [[ -z $(yq ".config.steps[] | select(.name == \"$step\") | .packages" "$yaml_file") ]]; then
                     errors+=("Missing 'packages' for $type step '$step'")
                 fi
                 ;;
             github)
-                local packages=$(yq ".steps[] | select(.name == \"$step\") | .packages" "$yaml_file")
+                local packages=$(yq ".config.steps[] | select(.name == \"$step\") | .packages" "$yaml_file")
                 if [[ -z "$packages" ]]; then
                     errors+=("Missing 'packages' for github step '$step'")
                 else
