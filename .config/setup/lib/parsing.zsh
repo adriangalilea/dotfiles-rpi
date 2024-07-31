@@ -115,74 +115,74 @@ parse_config() {
                                                                                                       
      case "$step_type" in                                                                             
          apt|pipx)                                                                                    
-             local packages=$(get_step_details "$step" "packages")                                    
-             if [[ -z "$packages" ]]; then                                                            
-                 log "Error: No packages specified for $step_type step '$step'" error                 
-                 return 1                                                                             
-             fi                                                                                       
-             local package_names=($(echo "$packages" | jq -r '.[].name'))                             
-             "install_${step_type}_packages" "${package_names[@]}"                                    
-             ;;                                                                                       
-         github)                                                                                      
-             local packages=$(get_step_details "$step" "packages")                                    
-             if [[ -z "$packages" ]]; then                                                            
-                 log "Error: No packages specified for github step '$step'" error                     
-                 return 1                                                                             
-             fi                                                                                       
-             local github_args=()                                                                     
-             while IFS= read -r package; do                                                           
-                 local repo=$(echo "$package" | jq -r '.repo')                                        
-                 local binaries=($(echo "$package" | jq -r '.binaries[]'))                            
-                 if [[ -n "$repo" && ${#binaries[@]} -gt 0 ]]; then                                   
-                     for binary in "${binaries[@]}"; do                                               
-                         github_args+=("$repo" "$binary")                                             
-                     done                                                                             
-                 else                                                                                 
-                     log "Warning: Invalid package format for '$repo'. Skipping." warn                
-                 fi                                                                                   
-             done < <(echo "$packages" | jq -c '.[]')                                                 
-             if [[ ${#github_args[@]} -eq 0 ]]; then                                                  
-                 log "Error: No valid GitHub packages found for step '$step'" error                   
-                 return 1                                                                             
-             fi                                                                                       
-             install_from_github "${github_args[@]}"                                                  
-             ;;                                                                                       
-         command)                                                                                     
-             local command=$(get_step_details "$step" "command")                                      
-             if [[ -z "$command" ]]; then                                                             
-                 log "Error: No command specified for command step '$step'" error                     
-                 return 1                                                                             
-             fi                                                                                       
-             log "Executing command: $command" debug                                                  
-             if ! output=$(eval "$command" 2>&1); then                                                
-                 log "Command execution failed: $command" error                                       
-                 log "Error output: $output" error                                                    
-                 return 1                                                                             
-             fi                                                                                       
-             log "Command executed successfully: $command" info                                       
-             [[ -n "$output" ]] && log "Command output: $output" debug                                
-             ;;                                                                                       
-         function)                                                                                    
-             local function=$(get_step_details "$step" "function")                                    
-             if [[ -z "$function" ]]; then                                                            
-                 log "Error: No function specified for function step '$step'" error                   
-                 return 1                                                                             
-             fi                                                                                       
-             local args=$(get_step_details "$step" "args" 2>/dev/null)                                
-             log "Calling function: $function" debug                                                  
-             if ! $function $args; then                                                               
-                 log "Function call failed: $function" error                                          
-                 return 1                                                                             
-             fi                                                                                       
-             ;;                                                                                       
-         *)                                                                                           
-             log "Unknown step type: $step_type" error                                                
-             return 1                                                                                 
-             ;;                                                                                       
-     esac                                                                                             
-                                                                                                      
-     log "Step completed: $step" info                                                                 
- }                                                                                                    
+             local packages=$(get_step_details "$step" "packages")
+             if [[ -z "$packages" ]]; then
+                 log "Error: No packages specified for $step_type step '$step'" error
+                 return 1
+             fi
+             local package_names=($(echo "$packages" | jq -r '.[].name'))
+             "install_${step_type}_packages" "${package_names[@]}"
+             ;;
+         github)
+             local packages=$(get_step_details "$step" "packages")
+             if [[ -z "$packages" ]]; then
+                 log "Error: No packages specified for github step '$step'" error
+                 return 1
+             fi
+             local github_args=()
+             while IFS= read -r package; do
+                 local repo=$(echo "$package" | jq -r '.repo')
+                 local binaries=($(echo "$package" | jq -r '.binaries[]'))
+                 if [[ -n "$repo" && ${#binaries[@]} -gt 0 ]]; then
+                     for binary in "${binaries[@]}"; do
+                         github_args+=("$repo" "$binary")
+                     done
+                 else
+                     log "Warning: Invalid package format for '$repo'. Skipping." warn
+                 fi
+             done < <(echo "$packages" | jq -c '.[]')
+             if [[ ${#github_args[@]} -eq 0 ]]; then
+                 log "Error: No valid GitHub packages found for step '$step'" error
+                 return 1
+             fi
+             install_from_github "${github_args[@]}"
+             ;;
+         command)
+             local command=$(get_step_details "$step" "command")
+             if [[ -z "$command" ]]; then
+                 log "Error: No command specified for command step '$step'" error
+                 return 1
+             fi
+             log "Executing command: $command" debug
+             if ! output=$(eval "$command" 2>&1); then
+                 log "Command execution failed: $command" error
+                 log "Error output: $output" error
+                 return 1
+             fi
+             log "Command executed successfully: $command" info
+             [[ -n "$output" ]] && log "Command output: $output" debug
+             ;;
+         function)
+             local function=$(get_step_details "$step" "function")
+             if [[ -z "$function" ]]; then
+                 log "Error: No function specified for function step '$step'" error
+                 return 1
+             fi
+             local args=$(get_step_details "$step" "args" 2>/dev/null)
+             log "Calling function: $function" debug
+             if ! $function $args; then
+                 log "Function call failed: $function" error
+                 return 1
+             fi
+             ;;
+         *)
+             log "Unknown step type: $step_type" error
+             return 1
+             ;;
+     esac
+
+     log "Step completed: $step" info
+}
                                                                                                       
  # Function to validate the configuration                                                             
  validate_config() {                                                                                  
