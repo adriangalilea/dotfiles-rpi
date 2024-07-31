@@ -49,7 +49,7 @@ install_from_github() {
         shift
         local binaries=()
 
-        while (( $# > 0 )) && [[ ! "$1" =~ ^[^/]+/[^/]+$ ]]; do
+        while (( $# > 0 )) && [[ "$1" != *"/"* ]]; do
             binaries+=("$1")
             shift
         done
