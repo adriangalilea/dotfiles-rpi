@@ -78,7 +78,7 @@ parse_config() {
              result="$step_name"                                                                      
              ;;                                                                                       
          type|function|command|comment|args|packages|repo|binaries|asset)
-             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.config.steps[] | select(.name == $name) | .[$detail]' "$json_file")
+             result=$(jq -r --arg name "$step_name" --arg detail "$detail" '.rpiConfig.steps[] | select(.name == $name) | .[$detail]' "$json_file")
              ;;                                                                                       
          *)                                                                                           
              log "Error: Unknown detail type '$detail'." error                                        
