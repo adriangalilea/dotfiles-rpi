@@ -134,16 +134,18 @@ execute_step() {
             install_pipx_packages "${packages[@]}"
             ;;
         github)
-            local repos=($(get_step_details "$step" "repo"))
-            local binaries=($(get_step_details "$step" "binaries"))
-            log "GitHub step: repos = ${repos[@]}, binaries = ${binaries[@]}" debug
-            if [[ ${#repos[@]} -eq 0 || ${#binaries[@]} -eq 0 ]]; then
+            local packages=($(get_step_details "$step" "packages"))
+            if [[ ${#packages[@]} -eq 0 ]]; then
                 log "Error: No packages specified for github step '$step_name'" error
                 return 1
             fi
             local github_args=()
-            for ((i=0; i<${#repos[@]}; i++)); do
-                github_args+=("${repos[i]}" "${binaries[i]}")
+            for package in "${packages[@]}"; do
+                local repo=$(echo "$package" | yq e '.repo' -)
+                local binaries=($(echo "$package" | yq e '.binaries[]' -))
+                for binary in "${binaries[@]}"; do
+                    github_args+=("$repo" "$binary")
+                done
             done
             log "Calling install_from_github with args: ${github_args[@]}" debug
             install_from_github "${github_args[@]}"

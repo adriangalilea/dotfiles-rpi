@@ -46,45 +46,27 @@ install_from_github() {
     log "Number of arguments: $#" debug
     log "Arguments: $@" debug
 
-    while (( $# > 0 )); do
+    while (( $# >= 2 )); do
         local repo="$1"
-        shift
-        local binaries=()
+        local binary="$2"
+        shift 2
 
         log "Processing repo: $repo" debug
-        log "Remaining arguments: $@" debug
+        log "Processing binary: $binary" debug
 
-        # Ensure we have at least one binary
-        if [[ -n "$1" && "$1" != *"/"* ]]; then
-            binaries+=("$1")
-            shift
-            log "Added binary: ${binaries[-1]}" debug
-        fi
-
-        # Add any additional binaries
-        while (( $# > 0 )) && [[ -n "$1" && "$1" != *"/"* ]]; do
-            binaries+=("$1")
-            shift
-            log "Added additional binary: ${binaries[-1]}" debug
-        done
-
-        if (( ${#binaries[@]} == 0 )); then
-            log "❌ Invalid package format for $repo. Expected format: owner/repo binary1 [binary2 ...]" "error"
+        if [[ -z "$repo" || -z "$binary" ]]; then
+            log "❌ Invalid package format. Expected format: owner/repo binary" "error"
             continue
         fi
 
-        log "Binaries for $repo: ${binaries[*]}" debug
-
-        for binary in "${binaries[@]}"; do
-            if [[ -n "$binary" ]]; then
-                log "Processing binary: $binary" debug
-                if ! process_package "$repo" "$binary"; then
-                    update_static_line "❌ Skipping $repo $binary: Failed to process package"
-                fi
-            else
-                log "Skipping empty binary for $repo" debug
-            fi
-        done
+        if ! process_package "$repo" "$binary"; then
+            update_static_line "❌ Skipping $repo $binary: Failed to process package"
+        fi
     done
+
+    if (( $# > 0 )); then
+        log "❌ Odd number of arguments. Last argument ignored: $1" "error"
+    fi
+
     echo
 }
