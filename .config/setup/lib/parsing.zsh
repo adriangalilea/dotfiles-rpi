@@ -90,6 +90,12 @@ execute_step() {
     local step="$1"
     local step_type=$(get_step_details "$step" "type")
     local step_name=$(get_step_details "$step" "name")
+    
+    if [[ -z "$step_type" || -z "$step_name" ]]; then
+        log "Error: Failed to retrieve step details for '$step'" error
+        return 1
+    fi
+    
     log "Executing step: $step_name" info
     
     case "$step_type" in
@@ -130,6 +136,7 @@ execute_step() {
             ;;
         *)
             log "Unknown step type: $step_type" error
+            return 1
             ;;
     esac
     
