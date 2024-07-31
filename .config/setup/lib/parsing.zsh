@@ -63,6 +63,9 @@ get_step_details() {
     
     local result
     case "$detail" in
+        name)
+            result="$step_name"
+            ;;
         type|function|command|comment)
             result=$(yq e ".config.steps[] | select(.name == \"$step_name\") | .$detail" "$yaml_file")
             ;;
