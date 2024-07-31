@@ -37,10 +37,15 @@ parse_config() {
     fi
     
     local steps
-    steps=$(yq e '.steps[] | .name' "$yaml_file") || {
+    steps=$(yq e '.steps[].name' "$yaml_file") || {
         echo "Error: Failed to parse steps from YAML." >&2
         return 1
     }
+    
+    if [[ -z "$steps" ]]; then
+        echo "Error: No steps found in the configuration." >&2
+        return 1
+    fi
     
     echo "$steps"
 }
@@ -88,50 +93,87 @@ get_step_details() {
 # Function to execute a step
 execute_step() {
     local step="$1"
-    local step_type=$(get_step_details "$step" "type")
-    local step_name=$(get_step_details "$step" "name")
     
-    if [[ -z "$step_type" || -z "$step_name" ]]; then
-        log "Error: Failed to retrieve step details for '$step'" error
+    if [[ -z "$step" ]]; then
+        log "Error: Empty step name provided to execute_step" error
         return 1
     fi
     
-    log "Executing step: $step_name" info
+    local step_type=$(get_step_details "$step" "type")
+    local step_name=$(get_step_details "$step" "name")
+    
+    if [[ -z "$step_type" ]]; then
+        log "Error: Failed to retrieve 'type' for step '$step'" error
+        return 1
+    fi
+    
+    if [[ -z "$step_name" ]]; then
+        log "Error: Failed to retrieve 'name' for step '$step'" error
+        return 1
+    fi
+    
+    log "Executing step: $step_name (Type: $step_type)" info
     
     case "$step_type" in
         apt)
             local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
+                log "Error: No packages specified for apt step '$step_name'" error
+                return 1
+            fi
             install_apt_packages $packages
             ;;
         pipx)
             local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
+                log "Error: No packages specified for pipx step '$step_name'" error
+                return 1
+            fi
             install_pipx_packages $packages
             ;;
         github)
             local packages=$(get_step_details "$step" "packages")
+            if [[ -z "$packages" ]]; then
+                log "Error: No packages specified for github step '$step_name'" error
+                return 1
+            fi
             local github_args=()
             local repo
             local binaries
             echo "$packages" | while IFS= read -r package; do
                 repo=$(echo "$package" | yq e '.repo' -)
                 binaries=($(echo "$package" | yq e '.binaries[]' -))
+                if [[ -z "$repo" || ${#binaries[@]} -eq 0 ]]; then
+                    log "Error: Invalid package specification in github step '$step_name'" error
+                    return 1
+                fi
                 github_args+=("$repo" "${binaries[@]}")
             done
             install_from_github "${github_args[@]}"
             ;;
         command)
             local command=$(get_step_details "$step" "command")
+            if [[ -z "$command" ]]; then
+                log "Error: No command specified for command step '$step_name'" error
+                return 1
+            fi
             log "Executing command: $command" debug
             if ! eval "$command"; then
                 log "Command execution failed: $command" error
+                return 1
             fi
             ;;
         function)
             local function=$(get_step_details "$step" "function")
+            if [[ -z "$function" ]]; then
+                log "Error: No function specified for function step '$step_name'" error
+                return 1
+            fi
             local args=$(get_step_details "$step" "args")
             log "Calling function: $function" debug
             if ! $function $args; then
                 log "Function call failed: $function" error
+                return 1
             fi
             ;;
         *)
