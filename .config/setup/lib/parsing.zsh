@@ -47,7 +47,7 @@ parse_config() {
 
     local steps
     log "Parsing steps from JSON" debug
-    if ! steps=$(jq -r '.steps[] | "\(.name)|\(.type)"' "$json_file"); then
+    if ! steps=$(jq -r '.config.steps[] | "\(.name)|\(.type)"' "$json_file"); then
         log "Failed to parse steps from JSON" error
         return 1
     fi
