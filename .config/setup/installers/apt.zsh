@@ -2,7 +2,6 @@
 
 update_package_lists() {
     log "Updating APT packages..." debug 
-    move_legacy_apt_keys
     if sudo apt-get update -qq; then
         log "APT updated." debug 
         echo
