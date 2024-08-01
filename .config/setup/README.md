@@ -41,7 +41,7 @@ ssh-add ~/.ssh/id_rsa
 
 3. **Add SSH Key to GitHub:**
   ```sh
-  cat ~/.ssh/id_rsa.pu
+  cat ~/.ssh/id_rsa.pub
   ```
 
    Copy the key and add it to your GitHub account:
