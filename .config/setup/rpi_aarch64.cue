@@ -58,6 +58,7 @@ steps: [
 			content: [
 				"curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh",
 				"curl -sfL https://direnv.net/install.sh | bash",
+				"curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh",
 			]
 		}
 	},
@@ -69,6 +70,7 @@ steps: [
 				{name: "setup_ssh_clipboard_forwarding", args: []},
 				{name: "increase_swap_size", args: ["1024"]},
 				{name: "setup_custom_motd", args: []},
+				{"name": "change_locale", "args": ["en_US.UTF-8 UTF-8", "en_GB.UTF-8 UTF-8"]},
 			]
 		}
 	},

@@ -40,6 +40,49 @@ increase_swap_size() {
     echo
 }
 
+change_locale() {
+    local enable_locale="$1"
+    local disable_locale="$2"
+
+    log "Attempting to change locale settings..." debug
+
+    if [[ -z "$enable_locale" || -z "$disable_locale" ]]; then
+        log "Error: Please provide both the locale to enable and the locale to disable." error
+        return 1
+    fi
+
+    run_sudo() {
+        if ! sudo "$@"; then
+            log "Error: Failed to execute: $*" error
+            return 1
+        fi
+    }
+
+    # Backup the original file
+    run_sudo cp /etc/locale.gen /etc/locale.gen.bak || return 1
+
+    # Disable the specified locale
+    run_sudo sed -i "/${disable_locale}/d" /etc/locale.gen || return 1
+
+    # Enable the specified locale
+    run_sudo sed -i "s/# ${enable_locale}/${enable_locale}/" /etc/locale.gen || return 1
+
+    # Generate the new locale
+    run_sudo locale-gen || return 1
+
+    # Update the system-wide locale setting
+    run_sudo update-locale LANG="${enable_locale}" LC_ALL="${enable_locale}" LANGUAGE="${enable_locale%%.*}" || return 1
+
+    # Verify the changes
+    if grep -q "^${enable_locale}" /etc/locale.gen && ! grep -q "^${disable_locale}" /etc/locale.gen; then
+        log "Locale changes appear to have been applied successfully." info
+    else
+        log "Warning: Locale changes may not have been applied correctly. Please check /etc/locale.gen manually." warn
+    fi
+
+    log "Note: You may need to log out and log back in for changes to take full effect." info
+}
+
 setup_custom_motd() {
     local custom_motd_path="${1:-$HOME/.config/motd/custom_motd.sh}"
     local wrapper_path="/etc/update-motd.d/99-custom-motd"

@@ -32,6 +32,7 @@ Failed to extract version
   - [HIGH] Mac m series
   - [LOW] Mac intel series
   - [LOW] Linux non-aarch64
+- [MEDIUM] feat: replace the ~/.config/setup/utils/ log function without our log  function
 - [MEDIUM] taskwarrior
   - [ ] server
   - [ ] client
