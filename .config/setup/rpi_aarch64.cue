@@ -70,7 +70,7 @@ steps: [
 				{name: "setup_ssh_clipboard_forwarding", args: []},
 				{name: "increase_swap_size", args: ["1024"]},
 				{name: "setup_custom_motd", args: []},
-				{"name": "change_locale", "args": ["en_US.UTF-8 UTF-8", "en_GB.UTF-8 UTF-8"]},
+				{"name": "change_locale", "args": ["\"en_US.UTF-8 UTF-8\"", "\"en_GB.UTF-8 UTF-8\""]},
 			]
 		}
 	},
