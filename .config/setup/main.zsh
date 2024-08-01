@@ -27,7 +27,6 @@ if [ ! -f "$install_config" ]; then
     exit 1
 fi
 
-echo "Installing requirements..."
 install_requirements
 
 if check_requirements_installed; then

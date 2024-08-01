@@ -61,20 +61,36 @@ install_jq() {
 }
 
 install_requirements() {
+    echo "Installing requirements..."
     for bin in "${REQUIRED_BINS[@]}"; do
         if ! command -v "$bin" &> /dev/null; then
-            "install_$bin"
+            echo "Installing $bin..."
+            if type "install_$bin" &>/dev/null; then
+                "install_$bin" || { echo "Failed to install $bin"; return 1; }
+            else
+                echo "Installation function for $bin not found"
+                return 1
+            fi
         else
-            log "$bin is already installed." debug
+            echo "$bin is already installed."
         fi
     done
+    echo "All requirements installed successfully."
 }
 
 check_requirements_installed() {
+    local missing_bins=()
     for bin in "${REQUIRED_BINS[@]}"; do
         if ! command -v "$bin" &> /dev/null; then
-            return 1
+            missing_bins+=("$bin")
         fi
     done
-    return 0
+    
+    if [ ${#missing_bins[@]} -eq 0 ]; then
+        echo "All required binaries are installed."
+        return 0
+    else
+        echo "Missing binaries: ${missing_bins[*]}"
+        return 1
+    fi
 }
