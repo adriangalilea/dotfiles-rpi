@@ -10,6 +10,14 @@ Rules:
 
 ## PENDING (ordered by urgency)
 
+- [NEXT] ❯ yy
+yy:2: command not found: yazi
+❯ ya
+zsh: command not found: ya
+❯ br
+br:3: command not found: broot
+After having run the installer
+
 - [NEXT] template should have a specific target system, e.g.: `{ OS: "Linux", arch: "aarch64" }` just so I can't ever accidentally install something for an unintended system.
 - [HIGH] fix: gum install, adding keys fails everytime.
 - [HIGH] add git as requirement.
