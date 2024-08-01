@@ -53,10 +53,20 @@ install_cue() {
 
 install_jq() {
     log "Installing jq..." debug
-    if ! install_from_github "jqlang" "jq" "jq"; then
-        log "Failed to install jq" error
-        return 1
+    if [ "$(uname)" = "Darwin" ]; then
+        echo "Detected macOS."
+        sudo mv bin/jq-macos-arm64 /usr/local/bin/jq
+    else
+        echo "Detected Linux."
+        sudo mv bin/jq-linux-arm64 /usr/local/bin/jq
     fi
+
+
+
+    # if ! install_from_github "jqlang" "jq" "jq"; then
+    #     log "Failed to install jq" error
+    #     return 1
+    # fi
     log "jq installed successfully." info
 }
 
