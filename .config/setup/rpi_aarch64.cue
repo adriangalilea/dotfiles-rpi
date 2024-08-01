@@ -19,7 +19,7 @@ steps: [
 		pipx: {
 			message: "Install Python packages globally"
 			comment: "These Python tools are installed globally using pipx"
-			content: ["dtj", "tldr", "yt-dlp", "periodic-table-cli"]
+			content: ["dtj", "tldr", "yt-dlp", "periodic-table-cli", "urlwatch"]
 		}
 	},
 	{
@@ -73,4 +73,3 @@ steps: [
 		}
 	},
 ]
-
