@@ -46,6 +46,47 @@ ssh-add ~/.ssh/id_rsa
 
    Copy the key and add it to your GitHub account:
    - GitHub: [Settings -> SSH and GPG keys -> New SSH key](https://github.com/settings/keys)
+  
+4. Test SSH Connection
+
+```sh
+ssh -T git@github.com
+```
+
+You should see a message like: "Hi username! You've successfully authenticated, but GitHub does not provide shell access."
+
+5. Update Repository Remote URL
+
+If your repository is currently using HTTPS, update it to use SSH:
+
+```sh
+git remote set-url origin git@github.com:username/repository.git
+```
+
+Replace 'username' and 'repository' with your GitHub username and repository name.
+
+## Troubleshooting
+
+If you're still having issues:
+
+1. Ensure correct SSH key permissions:
+   ```sh
+   chmod 600 ~/.ssh/id_rsa
+   chmod 644 ~/.ssh/id_rsa.pub
+   ```
+
+2. Add your SSH key to the ssh-agent again:
+   ```sh
+   ssh-add -K ~/.ssh/id_rsa
+   ```
+
+3. Create or edit `~/.ssh/config`:
+   ```
+   Host github.com
+     AddKeysToAgent yes
+     UseKeychain yes
+     IdentityFile ~/.ssh/id_rsa
+   ```
 
 # Useful tools that I did not install yet:
 - https://github.com/reemus-dev/gitnr gitignore generation TUI
