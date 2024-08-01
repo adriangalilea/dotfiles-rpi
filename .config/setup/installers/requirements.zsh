@@ -60,6 +60,7 @@ install_jq() {
         echo "Detected Linux."
         sudo mv bin/jq-linux-arm64 /usr/local/bin/jq
     fi
+    sudo chmod +x /usr/local/bin/jq
 
 
 
