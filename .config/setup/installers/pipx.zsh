@@ -1,5 +1,3 @@
-#!/bin/zsh
-
 install_pipx_packages() {
     local pipx_packages=("$@")
     log "Installing pipx packages: ${pipx_packages[*]}" debug
@@ -10,23 +8,42 @@ install_pipx_packages() {
     if ! command -v pipx &> /dev/null; then
         log "pipx not found, attempting to install pipx..." debug
         
-        # Attempt to install pipx
-        if python3 -m pip install --user pipx &> /dev/null && python3 -m pipx ensurepath &> /dev/null; then
+        # Determine the OS
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            if command -v brew &> /dev/null; then
+                brew install pipx
+            else
+                log "Homebrew not found. Please install Homebrew first." error
+                return 1
+            fi
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            # Linux (assuming Debian-based)
+            if command -v apt &> /dev/null; then
+                sudo apt update && sudo apt install -y pipx
+            else
+                log "apt not found. Please install pipx manually." error
+                return 1
+            fi
+        else
+            log "Unsupported operating system" error
+            return 1
+        fi
+        
+        # Ensure pipx is in PATH
+        pipx ensurepath
+        sudo pipx ensurepath --global # optional to allow pipx actions with --global argument
+        
+        # Refresh the current shell's PATH
+        export PATH="$PATH:$HOME/.local/bin"
+        
+        if command -v pipx &> /dev/null; then
             log "pipx installed successfully. ✅" info
-            # Refresh the shell's environment
-            export PATH="$PATH:$HOME/.local/bin"
         else
             log "Failed to install pipx. ❌" error
             log "Please install pipx manually and ensure it's in your PATH." error
             return 1
         fi
-    fi
-
-    # Verify pipx is now available
-    if ! command -v pipx &> /dev/null; then
-        log "pipx installation failed or it's not in the PATH. ❌" error
-        log "Please install pipx manually and ensure it's in your PATH." error
-        return 1
     fi
 
     # Install packages with pipx
