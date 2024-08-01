@@ -61,7 +61,7 @@ alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'  # non-rec
 
 # --- git secret ---
 
-alias add="git secret add"
+alias secret="git secret add"
 alias hide="git secret hide"
 alias reveal="git secret reveal"
 alias tell="git secret tell"

@@ -70,3 +70,5 @@
 !.config/xdg/
 !.config/broot/
 !.config/broot/**
+.config/setup/notes/notes.md
+.config/setup/notes/
