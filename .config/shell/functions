@@ -261,4 +261,11 @@ chpwd() {
 }
 
 
-
+# --- dotfiles setup ---
+install_dotfiles() {
+  sudo apt update -y
+  sudo apt install zsh -y
+  cd ~/.config/setup
+  chmod +x main.zsh
+  sudo ./main.zsh rpi_aarch64.cue
+}

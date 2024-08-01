@@ -11,6 +11,7 @@ Rules:
 ## PENDING (ordered by urgency)
 
 - [NEXT] template should have a specific target system, e.g.: `{ OS: "Linux", arch: "aarch64" }` just so I can't ever accidentally install something for an unintended system.
+- [HIGH] fix: gum install, adding keys fails everytime.
 - [HIGH] add git as requirement.
 - [HIGH] template should accept brew
 - [HIGH] fix broot install

@@ -23,7 +23,7 @@ fi
 install_config="$1"
 
 if [ ! -f "$install_config" ]; then
-    log "Error: Configuration file '$install_config' not found." error
+    echo "Error: Configuration file '$install_config' not found."
     exit 1
 fi
 
