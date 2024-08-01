@@ -78,19 +78,24 @@ export PATH
 #┌─────────────────────────────────────────────────┐
 #│                     zplug                       │
 #└─────────────────────────────────────────────────┘
-
-# Run the zplug installer if ZPLUG_HOME does not exist
-if [ ! -d "$ZPLUG_HOME" ]; then
-  mkdir -p "$ZPLUG_HOME"
-  curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-
-  # Check again if ZPLUG_HOME exists after running the installer
-  if [ ! -d "$ZPLUG_HOME" ]; then
-      echo "Warning: ZPLUG_HOME directory does not exist: $ZPLUG_HOME"
-  fi
+# if zplug can't be sourced we clone the repo
+if ! source "$ZPLUG_RCFILE"; then
+    echo "Failed to source ZPLUG_RCFILE. Attempting to install/reinstall zplug..."
+    
+    # Clone or re-clone zplug repository
+    if git clone https://github.com/zplug/zplug "$ZPLUG_HOME"; then
+        # Attempt to source ZPLUG_RCFILE again
+        if source "$ZPLUG_RCFILE"; then
+            echo "Successfully installed and sourced zplug."
+        else
+            echo "Error: Failed to source ZPLUG_RCFILE after installation."
+            echo "Please check your ZPLUG_RCFILE path and zplug installation."
+        fi
+    else
+        echo "Error: Failed to clone/update zplug repository."
+        echo "Please check your internet connection and try again."
+    fi
 fi
-
-source "$ZPLUG_RCFILE"
 
 #┌─────────────────────────────────────────────────┐
 #│               Shell Components                  │
