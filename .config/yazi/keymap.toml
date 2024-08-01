@@ -12,6 +12,21 @@
 	run  = "plugin --sync smart-paste"
 	desc = "Paste into the hovered directory or CWD"
 
+[[manager.prepend_keymap]]
+	on   = "/"
+	run  = "plugin smart-filter"
+	desc = "Smart filter"
+
+[[input.prepend_keymap]]
+	on   = "<Esc>"
+	run  = "close"
+	desc = "Cancel input"
+
+[[input.prepend_keymap]]
+	on   = "e"
+	run  = "plugin --sync smart-enter"
+	desc = "open dir"
+
 [manager]
 
 keymap = [
@@ -107,11 +122,11 @@ keymap = [
 	{ on = [ "c", "n" ], run = "copy name_without_ext", desc = "Copy the name of the file without the extension" },
 
 	# Filter
-	{ on = [ "/" ], run = "filter --smart", desc = "Filter the files" },
+	# { on = [ "/" ], run = "filter --smart", desc = "Filter the files" },
 
 	# Find
-	{ on = [ "f" ], run = "find --smart",            desc = "Find next file" },
-	{ on = [ "ff" ], run = "find --reverse --smart",            desc = "Find next file" },
+	{ on = [ "/" ], run = "find --smart",            desc = "Find next file" },
+	{ on = [ "//" ], run = "find --reverse --smart",            desc = "Find next file" },
 	{ on = [ "n" ], run = "find_arrow",              desc = "Go to next found file" },
 	{ on = [ "N" ], run = "find_arrow --previous",   desc = "Go to previous found file" },
 
@@ -223,27 +238,27 @@ keymap = [
 	{ on = [ "V" ], run = [ "move -999", "visual", "move 999" ], desc = "Enter visual mode and select all" },
 
 	# Character-wise movement
-	{ on = [ "h" ],       run = "move -1", desc = "Move back a character" },
-	{ on = [ "l" ],       run = "move 1",  desc = "Move forward a character" },
-	{ on = [ "<Left>" ],  run = "move -1", desc = "Move back a character" },
-	{ on = [ "<Right>" ], run = "move 1",  desc = "Move forward a character" },
-	{ on = [ "<C-b>" ],   run = "move -1", desc = "Move back a character" },
-	{ on = [ "<C-f>" ],   run = "move 1",  desc = "Move forward a character" },
+	# { on = [ "h" ],       run = "move -1", desc = "Move back a character" },
+	# { on = [ "l" ],       run = "move 1",  desc = "Move forward a character" },
+	# { on = [ "<Left>" ],  run = "move -1", desc = "Move back a character" },
+	# { on = [ "<Right>" ], run = "move 1",  desc = "Move forward a character" },
+	# { on = [ "<C-b>" ],   run = "move -1", desc = "Move back a character" },
+	# { on = [ "<C-f>" ],   run = "move 1",  desc = "Move forward a character" },
 
-	# Word-wise movement
-	{ on = [ "b" ],     run = "backward",              desc = "Move back to the start of the current or previous word" },
-	{ on = [ "w" ],     run = "forward",               desc = "Move forward to the start of the next word" },
-	{ on = [ "e" ],     run = "forward --end-of-word", desc = "Move forward to the end of the current or next word" },
-	{ on = [ "<A-b>" ], run = "backward",              desc = "Move back to the start of the current or previous word" },
-	{ on = [ "<A-f>" ], run = "forward --end-of-word", desc = "Move forward to the end of the current or next word" },
+	# # Word-wise movement
+	# { on = [ "b" ],     run = "backward",              desc = "Move back to the start of the current or previous word" },
+	# { on = [ "w" ],     run = "forward",               desc = "Move forward to the start of the next word" },
+	# { on = [ "e" ],     run = "forward --end-of-word", desc = "Move forward to the end of the current or next word" },
+	# { on = [ "<A-b>" ], run = "backward",              desc = "Move back to the start of the current or previous word" },
+	# { on = [ "<A-f>" ], run = "forward --end-of-word", desc = "Move forward to the end of the current or next word" },
 
-	# Line-wise movement
-	{ on = [ "0" ],      run = "move -999", desc = "Move to the BOL" },
-	{ on = [ "$" ],      run = "move 999",  desc = "Move to the EOL" },
-	{ on = [ "<C-a>" ],  run = "move -999", desc = "Move to the BOL" },
-	{ on = [ "<C-e>" ],  run = "move 999",  desc = "Move to the EOL" },
-	{ on = [ "<Home>" ], run = "move -999", desc = "Move to the BOL" },
-	{ on = [ "<End>" ],  run = "move 999",  desc = "Move to the EOL" },
+	# # Line-wise movement
+	# { on = [ "0" ],      run = "move -999", desc = "Move to the BOL" },
+	# { on = [ "$" ],      run = "move 999",  desc = "Move to the EOL" },
+	# { on = [ "<C-a>" ],  run = "move -999", desc = "Move to the BOL" },
+	# { on = [ "<C-e>" ],  run = "move 999",  desc = "Move to the EOL" },
+	# { on = [ "<Home>" ], run = "move -999", desc = "Move to the BOL" },
+	# { on = [ "<End>" ],  run = "move 999",  desc = "Move to the EOL" },
 
 	# Delete
 	{ on = [ "<Backspace>" ], run = "backspace",	        desc = "Delete the character before the cursor" },

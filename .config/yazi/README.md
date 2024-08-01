@@ -16,5 +16,8 @@ Two shortcuts may work for the 2 different flows, maybe: <kbd>/</kbd> <kbd>\\</k
 
 # TODO
 - [.] feat: git highilght in yazi <-- [tracked here](https://github.com/sxyazi/yazi/issues/51)
-- [ ] feat: slimmer navigation in yazi
-- [ ] install [relative-motions](https://github.com/dedukun/relative-motions.yazi)
+- [ ] feat: improve [smart-filter plugin](https://github.com/yazi-rs/plugins/tree/main/smart-filter.yazi)
+  - [ ] do not auto enter, wait for `/`
+  - [ ] allow for changing focus with `tab`
+  - [ ] allow for going backwards with `bksp`
+- [ ] [run direnv](https://github.com/sxyazi/yazi/discussions/1083)
