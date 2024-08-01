@@ -15,6 +15,16 @@ Rules:
 - [HIGH] add git as requirement.
 - [HIGH] improve visibility of what's going on in apt update
 - [HIGH] template should accept brew
+- [HIGH] fix: 00:46:07 ERROR setup_custom_motd: Custom MOTD script not found at /root/.config/motd/custom_motd.sh
+- [HIGH] fix: 00:46:00 ERROR execute_command_step: Error output: Searching for a package manager...  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current                                 Dload  100   731  100   731    0     0    458      0  0:00:01  0:00:01 --:--:--   458Archive:  clipboard-linux.zip  End-of-central-directory signature not found.  Either this file is not  a zipfile, or it constitutes one disk of a multi-part archive.  In the  latter case the central directory and zipfile comment will be found on  the last disk(s) of this archive.unzip:  cannot find zipfile directory in one of clipboard-linux.zip or        clipboard-linux.zip.zip, and cannot find clipboard-linux.zip.ZIP, period.
+
+- [HIGH] fix: 📦 jwtui
+Failed to extract version
+❌ Skipping jwtui: Failed to process package
+
+📦 csvlens
+Failed to extract version
+❌ Skipping csvlens: Failed to process package
 - [HIGH] fix broot install
   - [ ] github/utils.zsh should handle broot that is a zip file in which inside there is all binaries, and should perform the version selection after the zip is unzipped not before on github curl, but solution should be generic enough
 - [HIGH] Place the xdg-dirs install higher up, so that the rest of packages that use XDG `env`'s   generate config files in the right place, such as all `charmbracelet` programs(mods)
