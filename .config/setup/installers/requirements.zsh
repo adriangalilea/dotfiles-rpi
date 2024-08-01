@@ -5,7 +5,7 @@ source "${0:A:h}/apt.zsh"
 source "${0:A:h}/github/utils.zsh"
 source "${0:A:h}/github/main.zsh"
 
-REQUIRED_BINS=("gum" "cue" "jq")
+REQUIRED_BINS=("jq" "gum" "cue")
 
 install_gum() {
     echo "Installing gum..."
