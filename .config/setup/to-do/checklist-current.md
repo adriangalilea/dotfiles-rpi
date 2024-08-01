@@ -13,6 +13,7 @@ Rules:
 - [NEXT] template should have a specific target system, e.g.: `{ OS: "Linux", arch: "aarch64" }` just so I can't ever accidentally install something for an unintended system.
 - [HIGH] fix: gum install, adding keys fails everytime.
 - [HIGH] add git as requirement.
+- [HIGH] improve visibility of what's going on in apt update
 - [HIGH] template should accept brew
 - [HIGH] fix broot install
   - [ ] github/utils.zsh should handle broot that is a zip file in which inside there is all binaries, and should perform the version selection after the zip is unzipped not before on github curl, but solution should be generic enough
