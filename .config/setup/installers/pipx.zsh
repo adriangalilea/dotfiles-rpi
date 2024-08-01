@@ -8,12 +8,25 @@ install_pipx_packages() {
     
     # Ensure pipx is installed
     if ! command -v pipx &> /dev/null; then
-        log "pipx not found, installing pipx..." debug
-        python3 -m pip install --user pipx
-        python3 -m pipx ensurepath
-        log "pipx installed. ✅" info
-        # Refresh the shell's environment
-        export PATH="$PATH:~/.local/bin"
+        log "pipx not found, attempting to install pipx..." debug
+        
+        # Attempt to install pipx
+        if python3 -m pip install --user pipx &> /dev/null && python3 -m pipx ensurepath &> /dev/null; then
+            log "pipx installed successfully. ✅" info
+            # Refresh the shell's environment
+            export PATH="$PATH:$HOME/.local/bin"
+        else
+            log "Failed to install pipx. ❌" error
+            log "Please install pipx manually and ensure it's in your PATH." error
+            return 1
+        fi
+    fi
+
+    # Verify pipx is now available
+    if ! command -v pipx &> /dev/null; then
+        log "pipx installation failed or it's not in the PATH. ❌" error
+        log "Please install pipx manually and ensure it's in your PATH." error
+        return 1
     fi
 
     # Install packages with pipx
@@ -35,4 +48,3 @@ install_pipx_packages() {
     fi
     echo
 }
-
