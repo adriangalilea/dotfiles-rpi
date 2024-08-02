@@ -22,10 +22,6 @@
 	run  = "close"
 	desc = "Cancel input"
 
-[[input.prepend_keymap]]
-	on   = "e"
-	run  = "shell --block --confirm 'hx ."
-	desc = "open dir"
 
 [manager]
 
