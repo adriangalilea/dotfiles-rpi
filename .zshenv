@@ -3,6 +3,9 @@
 # Note: There are some non-standard locations in favor of keeping ~ clean.
 #       .ssh and other delicate folders are preserved against cleanliness for peace of mind.
 
+# update dotfiels to latest
+git pull
+
 #┌─────────────────────────────────────────────────┐
 #│     XDG Base Directory Specification            │
 #└─────────────────────────────────────────────────┘
