@@ -72,3 +72,5 @@
 !.config/broot/**
 .config/setup/notes/notes.md
 .config/setup/notes/
+!.config/setup/notes/notes.md.secret
+!.config/setup/notes/
