@@ -10,6 +10,7 @@ Rules:
 
 ## PENDING (ordered by urgency)
 
+- [NEXT] feat: https://github.com/tstack/lnav
 - [NEXT] ❯ yy
 yy:2: command not found: yazi
 ❯ ya

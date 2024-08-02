@@ -270,3 +270,10 @@ install_dotfiles() {
   chmod +x main.zsh
   sudo ./main.zsh rpi_aarch64.cue
 }
+
+# --- go home ---
+home() {
+  cd
+}
+alias ~="home"
+

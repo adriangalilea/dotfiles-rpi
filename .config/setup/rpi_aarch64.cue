@@ -47,6 +47,7 @@ steps: [
 				{ghUsername: "zellij-org", ghReponame: "zellij", binaries: ["zellij"]},
 				{ghUsername: "Feel-ix-343", ghReponame: "markdown-oxide", binaries: ["markdown-oxide"]},
 				{ghUsername: "adriangalilea", ghReponame: "xdg-dirs", binaries: ["xdg-dirs"]},
+				{ghUsername: "aome510"" ghReponame: "hackernews-TUI", binaries: ["hackernews_tui"]},
 				{ghUsername: "Canop", ghReponame: "broot", binaries: ["broot"]},
 			]
 		}

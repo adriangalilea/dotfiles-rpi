@@ -22,6 +22,46 @@
 	run  = "close"
 	desc = "Cancel input"
 
+[[manager.prepend_keymap]]
+	on = [ "u", "a" ]
+	run = "plugin yamb --args=save"
+	desc = "Add bookmark"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "g" ]
+	run = "plugin yamb --args=jump_by_key"
+	desc = "Jump bookmark by key"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "G" ]
+	run = "plugin yamb --args=jump_by_fzf"
+	desc = "Jump bookmark by fzf"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "d" ]
+	run = "plugin yamb --args=delete_by_key"
+	desc = "Delete bookmark by key"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "D" ]
+	run = "plugin yamb --args=delete_by_fzf"
+	desc = "Delete bookmark by fzf"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "A" ]
+	run = "plugin yamb --args=delete_all"
+	desc = "Delete all bookmarks"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "r" ]
+	run = "plugin yamb --args=rename_by_key"
+	desc = "Rename bookmark by key"
+
+[[manager.prepend_keymap]]
+	on = [ "u", "R" ]
+	run = "plugin yamb --args=rename_by_fzf"
+	desc = "Rename bookmark by fzf"
+
 
 [manager]
 
@@ -57,6 +97,8 @@ keymap = [
 	{ on = [ "l" ], run = "enter", desc = "Enter the child directory" },
 
 	{ on = [ "H" ], run = "back",    desc = "Go back to the previous directory" },
+	{ on = [ "-" ], run = "back",    desc = "Go back to the previous directory" },
+	{ on = [ "_" ], run = "forward",    desc = "Go back to the previous directory" },
 	{ on = [ "L" ], run = "forward", desc = "Go forward to the next directory" },
 
 	{ on = [ "<A-k>" ], run = "seek -5", desc = "Seek up 5 units in the preview" },
@@ -90,14 +132,14 @@ keymap = [
 	{ on = [ "X" ],         run = "unyank",                     desc = "Cancel the yank status of files" },
 	{ on = [ "p" ],         run = "paste",                      desc = "Paste the files" },
 	{ on = [ "P" ],         run = "paste --force",              desc = "Paste the files (overwrite if the destination exists)" },
-	{ on = [ "-" ],         run = "link",                       desc = "Symlink the absolute path of files" },
-	{ on = [ "_" ],         run = "link --relative",            desc = "Symlink the relative path of files" },
+	# { on = [ "-" ],         run = "link",                       desc = "Symlink the absolute path of files" },
+	# { on = [ "_" ],         run = "link --relative",            desc = "Symlink the relative path of files" },
 	{ on = [ "d" ],         run = "remove",                     desc = "Move the files to the trash" },
 	{ on = [ "D" ],         run = "remove --permanently",       desc = "Permanently delete the files" },
 	{ on = [ "a" ],         run = "create",                     desc = "Create a file or directory (ends with / for directories)" },
 	{ on = [ "r" ],         run = "rename --cursor=before_ext", desc = "Rename a file or directory" },
-	{ on = [ ";" ],         run = "shell",                      desc = "Run a shell command" },
-	{ on = [ ":" ],         run = "shell --block",              desc = "Run a shell command (block the UI until the command finishes)" },
+	{ on = [ ";" ],         run = "shell --interactive",                      desc = "Run a shell command" },
+	{ on = [ ":" ],         run = "shell --block --interactive",              desc = "Run a shell command (block the UI until the command finishes)" },
 	{ on = [ "." ],         run = "hidden toggle",              desc = "Toggle the visibility of hidden files" },
 	{ on = [ "s" ],         run = "search fd",                  desc = "Search files by name using fd" },
 	{ on = [ "S" ],         run = "search rg",                  desc = "Search files by content using ripgrep" },
@@ -164,6 +206,7 @@ keymap = [
 
 	# Goto
 	{ on = [ "~" ], run = "cd ~", desc = "Open help" },
+	{ on = [ "``" ], run = "cd ~", desc = "Open help" },
 	{ on = [ "g", "h" ],       run = "cd ~",             desc = "Go to the home directory" },
 	{ on = [ "g", "c" ],       run = "cd ~/.config",     desc = "Go to the config directory" },
 	{ on = [ "g", "d" ],       run = "cd ~/Downloads",   desc = "Go to the downloads directory" },
