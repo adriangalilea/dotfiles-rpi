@@ -17,6 +17,7 @@ zsh: command not found: ya
 ❯ br
 br:3: command not found: broot
 After having run the installer
+- [NEXT] feat: easy adding gpg keys so I can use it
 - [NEXT] make select right version agnostic, so we can use it for local folders or files.
 - [NEXT] select the only zip/tar  w/e that is if there's only  one with generic name then find inside best match, either dir, which means what's inside, or bin directly.
 - [NEXT] template should have a specific target system, e.g.: `{ OS: "Linux", arch: "aarch64" }` just so I can't ever accidentally install something for an unintended system.

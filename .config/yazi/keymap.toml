@@ -24,7 +24,7 @@
 
 [[input.prepend_keymap]]
 	on   = "e"
-	run  = "plugin --sync smart-enter"
+	run  = "shell --block --confirm 'hx ."
 	desc = "open dir"
 
 [manager]
