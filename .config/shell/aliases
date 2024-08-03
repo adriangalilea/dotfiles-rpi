@@ -26,6 +26,8 @@ alias grep="grep --color=auto"         # colorize output (good for log files)
 alias cat="bat --paging never --decorations never --plain"
 alias wget='wget -o /dev/null'
 alias reboot="sudo reboot"
+alias nvm="fnm"  # nvm deprecated in favor of fnm
+
 
 # --- python venv ---
 
