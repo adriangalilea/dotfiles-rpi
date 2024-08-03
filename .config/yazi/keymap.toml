@@ -62,6 +62,10 @@
 	run = "plugin yamb --args=rename_by_fzf"
 	desc = "Rename bookmark by fzf"
 
+[[manager.prepend_keymap]]
+	on   = [ "c", "a" ]
+	run  = "plugin compress"
+	desc = "Archive selected files"
 
 [manager]
 
