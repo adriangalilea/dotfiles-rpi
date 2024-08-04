@@ -4,7 +4,7 @@ source "${0:A:h}/apt.zsh"
 source "${0:A:h}/github/utils.zsh"
 source "${0:A:h}/github/main.zsh"
 
-REQUIRED_BINS=("jq" "gum" "cue")
+REQUIRED_BINS=("jq" "gum" "cue" "syncthing")
 
 # Determine OS and set up package manager
 if [[ "$OSTYPE" == "darwin"* ]]; then

@@ -68,8 +68,7 @@ steps: [
 			message: "removing the .sudo_as_admin_successful"
 			comment: "removing the .sudo_as_admin_successful"
 			content: [
-				"echo "Defaults \!admin_flag" | sudo EDITOR='tee -a' visudo"
-			]
+				"echo 'Defaults !admin_flag' | sudo EDITOR='tee -a' visudo"			]
 		}
 	},
 	{
