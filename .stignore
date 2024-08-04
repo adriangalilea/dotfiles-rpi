@@ -1,4 +1,9 @@
+# is important to prepend / as in '!/.env' instead of '!.env' otherwise it adds all folders sometimes
+
 !/.env
 !/.config/setup/notes/
 !/.config/setup/notes/notes.md
+
+# this line must be last otherwise it doesn't work
 *
+
