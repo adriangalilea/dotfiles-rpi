@@ -174,5 +174,9 @@ verbs: [
         external: ["{command} {file}"]
         leave_broot: false
     }
+    {
+    key: ctrl-esc
+    execution: ":focus {initial-root}"
+}
 ]
 
