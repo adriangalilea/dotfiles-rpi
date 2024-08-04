@@ -11,8 +11,7 @@ path_append() {
     fi
 }
 
-path_append "$HOME/.config/shell/bin"  # eza binary on git repo
-path_append "$HOME/.local/bin"         # zoxide directory
+path_append "$HOME/.local/bin"         # XDG path for bins
 path_append "$HOME/bin"                # mpv
 path_append "$HOME/bin/x"              # x/twitter from the terminal
 

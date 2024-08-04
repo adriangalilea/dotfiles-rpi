@@ -28,7 +28,7 @@ steps: [
 			comment: "These tools are downloaded and installed directly from GitHub"
 			content: [
 				{ghUsername: "helix-editor", ghReponame: "helix", binaries: ["hx"]},
-				{ghUsername: "eza-community", ghReponame: "eza", binaries: ["eza"]},
+				// {ghUsername: "eza-community", ghReponame: "eza", binaries: ["eza"]},
 				{ghUsername: "jesseduffield", ghReponame: "lazygit", binaries: ["lazygit"]},
 				{ghUsername: "dundee", ghReponame: "gdu", binaries: ["gdu"]},
 				{ghUsername: "junegunn", ghReponame: "fzf", binaries: ["fzf"]},

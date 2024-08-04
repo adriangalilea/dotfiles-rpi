@@ -74,3 +74,5 @@
 .config/setup/notes/
 !.config/setup/notes/notes.md.secret
 !.config/setup/notes/
+!.local/bin/eza
+!.local/bin/
