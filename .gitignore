@@ -69,3 +69,4 @@
 !.local/bin/
 !.config/syncthing/config.xml
 !.config/syncthing/
+.config/setup/notes/notes.md
