@@ -10,7 +10,7 @@ Rules:
 
 ## PENDING (ordered by urgency)
 
-- [NEXT] feat: https://github.com/tstack/lnav
+- [NEXT] feat: eza .local/bin is only aarch64
 - [NEXT] ❯ yy
 yy:2: command not found: yazi
 ❯ ya
@@ -54,6 +54,7 @@ Failed to extract version
 - [LOW] use gum to let me choose which steps to proceed, even with sub-items.
 - [LOW] [github] track installed versions, so we can check for updates.
 - [HIGH] feat: script the install on first rpi boot, hijacking the script.sh perhaps.
+- [HIGH] sops over git-secret probably
 - [LOW] feat: interactive installs
 - [LOW] Things to check-out:
   - [ ] [units](https://www.gnu.org/software/units/)

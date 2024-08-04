@@ -60,6 +60,17 @@ install_gum() {
     install_package "gum"
 }
 
+install_syncthing() {
+    if [[ "$OS" == "linux" ]]; then
+        add_repository "syncthing" \
+                       "https://syncthing.net/release-key.gpg" \
+                       "https://apt.syncthing.net/" \
+                       "syncthing" \
+                       "stable"
+    fi
+    install_package "syncthing"
+}
+
 install_cue() {
     log "Installing cue..." debug
     if ! install_from_github "cue-lang" "cue" "cue"; then
