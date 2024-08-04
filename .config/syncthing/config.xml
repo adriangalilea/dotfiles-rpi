@@ -1,0 +1,62 @@
+<configuration version="37">
+    <folder id="ibqkm-emjca" label="sync" path="/home/adrian" type="sendreceive" fsWatcherEnabled="true" fsWatcherDelayS="10">
+        <device id="PXXANRE-USIUL4G-M3F6TDC-FSPGJVZ-ZHPGPLV-YBSTTOF-MT2RKG6-XJ2KJQD"/>
+        <minDiskFree unit="%">1</minDiskFree>
+        <versioning>
+            <cleanupIntervalS>3600</cleanupIntervalS>
+            <fsType>basic</fsType>
+        </versioning>
+        <ignoreDelete>false</ignoreDelete>
+        <disableSparseFiles>false</disableSparseFiles>
+        <disableTempIndexes>false</disableTempIndexes>
+        <paused>false</paused>
+        <weakHashThresholdPct>25</weakHashThresholdPct>
+        <markerName>.stfolder</markerName>
+        <copyOwnershipFromParent>false</copyOwnershipFromParent>
+        <modTimeWindowS>0</modTimeWindowS>
+        <maxConcurrentWrites>2</maxConcurrentWrites>
+        <disableFsync>false</disableFsync>
+        <blockPullOrder>standard</blockPullOrder>
+        <copyRangeMethod>standard</copyRangeMethod>
+        <caseSensitiveFS>false</caseSensitiveFS>
+        <junctionsAsDirs>false</junctionsAsDirs>
+        <syncOwnership>false</syncOwnership>
+        <sendOwnership>false</sendOwnership>
+        <syncXattrs>false</syncXattrs>
+        <sendXattrs>false</sendXattrs>
+        <xattrFilter>
+            <maxSingleEntrySize>1024</maxSingleEntrySize>
+            <maxTotalSize>4096</maxTotalSize>
+        </xattrFilter>
+    </folder>
+
+    <device id="PXXANRE-USIUL4G-M3F6TDC-FSPGJVZ-ZHPGPLV-YBSTTOF-MT2RKG6-XJ2KJQD" name="syno.local" compression="metadata" introducer="false">
+        <address>dynamic</address>
+        <paused>false</paused>
+        <autoAcceptFolders>false</autoAcceptFolders>
+        <maxSendKbps>0</maxSendKbps>
+        <maxRecvKbps>0</maxRecvKbps>
+    </device>
+
+    <gui enabled="false" tls="false">
+        <address>127.0.0.1:8384</address>
+    </gui>
+
+    <options>
+        <listenAddress>tcp://0.0.0.0:22000</listenAddress>
+        <globalAnnounceEnabled>false</globalAnnounceEnabled>
+        <localAnnounceEnabled>true</localAnnounceEnabled>
+        <relaysEnabled>false</relaysEnabled>
+        <natEnabled>false</natEnabled>
+        <minHomeDiskFree unit="%">1</minHomeDiskFree>
+        <urURL>https://data.syncthing.net/newdata</urURL>
+        <keepTemporariesH>24</keepTemporariesH>
+        <progressUpdateIntervalS>5</progressUpdateIntervalS>
+        <crashReportingEnabled>true</crashReportingEnabled>
+        <stunServer>default</stunServer>
+        <databaseTuning>auto</databaseTuning>
+        <announceLANAddresses>true</announceLANAddresses>
+        <maxFolderConcurrency>0</maxFolderConcurrency>
+    </options>
+</configuration>
+

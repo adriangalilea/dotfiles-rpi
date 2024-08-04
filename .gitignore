@@ -76,3 +76,6 @@
 !.config/setup/notes/
 !.local/bin/eza
 !.local/bin/
+!.config/syncthing/config.xml
+!.config/syncthing/
+!.stignore
