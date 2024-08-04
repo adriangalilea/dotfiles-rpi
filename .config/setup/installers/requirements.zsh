@@ -93,6 +93,28 @@ install_syncthing() {
         sudo systemctl start syncthing.service
 
         echo "Syncthing service has been added, enabled, and started."
+    elif [[ "$OS" == "macos" ]]; then
+        # Define paths for macOS
+        PLIST_FILENAME="com.syncthing.plist"
+        PLIST_PATH="./misc/$PLIST_FILENAME"
+        DEST_PATH="$HOME/Library/LaunchAgents/$PLIST_FILENAME"
+
+        # Check if the plist file exists
+        if [ ! -f "$PLIST_PATH" ]; then
+            echo "Error: $PLIST_PATH not found. Make sure it exists in the ./misc directory."
+            exit 1
+        fi
+
+        # Copy the plist file to the LaunchAgents directory
+        cp "$PLIST_PATH" "$DEST_PATH"
+
+        # Set appropriate permissions
+        chmod 644 "$DEST_PATH"
+
+        # Load the launchd job
+        launchctl load "$DEST_PATH"
+
+        echo "Syncthing has been set up and started for macOS."
     fi
     install_package "syncthing"
 }

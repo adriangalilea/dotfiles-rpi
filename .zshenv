@@ -37,6 +37,11 @@ export SSH_CONFIG="$XDG_CONFIG_HOME/ssh/config"
 export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:$HOME/.terminfo:/usr/share/terminfo"
 mkdir -p "$XDG_DATA_HOME/terminfo"
 
+# synchting
+export ST_CONFIG_DIR="$XDG_CONFIG_HOME/syncthing"
+export ST_STATE_DIR="$XDG_STATE_HOME/syncthing"
+mkdir -p "$ST_CONFIG_DIR" "$ST_STATE_DIR"
+
 #┌─────────────────────────────────────────────────┐
 #│                    zplug                        │
 #└─────────────────────────────────────────────────┘
