@@ -67,6 +67,32 @@ install_syncthing() {
                        "https://apt.syncthing.net/" \
                        "syncthing" \
                        "stable"
+        # Define paths
+        SERVICE_FILE="./misc/syncthing.service"
+        DEST_PATH="/etc/systemd/system/syncthing.service"
+
+        # Check if the service file exists
+        if [ ! -f "$SERVICE_FILE" ]; then
+            echo "Error: $SERVICE_FILE not found. Make sure it exists in the ./misc directory."
+            exit 1
+        fi
+
+        # Copy the service file to the system directory
+        sudo cp "$SERVICE_FILE" "$DEST_PATH"
+
+        # Set appropriate permissions
+        sudo chmod 644 "$DEST_PATH"
+
+        # Reload systemd to recognize the new service file
+        sudo systemctl daemon-reload
+
+        # Enable the service to start on boot
+        sudo systemctl enable syncthing.service
+
+        # Start the service
+        sudo systemctl start syncthing.service
+
+        echo "Syncthing service has been added, enabled, and started."
     fi
     install_package "syncthing"
 }
