@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>Label</key>
-		<string>net.syncthing.syncthing</string>
-
-		<key>ProgramArguments</key>
-		<array>
-			<string>/usr/local/bin/syncthing</string>
-		</array>
-
-		<key>EnvironmentVariables</key>
-		<dict>
-			<key>HOME</key>
-			<string>/Users/adrian</string>
-			<key>STNORESTART</key>
-			<string>1</string>
-			<key>STCONFDIR</key>
-			<string>/Users/adrian/.config/syncthing</string>
-			<key>STDATADIR</key>
-			<string>/Users/adrian/.local/state/syncthing</string>
-		</dict>
-
-		<key>KeepAlive</key>
-		<true/>
-
-		<key>LowPriorityIO</key>
-		<true/>
-
-		<key>ProcessType</key>
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>my.syncthing</string>
+	<key>LimitLoadToSessionType</key>
+	<array>
+		<string>Aqua</string>
 		<string>Background</string>
+		<string>LoginWindow</string>
+		<string>StandardIO</string>
+		<string>System</string>
+	</array>
 
-		<key>StandardOutPath</key>
-		<string>/Users/adrian/.local/state/syncthing/Logs/Syncthing.log</string>
-
-		<key>StandardErrorPath</key>
-		<string>/Users/adrian/.local/state/syncthing/Logs/Syncthing-Errors.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>/Users/adrian</string>
+		<key>STCONFDIR</key>
+		<string>/Users/adrian/.config/syncthing</string>
+		<key>STDATADIR</key>
+		<string>/Users/adrian/.local/state/syncthing</string>
 	</dict>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/opt/syncthing/bin/syncthing</string>
+		<string>-no-browser</string>
+		<string>-no-restart</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+
+
+	<key>LowPriorityIO</key>
+	<true/>
+	
+	<key>StandardOutPath</key>
+	<string>/Users/adrian/.local/state/syncthing/logs/syncthing.log</string>
+
+	<key>StandardErrorPath</key>
+	<string>/Users/adrian/.local/state/syncthing/logs/errors.log</string>
+</dict>
 </plist>
-
-

@@ -9,6 +9,7 @@
 !.zshenv
 !.zplugrc
 !.tmux.conf
+!.stignore
 
 # Allow .config directory
 !.config/
@@ -68,4 +69,3 @@
 !.local/bin/
 !.config/syncthing/config.xml
 !.config/syncthing/
-!.stignore

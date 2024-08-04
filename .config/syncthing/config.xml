@@ -1,5 +1,5 @@
 <configuration version="37">
-    <folder id="ibqkm-emjca" label="sync" path="/home/adrian" type="sendreceive" fsWatcherEnabled="true" fsWatcherDelayS="10">
+    <folder id="jisxj-beu4c" label="sync" path="~" type="sendreceive" fsWatcherEnabled="true" fsWatcherDelayS="10">
         <device id="PXXANRE-USIUL4G-M3F6TDC-FSPGJVZ-ZHPGPLV-YBSTTOF-MT2RKG6-XJ2KJQD"/>
         <minDiskFree unit="%">1</minDiskFree>
         <versioning>
