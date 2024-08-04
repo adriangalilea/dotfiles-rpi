@@ -54,12 +54,6 @@
 !.config/vale/.vale.ini
 !.config/mods/mods.yml
 
-# Git secret related
-!.gitsecret/
-!.gitsecret/**
-!*.secret
-.gitsecret/keys/random_seed
-
 # Custom additions
 # (New paths will be added here by the add_to_gitignore function)
 !.config/glow/
@@ -70,10 +64,6 @@
 !.config/xdg/
 !.config/broot/
 !.config/broot/**
-.config/setup/notes/notes.md
-.config/setup/notes/
-!.config/setup/notes/notes.md.secret
-!.config/setup/notes/
 !.local/bin/eza
 !.local/bin/
 !.config/syncthing/config.xml

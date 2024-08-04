@@ -60,7 +60,6 @@ Heavily inspired by [@sobolevn](https://github.com/sobolevn) [dotfiles](https://
   - [ ] flow of installation
   - [ ] usefulness
   - [ ] aliases walkthrough
-  - [ ] git secret usage to use ai and lsp-ai
   
 ## side-quests 
 - [ ] [research more zsh config](https://github.com/changs/slimzsh?tab=readme-ov-file#fasd)

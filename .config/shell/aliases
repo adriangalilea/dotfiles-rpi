@@ -61,16 +61,6 @@ alias free="free -m"                   # show sizes in MB
 alias ,="git status --short --ignored ."    # recursive
 alias ,.='git status --short --ignored $(find . -maxdepth 1 -type f)'  # non-recursive
 
-# --- git secret ---
-
-alias secret="git secret add"
-alias hide="git secret hide"
-alias reveal="git secret reveal"
-alias tell="git secret tell"
-alias remove="git secret remove"
-alias secrets="git secret list"
-alias secret-help="git secret usage"   # list commands
-
 # --- misc utilities ---
 
 alias pubkey="cat ~/.ssh/id_rsa.pub | pbcopy | echo '=> Public key copied to pasteboard.'"

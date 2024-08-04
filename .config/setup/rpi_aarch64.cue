@@ -60,7 +60,6 @@ steps: [
 				"curl -sSL https://github.com/Slackadays/Clipboard/raw/main/install.sh | sh",
 				"curl -sfL https://direnv.net/install.sh | bash",
 				"curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh",
-				"sudo apt-get install -y gawk && git clone https://github.com/sobolevn/git-secret.git git-secret && cd git-secret && make build && sudo PREFIX="/usr/local" make install && cd .. && rm -rf git-secret"
 			]
 		}
 	},
