@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 User=adrian
-Environment=ST_CONFIG_DIR=%h/.config/syncthing
-Environment=ST_STATE_DIR=%h/.local/state/syncthing
+Environment=STCONFIGDIR=%h/.config/syncthing
+Environment=STSTATEDIR=%h/.local/state/syncthing
 ExecStart=/usr/bin/syncthing -no-browser
 Restart=on-failure
 RestartSec=5

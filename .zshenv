@@ -38,9 +38,9 @@ export TERMINFO_DIRS="$XDG_DATA_HOME/terminfo:$HOME/.terminfo:/usr/share/terminf
 mkdir -p "$XDG_DATA_HOME/terminfo"
 
 # synchting
-export ST_CONFIG_DIR="$XDG_CONFIG_HOME/syncthing"
-export ST_STATE_DIR="$XDG_STATE_HOME/syncthing"
-mkdir -p "$ST_CONFIG_DIR" "$ST_STATE_DIR"
+export STCONFIGDIR="$XDG_CONFIG_HOME/syncthing"
+export STSTATEDIR="$XDG_STATE_HOME/syncthing"
+mkdir -p "$STCONFIGDIR" "$STSTATEDIR"
 
 #┌─────────────────────────────────────────────────┐
 #│                    zplug                        │
