@@ -190,16 +190,27 @@ alias add="add_to_dotfiles"
 # --- toptal gitignore ---
 # example usage `gi mac,go >> .gitignore`
 function gi() {
-  local choice=$(gum choose --header "What do you want to do?" "Create .gitignore" "Show output")
-  local templates=$(echo $@ | tr ' ' ',')
-  local content=$(curl -sL "https://www.toptal.com/developers/gitignore/api/$templates")
-
-  if [[ $choice == "Create .gitignore" ]]; then
-    echo "$content" > .gitignore
-    echo ".gitignore created"
-  else
-    echo "$content"
-  fi
+  local choice
+  while true; do
+    choice=$(gum choose --header "What do you want to do?" "Create .gitignore" "Show output" "Quit")
+    case $choice in
+      "Create .gitignore")
+        local templates=$(echo $@ | tr ' ' ',')
+        local content=$(curl -sL "https://www.toptal.com/developers/gitignore/api/$templates")
+        echo "$content" > .gitignore
+        echo ".gitignore created"
+        break
+        ;;
+      "Show output")
+        local templates=$(echo $@ | tr ' ' ',')
+        local content=$(curl -sL "https://www.toptal.com/developers/gitignore/api/$templates")
+        echo "$content" | gum pager
+        ;;
+      "Quit")
+        break
+        ;;
+    esac
+  done
 }
 
 _gitignoreio_get_command_list() {
