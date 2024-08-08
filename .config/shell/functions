@@ -288,3 +288,35 @@ home() {
 }
 alias ~="home"
 
+# --- check anthropic rate limits ---
+check_limits() {
+  # Ensure the API key is set
+  if [ -z "$ANTHROPIC_API_KEY" ]; then
+    echo "Error: ANTHROPIC_API_KEY environment variable is not set."
+    return 1
+  fi
+
+  # Make the API request and save the headers in a variable
+  response=$(curl -s -D - -o /dev/null -H "Authorization: Bearer $ANTHROPIC_API_KEY" \
+     --header "x-api-key: $ANTHROPIC_API_KEY" \
+     --header "anthropic-version: 2023-06-01" \
+     --header "content-type: application/json" \
+     --data '{
+       "model": "claude-3-5-sonnet-20240620",
+       "max_tokens": 1,
+       "messages": [
+         {"role": "user", "content": "Hello"}
+       ]
+     }' \
+     https://api.anthropic.com/v1/messages)
+
+  # Extract and print the relevant headers
+  echo "Request Rate Limit: $(echo "$response" | grep -i 'anthropic-ratelimit-requests-limit:' | awk '{print $2}')"
+  echo "Requests Remaining: $(echo "$response" | grep -i 'anthropic-ratelimit-requests-remaining:' | awk '{print $2}')"
+  echo "Requests Reset Time: $(echo "$response" | grep -i 'anthropic-ratelimit-requests-reset:' | awk '{print $2}')"
+  echo "Token Rate Limit: $(echo "$response" | grep -i 'anthropic-ratelimit-tokens-limit:' | awk '{print $2}')"
+  echo "Tokens Remaining: $(echo "$response" | grep -i 'anthropic-ratelimit-tokens-remaining:' | awk '{print $2}')"
+  echo "Tokens Reset Time: $(echo "$response" | grep -i 'anthropic-ratelimit-tokens-reset:' | awk '{print $2}')"
+  echo "Retry After: $(echo "$response" | grep -i 'retry-after:' | awk '{print $2}')"
+}
+
