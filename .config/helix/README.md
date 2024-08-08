@@ -69,7 +69,8 @@ which was working for me before with the fix propose on [this issue](https://git
 # TODO
 
 - [ ] Using pipes for AI
-  - [ ] learn how to use pipes
+      > [this video as inspo](https://youtu.be/ge9Fs2X4DGo)
+  - [.] learn how to use pipes
   - [ ] mods
     - [ ] system prompt that limits output to only the returning stuff, 0 extra.
     - [ ] can be improved by fine-tuning
