@@ -57,6 +57,10 @@ setopt HIST_EXPIRE_DUPS_FIRST # Remove duplicates first when trimming history
 bindkey '^p' history-search-backward # ctrl+p now only shows matching commands
 bindkey '^n' history-search-forward  # ctrl+n now only shows matching commands
 
+# --- misc ---
+bindkey "^[[H" beginning-of-line  # Maps Home key to move cursor to start of line
+bindkey "^[[F" end-of-line        # Maps End key to move cursor to end of line
+
 #┌─────────────────────────────────────────────────┐
 #│                  PATH Setup                     │
 #└─────────────────────────────────────────────────┘
