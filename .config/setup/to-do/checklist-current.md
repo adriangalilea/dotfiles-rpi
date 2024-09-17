@@ -11,6 +11,8 @@ Rules:
 ## PENDING (ordered by urgency)
 
 - [NEXT] feat: eza .local/bin is only aarch64
+- [NEXT] feat: [rip](https://github.com/MilesCranmer/rip2)
+- [NEXT] feat: [oryx](https://github.com/pythops/oryx)
 - [NEXT] ❯ yy
 yy:2: command not found: yazi
 ❯ ya
