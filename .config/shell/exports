@@ -19,6 +19,9 @@ path_append "$HOME/bin/x"              # x/twitter from the terminal
 export GOPATH="$HOME/.local/go"
 path_append "$GOPATH/bin"
 
+# Rust -> Cargo
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Bun
 export BUN_INSTALL="$HOME/.local/bun"
 path_append "$BUN_INSTALL/bin"
